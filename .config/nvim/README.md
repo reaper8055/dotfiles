@@ -1,8 +1,6 @@
 # My personal neovim config!
 
-![Screenshot from 2023-10-05 19-10-51](https://github.com/reaper8055/nvim-config/assets/11490705/17674b42-1522-4933-9bdd-3aa262cabe61)
-
-![Screenshot from 2023-05-06 02-14-20](https://github.com/reaper8055/nvim-config/assets/11490705/592d061a-6aa4-46a3-83f1-1dbf7448133f)
+![Screenshot from 2024-03-28 00-26-53](https://github.com/reaper8055/dotfiles/assets/11490705/cc92a852-f861-4e9b-95b6-726b4ee504db)
 
 My neovim config heavily inspired by 
 - <https://github.com/LunarVim/Neovim-from-scratch>
