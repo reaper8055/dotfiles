@@ -26,6 +26,7 @@ lazy.setup({
     notify = false,
   },
   ui = {
+    backdrop = 100,
     border = "rounded",
   },
 })
