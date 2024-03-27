@@ -1,1 +1,3 @@
 .config/nvim/lazy-lock.json
+scripts/install-fonts/nerd-fonts-tmp
+scripts/install-fonts/pop-os-fonts-tmp

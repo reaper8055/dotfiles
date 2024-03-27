@@ -5,7 +5,7 @@ FONTS=("FiraCode" "FiraMono" "Hack" "Inconsolata" "NerdFontsSymbolsOnly" "JetBra
 DIR="nerd-fonts-tmp"
 mkdir -p ./$DIR
 
-git clone https://github.com/pop-os/fonts.git pop-os-fonts/
+git clone https://github.com/pop-os/fonts.git
 
 for FONT in "${FONTS[@]}"; do
   URL="https://github.com/ryanoasis/nerd-fonts/releases/download/${VERSION}/${FONT}.zip"

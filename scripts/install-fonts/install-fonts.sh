@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 for zipFile in ./fonts/src/*.zip; do
-  unzip $zipFile -d ./pop_os_fonts/
+  unzip $zipFile -d ./pop-os-fonts-tmp/
 done
 
-sudo cp -R ./pop_os_fonts /usr/share/fonts/
-cp -R ./pop_os_fonts $HOME/.local/share/fonts/
+sudo cp -R ./pop-os-fonts /usr/share/fonts/
+cp -R ./pop-os-fonts-tmp $HOME/.local/share/fonts/
 
 for zipFile in ./nerd-fonts-tmp/*.zip; do
   baseName=$(basename -- "$zipFile")
