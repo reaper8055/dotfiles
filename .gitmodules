@@ -1,0 +1,36 @@
+[submodule "kitty"]
+	path = .config/kitty
+	url = https://github.com/reaper8055/kitty-config
+[submodule "nvim"]
+	path = .config/nvim
+	url = https://github.com/reaper8055/nvim-config
+[submodule "wezterm"]
+	path = .config/wezterm
+	url = https://github.com/reaper8055/wezterm
+[submodule "wallpapers"]
+	path = .config/wallpapers
+	url = https://github.com/reaper8055/wallpapers
+[submodule "tmux"]
+	path = .config/tmux
+	url = https://github.com/reaper8055/tmux-config
+[submodule "starship"]
+	path = .config/starship
+	url = https://github.com/reaper8055/starship-config
+[submodule ".config/starship"]
+	path = .config/starship
+	url = https://github.com/reaper8055/starship-config
+[submodule ".config/tmux"]
+	path = .config/tmux
+	url = https://github.com/reaper8055/tmux-config
+[submodule ".config/nvim"]
+	path = .config/nvim
+	url = https://github.com/reaper8055/nvim-config
+[submodule ".config/wezterm"]
+	path = .config/wezterm
+	url = https://github.com/reaper8055/wezterm
+[submodule ".config/kitty"]
+	path = .config/kitty
+	url = https://github.com/reaper8055/kitty-config
+[submodule ".config/wallpapers"]
+	path = .config/wallpapers
+	url = https://github.com/reaper8055/wallpapers

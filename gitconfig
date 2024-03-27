@@ -1,0 +1,11 @@
+[init]
+  defaultBranch = main
+[user]
+  email = "email"
+  name = "username"
+[url "git@github.com:"]
+  insteadOf = https://github.com/
+[submodule]
+  recurse = true
+[push]
+  recurseSubmodules = on-demand
