@@ -1,4 +1,4 @@
 .config/nvim/lazy-lock.json
-.config/tmux/plugins/
+.config/tmux/plugins/*/
 scripts/install-fonts/nerd-fonts-tmp
 scripts/install-fonts/pop-os-fonts-tmp
