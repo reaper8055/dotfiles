@@ -16,7 +16,9 @@ local installed, lazy = pcall(require, "lazy")
 if not installed then return end
 
 lazy.setup({
-  { import = "plugins" },
+  {
+    import = "plugins",
+  },
 }, {
   checker = {
     enabled = true,

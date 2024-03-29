@@ -30,6 +30,11 @@ return {
     enabled = false,
   },
 
+  -- colorschemes
+  {
+    "rebelot/kanagawa.nvim",
+  },
+
   -- telescope-fzf
   {
     "nvim-telescope/telescope-fzf-native.nvim",
