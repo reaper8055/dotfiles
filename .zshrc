@@ -244,7 +244,7 @@ function nix-init() {
 # Upgarding nix
 function nix-upgrade() {
 sudo su <<EOF
-nix-env --install --file '<nixpkgs>' --attr nix cacert -I nixpkgs=channel:nixpkgs-unstable
+"$(which nix-env)" --install --file '<nixpkgs>' --attr nix cacert -I nixpkgs=channel:nixpkgs-unstable
 systemctl daemon-reload
 systemctl restart nix-daemon
 EOF

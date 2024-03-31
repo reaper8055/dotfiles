@@ -71,6 +71,8 @@ vim.opt.cursorcolumn = true
 vim.opt.shortmess:append("c")
 vim.opt.list = true
 vim.opt.listchars:append({
+  tab = "» ",
+  trail = "·",
   eol = "¬",
 })
 -- notify plugin
