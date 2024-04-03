@@ -12,3 +12,8 @@ autocmd("TextYankPost", {
     })
   end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go",
+  command = "setlocal formatoptions+=cqrn1",
+})

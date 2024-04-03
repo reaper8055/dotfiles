@@ -136,7 +136,7 @@ plug "zap-zsh/fzf"
 
 # Refresh environment variables in tmux.
 if [ -n "$TMUX" ]; then
-  function refresh {
+  function renew-tmux-env {
     sshauth=$(tmux show-environment | grep "^SSH_AUTH_SOCK")
     if [ $sshauth ]; then
         export $sshauth
@@ -145,14 +145,18 @@ if [ -n "$TMUX" ]; then
     if [ $display ]; then
         export $display
     fi
+    sshconn=$(tmux show-environment | grep "^SSH_CONNECTION")
+    if [ $sshconn ]; then
+      export $sshconn
+    fi
   }
 else
-  function refresh { }
+  function renew-tmux-env { }
 fi
 
 function preexec {
   # Refresh environment if inside tmux
-  refresh
+  renew-tmux-env
 }
 
 # Aliases

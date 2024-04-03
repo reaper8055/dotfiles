@@ -24,7 +24,6 @@ return {
           "lua_ls",
           "bashls",
           "gopls",
-          "lua_ls",
           "rust_analyzer",
           "zk",
           "taplo",
@@ -178,6 +177,11 @@ return {
 
       -- eslint
       lspconfig.eslint.setup({
+        capabilities = capabilities,
+        on_attach = on_attach,
+      })
+
+      lspconfig.zk.setup({
         capabilities = capabilities,
         on_attach = on_attach,
       })

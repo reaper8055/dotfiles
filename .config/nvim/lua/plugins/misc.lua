@@ -33,6 +33,14 @@ return {
   -- colorschemes
   {
     "rebelot/kanagawa.nvim",
+    {
+      "rose-pine/neovim",
+      name = "rose-pine",
+    },
+    {
+      "catppuccin/nvim",
+      name = "catppuccin",
+    },
   },
 
   -- telescope-fzf
