@@ -22,3 +22,4 @@ _darcs
 gitconfig
 auto-source.sh
 scripts
+.config/tmux/plugins/*
