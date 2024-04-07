@@ -213,16 +213,18 @@ mkShell {
   buildInputs = [
     # shell
     zsh
-    # go
+    # golang
     go
     gopls
     golangci-lint
+    gofumpt
     # web
     fnm
     nodejs
     yarn
     # unix-tools
     fd
+    ripgrep
   ];
   shellHook = ''
     export GIT_CONFIG_NOSYSTEM=true

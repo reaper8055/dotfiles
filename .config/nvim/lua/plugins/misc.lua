@@ -42,13 +42,4 @@ return {
       name = "catppuccin",
     },
   },
-
-  -- telescope-fzf
-  {
-    "nvim-telescope/telescope-fzf-native.nvim",
-    build = "make",
-  },
-
-  -- vim-bbye
-  { "moll/vim-bbye" },
 }

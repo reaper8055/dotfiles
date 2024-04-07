@@ -4,7 +4,7 @@ local opts = {
 }
 
 -- Shorten function name
-local keymap = vim.api.nvim_set_keymap
+local keymap = vim.keymap.set
 
 --Remap space as leader key
 keymap("", "<Space>", "<Nop>", opts)
@@ -40,7 +40,7 @@ keymap("n", "<C-A-h>", ":vertical resize +2<CR>", opts)
 keymap("n", "<S-l>", ":bnext<CR>", opts)
 keymap("n", "<S-h>", ":bprevious<CR>", opts)
 -- 2. Control
-keymap("n", "<C-w>q", ":bd<CR>", opts)
+keymap("n", "<leader>bd", ":bd<CR>", opts)
 
 -- Insert --
 -- Press jk fast to enter
@@ -81,6 +81,3 @@ keymap("n", "<leader>+", ":+tabmove<CR>", opts)
 keymap("n", "<leader>|", ":vsplit<CR>", opts)
 -- horizontal split
 keymap("n", "<leader>_", ":split<CR>", opts)
-
--- redo
-keymap("n", "<C-r>", "S-U", opts)

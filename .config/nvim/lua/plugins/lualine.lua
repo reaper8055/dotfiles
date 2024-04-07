@@ -11,8 +11,6 @@ return {
         icons_enabled = true,
         -- theme = "onedark",
         -- theme = vim.g.colors_name,
-        component_separators = { left = "", right = "" },
-        section_separators = { left = "", right = "" },
         disabled_filetypes = {
           "aerial",
           "NvimTree",
@@ -27,35 +25,56 @@ return {
             icons_enabled = true,
             icon = "",
             padding = 1,
+            separator = {
+              left = "",
+              right = "",
+            },
           },
         },
         lualine_b = {
           {
             "mode",
+            icons_enabled = true,
             padding = 1,
+            separator = {
+              left = "",
+              right = "",
+            },
           },
         },
         lualine_c = {},
         lualine_x = {
           {
             "diff",
-            colored = false,
+            colored = true,
             symbols = { added = " ", modified = " ", removed = " " }, -- changes diff symbols
             cond = function() return vim.fn.winwidth(0) > 80 end,
-            color = {
-              bg = "#98C379",
-              fg = "#282C34",
+            separator = {
+              right = "",
+              left = "",
             },
           },
-          "encoding",
         },
         lualine_y = {
           {
+            "encoding",
+            separator = {
+              right = "",
+              left = "",
+            },
+          },
+          "filetype",
+        },
+        lualine_z = {
+          {
             "location",
             padding = 1,
+            separator = {
+              right = "",
+              left = "",
+            },
           },
         },
-        lualine_z = {},
       },
       inactive_sections = {
         lualine_a = {},
