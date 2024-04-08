@@ -32,11 +32,11 @@ config.colors = {
 	brights = { "#727169", "#e82424", "#98bb6c", "#e6c384", "#7fb4ca", "#938aa9", "#7aa89f", "#dcd7ba" },
 	indexed = { [16] = "#ffa066", [17] = "#ff5d62" },
 }
-config.dpi = 192
 config.font = wezterm.font({
 	family = "FiraCode Nerd Font",
-	weight = "Regular",
+	weight = 450,
 })
+config.font_size = 12
 
 config.window_padding = {
 	left = 10,
