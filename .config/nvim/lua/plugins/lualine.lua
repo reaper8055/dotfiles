@@ -68,7 +68,11 @@ return {
         lualine_z = {
           {
             "location",
-            padding = 1,
+            icon = {
+              " ",
+              align = "right",
+            },
+            padding = 0,
             separator = {
               right = "",
               left = "",

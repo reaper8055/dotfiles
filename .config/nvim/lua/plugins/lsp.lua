@@ -44,7 +44,7 @@ return {
   },
   {
     "folke/neodev.nvim",
-    config = function() require("neodev").setup({}) end,
+    opts = {},
   },
   {
     "SmiteshP/nvim-navbuddy",
@@ -296,7 +296,6 @@ return {
       -- gopls
       lspconfig.gopls.setup({
         capabilities = capabilities,
-        -- on_attach = on_attach,
         cmd = { "gopls", "-remote=auto" },
         debounce_text_changes = 1000,
         filetypes = {
