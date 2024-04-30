@@ -11,7 +11,7 @@ function install-fzf() {
 }
 
 function update-zshrc() {
-  curl -sL https://raw.githubusercontent.com/reaper8055/zsh-config/main/zshrc > $HOME/.zshrc
+  curl -sL https://raw.githubusercontent.com/reaper8055/dotfiles/main/.zshrc > $HOME/.zshrc
   builtin source $HOME/.zshrc
 }
 
@@ -93,6 +93,7 @@ function INIT() {
     install-stow
     install-stylua
     dot-init
+    update-zshrc
     builtin source $HOME/.zshrc
   fi
 }
@@ -134,20 +135,25 @@ plug "zap-zsh/fzf"
 # kitty ssh fix
 # [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 
+# Function to strip ANSI codes
+function strip_formatting() {
+  echo "$1" | sed 's/\x1b\[[0-9;]*m//g'
+}
+
 # Refresh environment variables in tmux.
 if [ -n "$TMUX" ]; then
   function renew-tmux-env {
-    sshauth=$(tmux show-environment | grep "^SSH_AUTH_SOCK")
-    if [ $sshauth ]; then
-        export $sshauth
+    sshauth="$(tmux show-environment | grep "^SSH_AUTH_SOCK" | sed 's/\x1b\[[0-9;]*[mK]//g')"
+    if [ "$sshauth" ]; then
+      export "$sshauth"
     fi
-    display=$(tmux show-environment | grep "^DISPLAY")
-    if [ $display ]; then
-        export $display
+    display="$(tmux show-environment | grep "^DISPLAY" | sed 's/\x1b\[[0-9;]*[mK]//g')"
+    if [ "$display" ]; then
+      export "$display"
     fi
-    sshconn=$(tmux show-environment | grep "^SSH_CONNECTION")
-    if [ $sshconn ]; then
-      export $sshconn
+    sshconn="$(tmux show-environment | grep "^SSH_CONNECTION" | sed 's/\x1b\[[0-9;]*[mK]//g')"
+    if [ "$sshconn" ]; then
+      export "$sshconn"
     fi
   }
 else
@@ -161,7 +167,7 @@ function preexec {
 
 # Aliases
 alias n="nvim"
-alias .="builtin source $HOME/.zshrc"
+alias .="source"
 alias zshrc="nvim $HOME/.zshrc"
 alias kc="nvim $HOME/.config/kitty/kitty.conf"
 alias wez="nvim $HOME/.config/wezterm/wezterm.lua"
@@ -173,6 +179,7 @@ alias nix-search="nix-env -qaP"
 alias c2c="xclip -sel c < "
 alias path="echo $PATH | sed -e 's/:/\n/g'"
 alias tmux="tmux -u"
+alias grep="grep --color=always"
 
 # gitconfig
 function gitconfig() {
@@ -194,12 +201,10 @@ xclip -sel c <<EOF
 [user]
   email = "11490705+reaper8055@users.noreply.github.com"
   name = "reaper8055"
+[gpg]
+	format = ssh
 [url "git@github.com:"]
   insteadOf = https://github.com/
-[submodule]
-  recurse = true
-[push]
-  recurseSubmodules = on-demand
 EOF
 }
 

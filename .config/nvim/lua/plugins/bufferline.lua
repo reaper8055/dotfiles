@@ -16,6 +16,15 @@ return {
           style = "icon",
           icon = "▎",
         },
+        offsets = {
+          {
+            filetype = "NvimTree",
+            text = "󰙅 File Explorer",
+            text_align = "left",
+            separator = true,
+          },
+        },
+        color_iconss = true,
         buffer_close_icon = "󰅖",
         modified_icon = "●",
         close_icon = "󰅖",
@@ -26,9 +35,6 @@ return {
         tab_size = 20,
         diagnostics = false, -- | "nvim_lsp" | "coc",
         diagnostics_update_in_insert = false,
-        offsets = {
-          { filetype = "NvimTree", text = "", padding = 0 },
-        },
         show_buffer_icons = true,
         show_buffer_close_icons = true,
         show_close_icon = true,

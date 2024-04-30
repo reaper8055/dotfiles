@@ -1,5 +1,6 @@
 return {
   "hrsh7th/nvim-cmp",
+  lazy = false,
   event = "InsertEnter",
   dependencies = {
     "hrsh7th/cmp-buffer",
@@ -27,6 +28,10 @@ return {
     cmp.setup({
       snippet = {
         expand = function(args) luasnip.lsp_expand(args.body) end,
+      },
+      window = {
+        documentation = cmp.config.window.bordered(),
+        completion = cmp.config.window.bordered(),
       },
       mapping = cmp.mapping.preset.insert({
         ["<C-k>"] = cmp.mapping.select_prev_item(),
@@ -88,14 +93,18 @@ return {
             disable_omnifuncs = { "v:lua.vim.lsp.omnifunc" },
           },
         },
+        {
+          name = "nvim_lsp",
+          option = {
+            markdown_oxide = {
+              keyword_pattern = [[\(\k\| \|\/\|#\)\+]],
+            },
+          },
+        },
       }),
       confirm_opts = {
         behavior = cmp.ConfirmBehavior.Replace,
         select = false,
-      },
-      window = {
-        documentation = cmp.config.window.bordered(),
-        completion = cmp.config.window.bordered(),
       },
       experimental = {
         ghost_text = false,

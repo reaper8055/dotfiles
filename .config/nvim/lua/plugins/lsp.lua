@@ -25,7 +25,7 @@ return {
           "bashls",
           "gopls",
           "rust_analyzer",
-          "zk",
+          "markdown_oxide",
           "taplo",
           "terraformls",
           "yamlls",
@@ -288,11 +288,12 @@ return {
         end,
       })
 
-      local lspconfig = require("lspconfig")
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities =
         vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+      print(capabilities)
 
+      local lspconfig = require("lspconfig")
       -- gopls
       lspconfig.gopls.setup({
         capabilities = capabilities,
@@ -350,7 +351,7 @@ return {
         capabilities = capabilities,
       })
 
-      lspconfig.zk.setup({
+      lspconfig.markdown_oxide.setup({
         capabilities = capabilities,
       })
 

@@ -9,14 +9,15 @@ return {
     require("lualine").setup({
       options = {
         icons_enabled = true,
-        -- theme = "onedark",
-        -- theme = vim.g.colors_name,
-        disabled_filetypes = {
-          "aerial",
-          "NvimTree",
-          "Outline",
-        },
+        globalstatus = true,
+        theme = vim.g.colors_name,
+        disabled_filetypes = {},
         always_divide_middle = true,
+        refresh = {
+          statusline = 1000,
+          tabline = 1000,
+          winbar = 1000,
+        },
       },
       sections = {
         lualine_a = {
@@ -63,16 +64,23 @@ return {
               left = "",
             },
           },
-          "filetype",
+          {
+            "filetype",
+            separator = {
+              right = "",
+              left = "",
+            },
+          },
         },
         lualine_z = {
           {
             "location",
             icon = {
+              -- " ",
               " ",
               align = "right",
             },
-            padding = 0,
+            padding = 1,
             separator = {
               right = "",
               left = "",
