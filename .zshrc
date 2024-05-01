@@ -5,14 +5,19 @@ function install-nix() {
 }
 
 function install-fzf() {
-  [ -f "$(which fzf)" ] && return 0
+  [ -f "$(which fzf)" ] && { printf '%s: successful\n' "$0"; return 0 }
   git clone --depth 1 https://github.com/junegunn/fzf.git $HOME/.fzf
   yes | $HOME/.fzf/install
 }
 
 function update-zshrc() {
-  curl -sL https://raw.githubusercontent.com/reaper8055/dotfiles/main/.zshrc > $HOME/.zshrc
-  builtin source $HOME/.zshrc
+  [ ! -h "$HOME/.zshrc" ] && rm "$HOME/.zshrc"
+  cd "$HOME/dotfiles" || { 
+    cd "$HOME" \
+    git clone https://github.com/reaper8055/dotfiles \
+    cd "$HOME/dotfiles" \
+    stow .
+  }
 }
 
 function project-init() {
@@ -38,7 +43,7 @@ function install-stylua() {
 
 function dot-init() {
   cd "$HOME"
-  git clone --recurseSubmodules https://github.com/reaper8055/dotfiles
+  git clone https://github.com/reaper8055/dotfiles
   cd dotfiles && stow .
 }
 
@@ -80,6 +85,15 @@ function install-zap() {
     --branch release-v1
 }
 
+function install-wl-clipboard() {
+  sudo apt install -y wl-clipboard
+}
+
+function set-copy-alias() {
+  [ -f "$(which xclip)" ] && alias copy="xclip" return 0
+  [ -f "$(which wl-copy)" ] && alias copy="wl-copy" return 0
+}
+
 function INIT() {
   [ -f "$(which curl)" ] || sudo apt install -y curl
   if [ -f "$HOME/.local/share/zap/zap.zsh" ]; then
@@ -93,12 +107,12 @@ function INIT() {
     install-stow
     install-stylua
     dot-init
-    update-zshrc
     builtin source $HOME/.zshrc
   fi
 }
 
 INIT
+set-copy-alias
 
 # tmux backspace fix
 bindkey "^H" backward-delete-char
@@ -176,10 +190,10 @@ alias tc="nvim $HOME/.config/tmux/tmux.conf"
 alias ac="nvim $HOME/.config/alacritty/alacritty.yml"
 alias git-remote-url="git remote set-url origin"
 alias nix-search="nix-env -qaP"
-alias c2c="xclip -sel c < "
 alias path="echo $PATH | sed -e 's/:/\n/g'"
 alias tmux="tmux -u"
 alias grep="grep --color=always"
+
 
 # gitconfig
 function gitconfig() {
@@ -195,7 +209,7 @@ EOF
 }
 
 function cp-gitconfig() {
-xclip -sel c <<EOF
+copy -sel c <<EOF
 [init]
   defaultBranch = main
 [user]
