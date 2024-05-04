@@ -23,6 +23,7 @@ return {
         ensure_installed = {
           "lua_ls",
           "bashls",
+          "shellcheck",
           "gopls",
           "rust_analyzer",
           "markdown_oxide",

@@ -120,11 +120,11 @@ bindkey "^?" backward-delete-char
 
 # default editor
 if [ -f "$(which nvim)" ]; then
-  export EDITOR=nvim
-  export VISUAL=nvim
+  export EDITOR="$(which nvim)"
+  export VISUAL="$(which nvim)"
   # Use nvim as MANPAGER
   # Reference :help man.vim
-  export MANPAGER='nvim +Man!'
+  export MANPAGER="$(which nvim) +Man!"
 fi
 
 # QT Application Scaling
