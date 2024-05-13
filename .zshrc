@@ -22,7 +22,7 @@ function update-zshrc() {
 
 function project-init() {
   mkdir -p $HOME/Projects/configs/
-  git clone git@github.com:reaper8055/github.git $HOME/Projects/configs/
+  git clone git@github.com:reaper8055/github.git $HOME/Projects/.config/
 }
 
 function install-wezterm() {
@@ -247,8 +247,8 @@ mkShell {
   ];
   shellHook = ''
     export GIT_CONFIG_NOSYSTEM=true
-    export GIT_CONFIG_SYSTEM="$HOME/Projects/configs/github/github_global"
-    export GIT_CONFIG_GLOBAL="$HOME/Projects/configs/github/github_global"
+    export GIT_CONFIG_SYSTEM="$HOME/Projects/.config/github/github_global"
+    export GIT_CONFIG_GLOBAL="$HOME/Projects/.config/github/github_global"
   '';
 }
 EOF
