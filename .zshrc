@@ -155,29 +155,29 @@ function strip_formatting() {
 }
 
 # Refresh environment variables in tmux.
-if [ -n "$TMUX" ]; then
-  function renew-tmux-env {
-    sshauth="$(tmux show-environment | grep "^SSH_AUTH_SOCK" | sed 's/\x1b\[[0-9;]*[mK]//g')"
-    if [ "$sshauth" ]; then
-      export "$sshauth"
-    fi
-    display="$(tmux show-environment | grep "^DISPLAY" | sed 's/\x1b\[[0-9;]*[mK]//g')"
-    if [ "$display" ]; then
-      export "$display"
-    fi
-    sshconn="$(tmux show-environment | grep "^SSH_CONNECTION" | sed 's/\x1b\[[0-9;]*[mK]//g')"
-    if [ "$sshconn" ]; then
-      export "$sshconn"
-    fi
-  }
-else
-  function renew-tmux-env { }
-fi
-
-function preexec {
-  # Refresh environment if inside tmux
-  renew-tmux-env
-}
+# if [ -n "$TMUX" ]; then
+#   function renew-tmux-env {
+#     sshauth="$(tmux show-environment | grep "^SSH_AUTH_SOCK" | sed 's/\x1b\[[0-9;]*[mK]//g')"
+#     if [ "$sshauth" ]; then
+#       export "$sshauth"
+#     fi
+#     display="$(tmux show-environment | grep "^DISPLAY" | sed 's/\x1b\[[0-9;]*[mK]//g')"
+#     if [ "$display" ]; then
+#       export "$display"
+#     fi
+#     sshconn="$(tmux show-environment | grep "^SSH_CONNECTION" | sed 's/\x1b\[[0-9;]*[mK]//g')"
+#     if [ "$sshconn" ]; then
+#       export "$sshconn"
+#     fi
+#   }
+# else
+#   function renew-tmux-env { }
+# fi
+#
+# function preexec {
+#   # Refresh environment if inside tmux
+#   renew-tmux-env
+# }
 
 # Aliases
 alias n="nvim"
@@ -209,7 +209,7 @@ EOF
 }
 
 function cp-gitconfig() {
-copy -sel c <<EOF
+copy <<EOF
 [init]
   defaultBranch = main
 [user]
@@ -299,6 +299,19 @@ zvm_after_init_commands+=(
   autopair_init
   autosuggestions_init
 )
+
+# Keybindings
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
+
+# History
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
 
 # starship.rs
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
