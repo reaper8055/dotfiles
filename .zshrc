@@ -94,11 +94,18 @@ function set-copy-alias() {
   [ -f "$(which wl-copy)" ] && alias copy="wl-copy" return 0
 }
 
+function install-zsh() {
+  [ -f "$(which zsh)" ] || sudo apt install zsh
+}
+
 function INIT() {
   [ -f "$(which curl)" ] || sudo apt install -y curl
   if [ -f "$HOME/.local/share/zap/zap.zsh" ]; then
     source "$HOME/.local/share/zap/zap.zsh"
+    autoload -Uz compinit
+    compinit
   else
+    install-zsh
     install-zap
     install-eza
     install-starship
