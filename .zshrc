@@ -4,7 +4,7 @@ else
   zsh <(curl -sL https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) \
     --branch release-v1
   cd "$HOME"
-  git clone https://github.com/reaper8055/dotfiles
+  [ -d "$HOME/dotfiles" ] || git clone https://github.com/reaper8055/dotfiles
   for DIR in $HOME/dotfiles/.config/*/; do
     DIR_NAME="$(basename $DIR)"
     [ -d "$HOME/.config/$DIR_NAME" ] && rm -rf "$HOME/.config/$DIR_NAME"
@@ -12,7 +12,7 @@ else
   for FILE in $HOME/.zshrc*; do
     rm "$FILE"
   done
-  cd dotfiles && stow .
+  cd dotfiles && git pull origin main && stow .
   cd "$HOME"
 fi
 
