@@ -23,3 +23,4 @@ gitconfig
 auto-source.sh
 scripts
 .config/tmux/plugins/*
+install.sh

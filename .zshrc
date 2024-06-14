@@ -1,132 +1,28 @@
-# INIT Functions
-
-function install-nix() {
-  sh <(curl -L https://nixos.org/nix/install) --daemon
-}
-
-function install-fzf() {
-  [ -f "$(which fzf)" ] && { printf '%s: successful\n' "$0"; return 0 }
-  git clone --depth 1 https://github.com/junegunn/fzf.git $HOME/.fzf
-  yes | $HOME/.fzf/install
-}
-
-function update-zshrc() {
-  [ ! -h "$HOME/.zshrc" ] && rm "$HOME/.zshrc"
-  cd "$HOME/dotfiles" || {
-    cd "$HOME" \
-    git clone https://github.com/reaper8055/dotfiles \
-    cd "$HOME/dotfiles" \
-    stow .
-  }
-}
-
-function project-init() {
-  mkdir -p $HOME/Projects/configs/
-  git clone git@github.com:reaper8055/github.git $HOME/Projects/.config/
-}
-
-function install-wezterm() {
-  curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
-  echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
-}
-
-function install-stylua() {
-  if [ -f "$(which stylua)" ]; then
-    return 0
-  else
-    cd $HOME/Downloads/
-    curl -LO https://github.com/JohnnyMorganz/StyLua/releases/download/v0.20.0/stylua-linux-x86_64.zip
-    sudo unzip stylua-linux-x86_64.zip -d /usr/local/bin/
-    [[ $? -eq 0 ]] && rm $HOME/Downloads/stylua-linux-x86_64.zip
-  fi
-}
-
-
-function dot-init() {
+if [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ]; then 
+  source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
+else
+  zsh <(curl -sL https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) \
+    --branch release-v1
   cd "$HOME"
   git clone https://github.com/reaper8055/dotfiles
   for DIR in $HOME/dotfiles/.config/*/; do
     DIR_NAME="$(basename $DIR)"
-    rm -rf "$HOME/.config/$DIR_NAME"
+    [ -d "$HOME/.config/$DIR_NAME" ] && rm -rf "$HOME/.config/$DIR_NAME"
   done
   for FILE in $HOME/.zshrc*; do
     rm "$FILE"
   done
   cd dotfiles && stow .
-}
+  cd "$HOME"
+fi
 
-function install-eza() {
-  [ -f "$(which eza)" ] && return 0
-
-  if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    distribution_id="$(lsb_release -is)"
-    if [[ "${distribution_id}" == "Ubuntu" ]] || [[  "${distribution_id}" == "Pop" ]]; then
-      sudo mkdir -p /etc/apt/keyrings
-      wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-      echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-      sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-      sudo apt update
-      sudo apt install -y eza
-    fi
-  fi
-}
-
-function install-stow() {
-  [ -f "$(which stow)" ] || sudo apt install -y stow
-}
-
-function install-starship() {
-  [ -f "$(which starship)" ] || curl -sSL https://starship.rs/install.sh | sudo sh -s -- -y
-}
-
-function install-direnv() {
-  if [ -f "$(which direnv)" ]; then
-    return 0
-  else
-    export bin_path="/usr/local/bin"
-    curl -sfL https://direnv.net/install.sh | sudo bash
-  fi
-}
-
-function install-zap() {
-  zsh <(curl -sL https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) \
-    --branch release-v1
-}
-
-function install-wl-clipboard() {
-  sudo apt install -y wl-clipboard
-}
+[ -f "$HOME/.reaper8055.zsh" ] && builtin source $HOME/.reaper8055.zsh
 
 function set-copy-alias() {
   [ -f "$(which xclip)" ] && alias copy="xclip" return 0
   [ -f "$(which wl-copy)" ] && alias copy="wl-copy" return 0
 }
 
-function install-zsh() {
-  [ -f "$(which zsh)" ] || sudo apt install zsh
-}
-
-function INIT() {
-  [ -f "$(which curl)" ] || sudo apt install -y curl
-  if [ -f "$HOME/.local/share/zap/zap.zsh" ]; then
-    source "$HOME/.local/share/zap/zap.zsh"
-    autoload -Uz compinit
-    compinit
-  else
-    install-zsh
-    install-zap
-    install-eza
-    install-starship
-    install-direnv
-    install-fzf
-    install-stow
-    install-stylua
-    dot-init
-    builtin source $HOME/.zshrc
-  fi
-}
-
-INIT
 set-copy-alias
 
 # tmux backspace fix
@@ -209,90 +105,6 @@ alias path="echo $PATH | sed -e 's/:/\n/g'"
 alias tmux="tmux -u"
 alias grep="grep --color=always"
 
-
-# gitconfig
-function gitconfig() {
-cat <<EOF
-[init]
-  defaultBranch = main
-[user]
-  email = "11490705+reaper8055@users.noreply.github.com"
-  name = "reaper8055"
-[url "git@github.com:"]
-  insteadOf = https://github.com/
-EOF
-}
-
-function cp-gitconfig() {
-copy <<EOF
-[init]
-  defaultBranch = main
-[user]
-  email = "11490705+reaper8055@users.noreply.github.com"
-  name = "reaper8055"
-[gpg]
-	format = ssh
-[url "git@github.com:"]
-  insteadOf = https://github.com/
-EOF
-}
-
-function gen-nix-shell() {
-cat > shell.nix <<EOF
-{ pkgs ? import <nixpkgs> {} }:
-
-with pkgs;
-
-mkShell {
-  buildInputs = [
-    # shell
-    zsh
-    # golang
-    go
-    gopls
-    golangci-lint
-    gofumpt
-    # web
-    fnm
-    nodejs
-    yarn
-    # unix-tools
-    fd
-    ripgrep
-  ];
-  shellHook = ''
-    export GIT_CONFIG_NOSYSTEM=true
-    export GIT_CONFIG_SYSTEM="$HOME/Projects/.config/github/github_global"
-    export GIT_CONFIG_GLOBAL="$HOME/Projects/.config/github/github_global"
-  '';
-}
-EOF
-}
-
-function gen-envrc() {
-cat > .envrc <<EOF
-use nix shell.nix
-EOF
-}
-
-function nix-init() {
-  gen-nix-shell
-  gen-envrc
-  direnv allow
-}
-
-# Upgarding nix
-function nix-upgrade() {
-sudo su <<EOF
-"$(which nix-env)" --install --file '<nixpkgs>' --attr nix cacert -I nixpkgs=channel:nixpkgs-unstable
-systemctl daemon-reload
-systemctl restart nix-daemon
-EOF
-}
-
-function gogh() {
-  bash -c "$(wget -qO- https://git.io/vQgMr)"
-}
 
 # fzf_init
 function fzf_init() {
