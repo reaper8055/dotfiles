@@ -49,7 +49,9 @@ function dot-init() {
     DIR_NAME="$(basename $DIR)"
     rm -rf "$HOME/.config/$DIR_NAME"
   done
-  [ -f "$HOME/.zshrc" ] && rm "$HOME/.zshrc"
+  for FILE in $HOME/.zshrc*; do
+    rm "$FILE"
+  done
   cd dotfiles && stow .
 }
 
