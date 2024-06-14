@@ -41,9 +41,15 @@ function install-stylua() {
   fi
 }
 
+
 function dot-init() {
   cd "$HOME"
   git clone https://github.com/reaper8055/dotfiles
+  for DIR in $HOME/dotfiles/.config/*/; do
+    DIR_NAME=$(basename $DIR)
+    find $HOME/.config/ -type d -name "$DIR_NAME" -exec rm -rf {} +
+  done
+  find $HOME/ -type f -name ".zshrc" -exec rm -f {} +
   cd dotfiles && stow .
 }
 
@@ -68,7 +74,7 @@ function install-stow() {
 }
 
 function install-starship() {
-  [ -f "$(which starship)" ] || curl -sSL https://starship.rs/install.sh | sh -s -- -y
+  [ -f "$(which starship)" ] || curl -sSL https://starship.rs/install.sh | sudo sh -s -- -y
 }
 
 function install-direnv() {
