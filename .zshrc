@@ -3,17 +3,6 @@ if [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ]; then
 else
   zsh <(curl -sL https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) \
     --branch release-v1
-  cd "$HOME"
-  [ -d "$HOME/dotfiles" ] || git clone https://github.com/reaper8055/dotfiles
-  for DIR in $HOME/dotfiles/.config/*/; do
-    DIR_NAME="$(basename $DIR)"
-    [ -d "$HOME/.config/$DIR_NAME" ] && rm -rf "$HOME/.config/$DIR_NAME"
-  done
-  for FILE in $HOME/.zshrc*; do
-    rm "$FILE"
-  done
-  cd dotfiles && git pull origin main && stow .
-  cd "$HOME"
 fi
 
 [ -f "$HOME/.reaper8055.zsh" ] && builtin source $HOME/.reaper8055.zsh
@@ -177,3 +166,7 @@ zstyle ':fzf-tab:*' fzf-min-height 10
 
 # fzf key-bindings
 [ -f "$HOME/.fzf.zsh" ] && builtin source $HOME/.fzf.zsh
+
+# nvm
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
