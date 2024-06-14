@@ -12,7 +12,7 @@ function install-fzf() {
 
 function update-zshrc() {
   [ ! -h "$HOME/.zshrc" ] && rm "$HOME/.zshrc"
-  cd "$HOME/dotfiles" || { 
+  cd "$HOME/dotfiles" || {
     cd "$HOME" \
     git clone https://github.com/reaper8055/dotfiles \
     cd "$HOME/dotfiles" \
@@ -46,17 +46,17 @@ function dot-init() {
   cd "$HOME"
   git clone https://github.com/reaper8055/dotfiles
   for DIR in $HOME/dotfiles/.config/*/; do
-    DIR_NAME=$(basename $DIR)
-    find $HOME/.config/ -type d -name "$DIR_NAME" -exec rm -rf {} +
+    DIR_NAME="$(basename $DIR)"
+    rm -rf "$HOME/.config/$DIR_NAME"
   done
-  find $HOME/ -type f -name ".zshrc" -exec rm -f {} +
+  [ -f "$HOME/.zshrc" ] && rm "$HOME/.zshrc"
   cd dotfiles && stow .
 }
 
 function install-eza() {
   [ -f "$(which eza)" ] && return 0
 
-  if [[ "$OSTYPE" == "linux-gnu" ]]; then 
+  if [[ "$OSTYPE" == "linux-gnu" ]]; then
     distribution_id="$(lsb_release -is)"
     if [[ "${distribution_id}" == "Ubuntu" ]] || [[  "${distribution_id}" == "Pop" ]]; then
       sudo mkdir -p /etc/apt/keyrings
@@ -141,7 +141,7 @@ if [ -f "$(which nvim)" ]; then
 fi
 
 # QT Application Scaling
-if [[ "$OSTYPE" == "linux-gnu" ]]; then 
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
   distribution_id="$(lsb_release -is)"
   if [[ "${distribution_id}" == "Pop" ]] ; then
     export QT_AUTO_SCREEN_SCALE_FACTOR=1
