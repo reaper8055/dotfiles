@@ -87,6 +87,8 @@ function _dependencies() {
     ripgrep \
     stow \
     sudo \
+    lua5.1 \
+    liblua5.1-0 \
     build-essential \
     apt-transport-https \
     ca-certificates \
