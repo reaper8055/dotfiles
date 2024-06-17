@@ -34,8 +34,5 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | b
   nvm install 20
 RUN nvim --headless "+Lazy! sync" +qa
 
-# Expose any necessary ports
-EXPOSE 6666
-
 # Default command to run
 CMD ["zsh"]
