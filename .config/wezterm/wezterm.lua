@@ -14,29 +14,31 @@ end
 -- config.color_scheme = "Ayu Mirage"
 
 config.force_reverse_video_cursor = true
-config.colors = {
-	foreground = "#dcd7ba",
-	background = "#1f1f28",
-
-	cursor_bg = "#c8c093",
-	cursor_fg = "#c8c093",
-	cursor_border = "#c8c093",
-
-	selection_fg = "#c8c093",
-	selection_bg = "#2d4f67",
-
-	scrollbar_thumb = "#16161d",
-	split = "#16161d",
-
-	ansi = { "#090618", "#c34043", "#76946a", "#c0a36e", "#7e9cd8", "#957fb8", "#6a9589", "#c8c093" },
-	brights = { "#727169", "#e82424", "#98bb6c", "#e6c384", "#7fb4ca", "#938aa9", "#7aa89f", "#dcd7ba" },
-	indexed = { [16] = "#ffa066", [17] = "#ff5d62" },
-}
+config.color_scheme = "kanagawa (Gogh)"
+config.enable_tab_bar = true
 config.font = wezterm.font({
 	family = "FiraCode Nerd Font",
 	weight = 450,
 })
+config.font_rules = {
+	{
+		italic = true,
+		font = wezterm.font({
+			family = "JetBrainsMono Nerd Font",
+			style = "Italic",
+		}),
+	},
+	{
+		italic = false,
+		intensity = "Bold",
+		font = wezterm.font({
+			family = "FiraCode Nerd Font",
+		}),
+	},
+}
+config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 config.font_size = 12
+config.freetype_load_flags = "NO_HINTING"
 
 config.window_padding = {
 	left = 10,
@@ -45,7 +47,9 @@ config.window_padding = {
 	bottom = 1,
 }
 config.window_decorations = "RESIZE"
-config.enable_tab_bar = false
+config.enable_tab_bar = true
+config.use_fancy_tab_bar = false
+config.tab_bar_at_bottom = true
 config.cursor_thickness = 2
 config.check_for_updates = true
 config.check_for_updates_interval_seconds = 86400
