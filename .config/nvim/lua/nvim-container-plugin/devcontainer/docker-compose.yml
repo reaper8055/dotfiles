@@ -1,5 +1,0 @@
-services:
-  devcontainer:
-    image: reaper8055/dev-container:latest
-    container_name: dev-container
-    command: ["sleep", "infinity"]

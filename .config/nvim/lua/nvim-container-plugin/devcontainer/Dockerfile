@@ -17,7 +17,7 @@ RUN useradd -ms /usr/bin/zsh $USER
 RUN usermod -aG sudo $USER
 
 # Set up working dir
-WORKDIR $HOME/workspace
+WORKDIR $HOME/Projects
 RUN chown -R $USER:$USER $HOME
 
 # Allow the user to use sudo without a password

@@ -42,7 +42,6 @@ plug "zsh-users/zsh-autosuggestions"
 plug "zsh-users/zsh-syntax-highlighting"
 plug "jeffreytse/zsh-vi-mode"
 plug "zap-zsh/supercharge"
-plug "zap-zsh/exa" # this plugin needs to be after zap-zsh/supercharge as per https://github.com/zap-zsh/exa/issues/3
 plug "Aloxaf/fzf-tab"
 plug "zap-zsh/fzf"
 
