@@ -92,7 +92,7 @@ alias nix-search="nix-env -qaP"
 alias path="echo $PATH | sed -e 's/:/\n/g'"
 alias tmux="tmux -u"
 alias grep="grep --color=always"
-
+alias ll="ls -l"
 
 # fzf_init
 function fzf_init() {

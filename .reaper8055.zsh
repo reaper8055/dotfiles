@@ -24,6 +24,7 @@ EOF
 }
 
 function cp-gitconfig() {
+  set-copy-alias
 copy <<EOF
 [init]
   defaultBranch = main

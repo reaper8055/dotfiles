@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function _nix() {
-  if [ -f "$(which nix)" ]; then 
+  if [ -f "$(which nix)" ]; then
     return 0
   else
     sh <(curl -L https://nixos.org/nix/install) --daemon
@@ -9,11 +9,11 @@ function _nix() {
 }
 
 function _fzf() {
-  if [ -f "$(which fzf)" ]; then 
+  if [ -f "$(which fzf)" ]; then
     return 0
   else
-    git clone --depth 1 https://github.com/junegunn/fzf.git $HOME/.fzf
-    yes | $HOME/.fzf/install
+    git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME"/.fzf
+    yes | "$HOME"/.fzf/install
   fi
 }
 
@@ -26,10 +26,10 @@ function _stylua() {
   if [ -f "$(which stylua)" ]; then
     return 0
   else
-    cd $HOME/Downloads/
+    cd "$HOME"/Downloads/ || return 1
     curl -LO https://github.com/JohnnyMorganz/StyLua/releases/download/v0.20.0/stylua-linux-x86_64.zip
     sudo unzip stylua-linux-x86_64.zip -d /usr/local/bin/
-    [[ $? -eq 0 ]] && rm $HOME/Downloads/stylua-linux-x86_64.zip
+    [[ $? -eq 0 ]] && rm "$HOME"/Downloads/stylua-linux-x86_64.zip
   fi
 }
 
@@ -47,7 +47,7 @@ function _eza() {
 }
 
 function _starship() {
-  if [ -f "$(which starship)" ]; then 
+  if [ -f "$(which starship)" ]; then
     return 0
   else
     curl -sSL https://starship.rs/install.sh | sudo sh -s -- -y
@@ -69,7 +69,7 @@ function _zap() {
 }
 
 function _wl-clipboard() {
-  if [ -f "$(which wl-copy)" ]; then 
+  if [ -f "$(which wl-copy)" ]; then
     return 0
   else
     sudo apt install -y wl-clipboard
@@ -96,13 +96,13 @@ function _dependencies() {
 }
 
 function _dotfiles() {
-  cd $HOME
-  git clone https://github.com/reaper8055/dofiles $HOME/dotfiles
-  for FILE in $HOME/.zshrc*; do
+  cd "$HOME" || return 1
+  git clone https://github.com/reaper8055/dofiles "$HOME"/dotfiles
+  for FILE in "$HOME"/.zshrc*; do
     rm "$FILE"
   done
-  cd $HOME/dotfiles && stow .
-  builtin source $HOME/.zshrc
+  cd "$HOME"/dotfiles && stow .
+  builtin source "$HOME"/.zshrc
 }
 
 _dependencies
