@@ -6,6 +6,7 @@ else
 fi
 
 [ -f "$HOME/.reaper8055.zsh" ] && builtin source $HOME/.reaper8055.zsh
+[ -f "$HOME/.nvm.zsh" ] && builtin source $HOME/.nvm.zsh
 
 function set-copy-alias() {
   [ -f "$(which xclip)" ] && alias copy="xclip" return 0
@@ -90,7 +91,7 @@ alias ac="nvim $HOME/.config/alacritty/alacritty.yml"
 alias git-remote-url="git remote set-url origin"
 alias nix-search="nix-env -qaP"
 alias path="echo $PATH | sed -e 's/:/\n/g'"
-alias tmux="tmux -u"
+# alias tmux="tmux -u"
 alias grep="grep --color=always"
 alias ll="ls -l"
 
@@ -166,6 +167,3 @@ zstyle ':fzf-tab:*' fzf-min-height 10
 # fzf key-bindings
 [ -f "$HOME/.fzf.zsh" ] && builtin source $HOME/.fzf.zsh
 
-# nvm
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
