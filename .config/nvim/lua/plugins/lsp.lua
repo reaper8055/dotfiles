@@ -20,6 +20,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     dependencies = {
       "williamboman/mason.nvim",
+      "neovim/nvim-lspconfig",
     },
     config = function()
       require("mason-lspconfig").setup({
@@ -27,7 +28,7 @@ return {
           "lua_ls",
           "bashls",
           "shellcheck",
-          "gopls",
+          -- "gopls",
           "rust_analyzer",
           "markdown_oxide",
           "taplo",
@@ -309,15 +310,41 @@ return {
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client.server_capabilities.documentHighlightProvider then
+            local highlight_augroup =
+              vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
               buffer = event.buf,
+              group = highlight_augroup,
               callback = vim.lsp.buf.document_highlight,
             })
 
-            vim.api.nvim_create_autocmd({ "cursorMoved", "CursorMovedI" }, {
+            vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
               buffer = event.buf,
+              group = highlight_augroup,
               callback = vim.lsp.buf.clear_references,
             })
+
+            vim.api.nvim_create_autocmd("LspDetach", {
+              group = vim.api.nvim_create_augroup("kickstart-lsp-detach", { clear = true }),
+              callback = function(event2)
+                vim.lsp.buf.clear_references()
+                vim.api.nvim_clear_autocmds({
+                  group = "kickstart-lsp-highlight",
+                  buffer = event2.buf,
+                })
+              end,
+            })
+          end
+          -- The following autocommand is used to enable inlay hints in your
+          -- code, if the language server you are using supports them
+          --
+          -- This may be unwanted, since they displace some of your code
+          if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+            keymap(
+              "<leader>th",
+              function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
+              "[T]oggle Inlay [H]ints"
+            )
           end
         end,
       })
@@ -330,7 +357,7 @@ return {
       -- gopls
       lspconfig.gopls.setup({
         capabilities = capabilities,
-        cmd = { "gopls", "-remote=auto" },
+        -- cmd = { "gopls", "-remote=auto" },
         debounce_text_changes = 1000,
         filetypes = {
           "go",
@@ -341,21 +368,11 @@ return {
         single_file_support = true,
         settings = {
           gopls = {
-            gofumpt = true,
-            completeUnimported = true,
-            staticcheck = true,
-            hoverKind = "FullDocumentation",
-            linkTarget = "pkg.go.dev",
-            usePlaceholders = true,
-            hints = {
-              assignVariableTypes = true,
-              compositeLiteralFields = true,
-              compositeLiteralTypes = true,
-              constantValues = true,
-              functionTypeParameters = true,
-              parameterNames = true,
-              rangeVariableTypes = true,
+            analyses = {
+              unusedparams = true,
             },
+            staticcheck = true,
+            gofumpt = true,
           },
         },
       })
