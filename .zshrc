@@ -14,6 +14,7 @@ function set-copy-alias() {
 }
 
 set-copy-alias
+export TERM="xterm-256color"
 
 # tmux backspace fix
 bindkey "^H" backward-delete-char
@@ -94,6 +95,7 @@ alias path="echo $PATH | sed -e 's/:/\n/g'"
 # alias tmux="tmux -u"
 alias grep="grep --color=always"
 alias ll="ls -l"
+alias vim="$(which nvim)"
 
 # fzf_init
 function fzf_init() {
