@@ -1,12 +1,15 @@
+# /etc/zsh/zshrc
+# ZDOTDIR=~/.config/zsh
+
 if [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ]; then 
   source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
 else
   zsh <(curl -sL https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) \
-    --branch release-v1
+    --keep --branch release-v1
 fi
 
-[ -f "$HOME/.reaper8055.zsh" ] && builtin source $HOME/.reaper8055.zsh
-[ -f "$HOME/.nvm.zsh" ] && builtin source $HOME/.nvm.zsh
+[ -f "$HOME/.reaper8055.zsh" ] && builtin source "$HOME/.reaper8055.zsh"
+[ -f "$HOME/.nvm.zsh" ] && builtin source "$HOME/.nvm.zsh"
 
 function set-copy-alias() {
   [ -f "$(which xclip)" ] && alias copy="xclip" return 0
@@ -29,15 +32,6 @@ if [ -f "$(which nvim)" ]; then
   export MANPAGER="$(which nvim) +Man!"
 fi
 
-# QT Application Scaling
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-  distribution_id="$(lsb_release -is)"
-  if [[ "${distribution_id}" == "Pop" ]] ; then
-    export QT_AUTO_SCREEN_SCALE_FACTOR=1
-    export QT_ENABLE_HIGHDPI_SCALING=1
-  fi
-fi
-
 # Plugins
 plug "hlissner/zsh-autopair"
 plug "zsh-users/zsh-autosuggestions"
@@ -47,39 +41,11 @@ plug "zap-zsh/supercharge"
 plug "Aloxaf/fzf-tab"
 plug "zap-zsh/fzf"
 
-# kitty ssh fix
-# [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
-
 # Function to strip ANSI codes
 function strip_formatting() {
   echo "$1" | sed 's/\x1b\[[0-9;]*m//g'
 }
-
-# Refresh environment variables in tmux.
-# if [ -n "$TMUX" ]; then
-#   function renew-tmux-env {
-#     sshauth="$(tmux show-environment | grep "^SSH_AUTH_SOCK" | sed 's/\x1b\[[0-9;]*[mK]//g')"
-#     if [ "$sshauth" ]; then
-#       export "$sshauth"
-#     fi
-#     display="$(tmux show-environment | grep "^DISPLAY" | sed 's/\x1b\[[0-9;]*[mK]//g')"
-#     if [ "$display" ]; then
-#       export "$display"
-#     fi
-#     sshconn="$(tmux show-environment | grep "^SSH_CONNECTION" | sed 's/\x1b\[[0-9;]*[mK]//g')"
-#     if [ "$sshconn" ]; then
-#       export "$sshconn"
-#     fi
-#   }
-# else
-#   function renew-tmux-env { }
-# fi
 #
-# function preexec {
-#   # Refresh environment if inside tmux
-#   renew-tmux-env
-# }
-
 # Aliases
 alias n="nvim"
 alias .="source"
@@ -167,7 +133,7 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
 zstyle ':fzf-tab:*' fzf-min-height 10
 
 # fzf key-bindings
-[ -f "$HOME/.fzf.zsh" ] && builtin source $HOME/.fzf.zsh
+[ -f "$HOME/.fzf.zsh" ] && builtin source "$HOME/.fzf.zsh"
 
 export PATH=$PATH:$HOME/bin
 

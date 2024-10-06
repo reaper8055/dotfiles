@@ -37,6 +37,7 @@ config.font_rules = {
 	},
 }
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+config.tab_max_width = 60
 config.font_size = 12
 config.freetype_load_flags = "NO_HINTING"
 
