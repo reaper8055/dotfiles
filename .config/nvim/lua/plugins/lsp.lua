@@ -398,27 +398,69 @@ return {
       })
 
       -- gopls
-      lspconfig.gopls.setup({
-        capabilities = capabilities,
-        -- cmd = { "gopls", "-remote=auto" },
-        debounce_text_changes = 1000,
-        filetypes = {
-          "go",
-          "gomod",
-          "gowork",
-          "gotmpl",
-        },
-        single_file_support = true,
-        settings = {
-          gopls = {
-            analyses = {
-              unusedparams = true,
-            },
-            staticcheck = true,
-            gofumpt = true,
+      for _, v in pairs(capabilities) do
+        if type(v) == "table" and v.workspace then
+          v.workspace.didChangeWatchedFiles = {
+            dynamicRegistration = false,
+            relativePatternSupport = false,
+          }
+        end
+      end
+
+      local gopls_settings = {
+        gopls = {
+          analyses = {
+            unusedparams = true,
           },
+          staticcheck = true,
+          gofumpt = true,
         },
+      }
+
+      local gopls_init_options = {
+        usePlaceholders = true,
+        completeUnimported = true,
+      }
+
+      -- Check if BAZEL_WORKSPACE is set
+      if vim.fn.environ()["BAZEL_WORKSPACE"] then
+        -- Bazel-specific settings
+        gopls_settings.gopls.buildFlags = { "-tags=bazel" }
+        gopls_settings.gopls.env = {
+          -- GOPACKAGESDRIVER = vim.fn.expand("~/go/bin/gopackagesdriver.sh"),
+          BAZEL_WORKSPACE = vim.fn.getcwd(),
+        }
+      end
+
+      lspconfig.gopls.setup({
+        cmd = { "gopls", "-remote=auto", "-debug=localhost:6060", "-rpc.trace" },
+        debounce_text_changes = 500,
+        filetypes = { "go", "gomod", "gowork", "gotmpl" },
+        settings = gopls_settings,
+        init_options = gopls_init_options,
       })
+
+      -- lspconfig.gopls.setup({
+      --   capabilities = capabilities,
+      --   -- cmd = { "gopls", "-remote=auto" },
+      --   debounce_text_changes = 1000,
+      --   filetypes = {
+      --     "go",
+      --     "gomod",
+      --     "gowork",
+      --     "gotmpl",
+      --   },
+      --   single_file_support = true,
+      --   settings = {
+      --     gopls = {
+      --       analyses = {
+      --         unusedparams = true,
+      --       },
+      --       staticcheck = true,
+      --       gofumpt = true,
+      --     },
+      --   },
+      -- })
 
       -- tsserver
       lspconfig.ts_ls.setup({
