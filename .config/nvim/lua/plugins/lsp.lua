@@ -27,7 +27,7 @@ return {
         ensure_installed = {
           "lua_ls",
           "bashls",
-          -- "gopls",
+          "gopls",
           "rust_analyzer",
           "markdown_oxide",
           "taplo",
