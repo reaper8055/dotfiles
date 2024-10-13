@@ -471,6 +471,7 @@ return {
         filetypes = {
           "zsh",
           "sh",
+          "zshrc",
         },
       })
 

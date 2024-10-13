@@ -8,8 +8,7 @@ else
     --keep --branch release-v1
 fi
 
-[ -f "$HOME/.reaper8055.zsh" ] && builtin source "$HOME/.reaper8055.zsh"
-[ -f "$HOME/.nvm.zsh" ] && builtin source "$HOME/.nvm.zsh"
+[ -f "$HOME/.config/zsh/.reaper8055.zsh" ] && builtin source "$HOME/.config/zsh/.reaper8055.zsh"
 
 function set-copy-alias() {
   [ -f "$(which xclip)" ] && alias copy="xclip" return 0
@@ -49,7 +48,7 @@ function strip_formatting() {
 # Aliases
 alias n="nvim"
 alias .="source"
-alias zshrc="nvim $HOME/.zshrc"
+alias zshrc="nvim $HOME/.config/zsh/.zshrc"
 alias kc="nvim $HOME/.config/kitty/kitty.conf"
 alias wez="nvim $HOME/.config/wezterm/wezterm.lua"
 alias zc="nvim $HOME/.config/zellij/config.kdl"

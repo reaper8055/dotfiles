@@ -36,6 +36,7 @@ config.font_rules = {
 		}),
 	},
 }
+config.enable_wayland = false
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 config.tab_max_width = 60
 config.font_size = 12
