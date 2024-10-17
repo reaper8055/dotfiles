@@ -23,14 +23,16 @@ local function keep_cursor_lower_third()
   end
 end
 
--- Map k and j to move and adjust the view
+-- Map k and j to move and adjust the view, preserving count
 vim.keymap.set("n", "k", function()
-  vim.cmd("normal! k")
+  local count = vim.v.count1
+  vim.cmd("normal! " .. count .. "k")
   keep_cursor_lower_third()
 end, { silent = true })
 
 vim.keymap.set("n", "j", function()
-  vim.cmd("normal! j")
+  local count = vim.v.count1
+  vim.cmd("normal! " .. count .. "j")
   keep_cursor_lower_third()
 end, { silent = true })
 
