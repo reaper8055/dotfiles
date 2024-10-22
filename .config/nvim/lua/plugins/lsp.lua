@@ -4,7 +4,7 @@ return {
     config = function()
       require("mason").setup({
         ui = {
-          border = "rounded",
+          border = "single",
           icons = {
             package_installed = "✓",
             package_pending = "➜",
@@ -87,7 +87,7 @@ return {
 
       navbuddy.setup({
         window = {
-          border = "rounded", -- "rounded", "double", "solid", "none"
+          border = "single", -- "rounded", "double", "solid", "none"
           -- or an array with eight chars building up the border in a clockwise fashion
           -- starting with the top-left corner. eg: { "╔", "═" ,"╗", "║", "╝", "═", "╚", "║" }.
           size = "60%", -- Or table format example: { height = "40%", width = "100%"}
@@ -254,23 +254,21 @@ return {
         float = {
           focusable = true,
           style = "minimal",
-          border = "rounded",
-          source = "always",
+          border = "single",
+          source = true,
           header = "",
           prefix = "",
         },
       })
 
       vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-        border = "rounded",
+        border = "single",
       })
 
       vim.lsp.handlers["textDocument/signatureHelp"] =
         vim.lsp.with(vim.lsp.handlers.signature_help, {
-          border = "rounded",
+          border = "single",
         })
-
-      require("lspconfig.ui.windows").default_options.border = "rounded"
 
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("reaper-lsp-attach", { clear = true }),
@@ -346,6 +344,7 @@ return {
           end
         end,
       })
+      require("lspconfig.ui.windows").default_options.border = "single"
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities =

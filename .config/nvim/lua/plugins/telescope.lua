@@ -14,6 +14,16 @@ return {
 
     telescope.setup({
       defaults = {
+        borderchars = {
+          "─",
+          "│",
+          "─",
+          "│",
+          "┌",
+          "┐",
+          "┘",
+          "└",
+        },
         prompt_prefix = " ",
         selection_caret = " ",
         path_display = { "smart" },
@@ -111,6 +121,17 @@ return {
     pcall(require("telescope").load_extension, "ui-select")
     pcall(require("telescope").load_extension, "undo")
 
+    -- custom telescope dropdown menu
+    local custom_dropdown = require("telescope.themes").get_dropdown({
+      borderchars = {
+        { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+        prompt = { "─", "│", " ", "│", "┌", "┐", "│", "│" },
+        results = { "─", "│", "─", "│", "├", "┤", "┘", "└" },
+        preview = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+      },
+      previewer = false,
+    })
+
     -- keymaps
     local builtin = require("telescope.builtin")
     vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
@@ -130,21 +151,19 @@ return {
     vim.keymap.set(
       "n",
       "<leader>f",
-      function() builtin.find_files(require("telescope.themes").get_dropdown({ previewer = false })) end,
+      function() builtin.find_files(custom_dropdown) end,
       { desc = "[F]ind files" }
     )
     vim.keymap.set(
       "n",
       "<leader>sb",
-      function() builtin.buffers(require("telescope.themes").get_dropdown({ previewer = false })) end,
+      function() builtin.buffers(custom_dropdown) end,
       { desc = "Find existing [b]uffers" }
     )
     vim.keymap.set("n", "<leader>ut", "<cmd>Telescope undo<cr>", { desc = "[U]ndo [T]ree" })
     vim.keymap.set("n", "<leader>/", function()
       -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-      builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-        previewer = false,
-      }))
+      builtin.current_buffer_fuzzy_find(custom_dropdown)
     end, { desc = "[/] Fuzzily search in current buffer" })
 
     -- It's also possible to pass additional configuration options.

@@ -8,7 +8,7 @@ return {
   opts = {
     preset = "classic",
     win = {
-      border = "rounded",
+      border = "single",
     },
   },
   key = {

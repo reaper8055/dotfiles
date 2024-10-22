@@ -28,6 +28,6 @@ lazy.setup({
   },
   ui = {
     backdrop = 100,
-    border = "rounded",
+    border = "single",
   },
 })

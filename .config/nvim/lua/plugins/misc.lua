@@ -17,12 +17,6 @@ return {
   -- kitty.conf syntax highlighting
   { "fladson/vim-kitty" },
 
-  -- dressing
-  {
-    "stevearc/dressing.nvim",
-    opts = {},
-  },
-
   -- vim-go
   {
     "fatih/vim-go",
