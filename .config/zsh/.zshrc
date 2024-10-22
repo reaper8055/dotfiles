@@ -1,6 +1,8 @@
 # /etc/zsh/zshrc
 # ZDOTDIR=~/.config/zsh
 
+# export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+
 # Zap installation (safer approach)
 if [ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ]; then
   # Download the install script

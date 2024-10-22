@@ -21,6 +21,8 @@ _darcs
 
 gitconfig
 auto-source.sh
+editorconfig
+\.editorconfig
 scripts
 \.config/tmux/plugins/*
 setup-ubuntu-machine.sh
