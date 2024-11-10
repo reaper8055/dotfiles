@@ -73,19 +73,26 @@ vim.opt.softtabstop = 2 -- make sure softtabstop matches tabstop
 
 -- highlight the current line
 vim.opt.cursorline = true
+
 -- set numbered lines
 vim.opt.number = true
+
 -- set relative numbered lines
 vim.opt.relativenumber = true
+
 -- set number column width to 2 {default 4}
 vim.opt.numberwidth = 4
+
 -- always show the sign column
 vim.opt.signcolumn = "yes"
+
 -- display lines as one long line
 vim.opt.wrap = true
+
 -- is one of my fav
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
+
 -- the font used in graphical neovim applications
 vim.opt.guifont = "FiraCode Nerd Font:h18"
 vim.opt.colorcolumn = "100"
@@ -126,3 +133,6 @@ vim.cmd([[set iskeyword+=-]])
 -- r = automatically insert comment leader after hitting <Enter>
 -- n = recognize numbered lists
 -- vim.cmd("set formatoptions+=t")
+
+-- Helps Neovim detect indentation when no .editorconfig is present
+vim.opt.autoindent = true
