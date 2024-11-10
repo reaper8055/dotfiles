@@ -6,6 +6,9 @@ return {
     opt = true,
   },
   config = function()
+    local helpers = require("utils.helpers")
+    local colors = helpers.get_hlg_colors()
+
     require("lualine").setup({
       options = {
         icons_enabled = true,
@@ -14,9 +17,9 @@ return {
         disabled_filetypes = {},
         always_divide_middle = true,
         refresh = {
-          statusline = 1000,
-          tabline = 1000,
-          winbar = 1000,
+          statusline = 20,
+          tabline = 20,
+          winbar = 20,
         },
       },
       sections = {
@@ -27,7 +30,7 @@ return {
             icon = "",
             padding = 1,
             separator = {
-              left = "",
+              left = "  ",
               right = "",
             },
           },
@@ -43,29 +46,62 @@ return {
             },
           },
         },
-        lualine_c = {},
+        lualine_c = {
+          {
+            "diagnostics",
+            colored = true,
+            color = {
+              bg = colors.bg,
+            },
+            separator = {
+              left = "",
+              right = "",
+            },
+            source = { "nvim" },
+            sections = { "error" },
+          },
+          {
+            "diagnostics",
+            colored = true,
+            color = {
+              bg = colors.bg,
+            },
+            separator = {
+              left = "",
+              right = "",
+            },
+            source = { "nvim" },
+            sections = { "warn" },
+          },
+        },
         lualine_x = {
           {
             "diff",
             colored = true,
             symbols = { added = " ", modified = " ", removed = " " }, -- changes diff symbols
+            color = {
+              bg = colors.bg,
+            },
             cond = function() return vim.fn.winwidth(0) > 80 end,
             separator = {
               right = "",
-              left = "",
+              left = "",
             },
           },
         },
         lualine_y = {
           {
-            "encoding",
+            "filetype",
             separator = {
               right = "",
               left = "",
             },
           },
           {
-            "filetype",
+            "encoding",
+            color = {
+              bg = colors.bg,
+            },
             separator = {
               right = "",
               left = "",
@@ -76,7 +112,6 @@ return {
           {
             "location",
             icon = {
-              -- " ",
               " ",
               align = "right",
             },
