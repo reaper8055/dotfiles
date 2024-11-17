@@ -75,7 +75,7 @@ function init_zsh_plugins() {
   local fzf_source="/usr/share/doc/fzf/examples"
   [ -f "$fzf_source/key-bindings.zsh" ] && source "$fzf_source/key-bindings.zsh"
   [ -f "$fzf_source/completion.zsh" ] && source "$fzf_source/completion.zsh"
-  
+
   local zap_plugins="$HOME/.local/share/zap/plugins"
   [ -f "$zap_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
     source "$zap_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
@@ -116,4 +116,4 @@ autoload -Uz compinit
 compinit
 
 # Source fzf keybindings if present
-[ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
+[ -f "$HOME/.fzf.zsh" ] && source "$HOME"/.fzf.zsh
