@@ -1,14 +1,13 @@
 return {
   "folke/which-key.nvim",
-  dependencies = {
-    "echasnovski/mini.icons",
-    version = false,
-  },
   delay = 100,
   opts = {
     preset = "classic",
     win = {
       border = "single",
+    },
+    icons = {
+      mappings = false,
     },
   },
   key = {

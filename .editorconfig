@@ -35,3 +35,11 @@ indent_size = 2
 # Markdown files
 [*.md]
 trim_trailing_whitespace = false
+
+# Bazel files
+[*.{bazel,bzl,BUILD,WORKSPACE}]
+indent_size = 4
+
+# Shell script files
+[*.{sh,bash}]
+indent_size = 2
