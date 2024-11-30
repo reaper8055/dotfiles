@@ -18,6 +18,7 @@ return {
         "vimdoc",
         "rust",
         "go",
+        "java",
         "nix",
         "gitcommit",
         "gitignore",
