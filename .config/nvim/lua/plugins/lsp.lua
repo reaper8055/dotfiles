@@ -32,7 +32,6 @@ return {
           "rust_analyzer",
           "markdown_oxide",
           "taplo",
-          "terraformls",
           "yamlls",
           "html",
           "jsonls",
@@ -49,26 +48,21 @@ return {
   {
     {
       "folke/lazydev.nvim",
-      ft = "lua", -- only load on lua files
+      ft = "lua",
       opts = {
         library = {
-          -- Library items can be absolute paths
-          -- "~/projects/my-awesome-lib",
-          -- Or relative, which means they will be resolved as a plugin
-          -- "LazyVim",
-          -- When relative, you can also provide a path to the library in the plugin dir
-          "luvit-meta/library", -- see below
+          "luvit-meta/library",
         },
       },
     },
-    { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
-    { -- optional completion source for require statements and module annotations
+    { "Bilal2453/luvit-meta", lazy = true },
+    {
       "hrsh7th/nvim-cmp",
       opts = function(_, opts)
         opts.sources = opts.sources or {}
         table.insert(opts.sources, {
           name = "lazydev",
-          group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+          group_index = 0,
         })
       end,
     },
@@ -88,27 +82,22 @@ return {
 
       navbuddy.setup({
         window = {
-          border = "single", -- "rounded", "double", "solid", "none"
-          -- or an array with eight chars building up the border in a clockwise fashion
-          -- starting with the top-left corner. eg: { "╔", "═" ,"╗", "║", "╝", "═", "╚", "║" }.
-          size = "60%", -- Or table format example: { height = "40%", width = "100%"}
-          position = "50%", -- Or table format example: { row = "100%", col = "0%"}
-          scrolloff = nil, -- scrolloff value within navbuddy window
+          border = "single",
+          size = "60%",
+          position = "50%",
+          scrolloff = nil,
           sections = {
             left = {
               size = "20%",
-              border = nil, -- You can set border style for each section individually as well.
+              border = nil,
             },
             mid = {
               size = "40%",
               border = nil,
             },
             right = {
-              -- No size option for right most section. It fills to
-              -- remaining area.
               border = nil,
-              preview = "leaf", -- Right section can show previews too.
-              -- Options: "leaf", "always" or "never"
+              preview = "leaf",
             },
           },
         },
@@ -226,10 +215,8 @@ return {
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "SmiteshP/nvim-navbuddy",
-      dependencies = {
-        "SmiteshP/nvim-navic",
-        "MunifTanjim/nui.nvim",
-      },
+      "SmiteshP/nvim-navic",
+      "MunifTanjim/nui.nvim",
       opts = { lsp = { auto_attach = true } },
     },
     config = function()

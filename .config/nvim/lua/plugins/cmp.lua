@@ -9,16 +9,15 @@ return {
     "hrsh7th/cmp-nvim-lsp",
     "hrsh7th/cmp-nvim-lua",
     "hrsh7th/cmp-omni",
-    -- snippets
     "saadparwaiz1/cmp_luasnip",
+    "hrsh7th/cmp-nvim-lsp-signature-help",
     {
       "L3MON4D3/LuaSnip",
-      -- follow latest release.
-      version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-      -- install jsregexp (optional!).
+      version = "v2.*",
       build = "make install_jsregexp",
     },
     "rafamadriz/friendly-snippets",
+    "onsails/lspkind.nvim",
   },
   config = function()
     local cmp = require("cmp")
@@ -26,10 +25,12 @@ return {
     local luasnip_vscode = require("luasnip.loaders.from_vscode")
     local lspkind = require("lspkind")
 
-    local check_backspace = function()
-      local col = vim.fn.col(".") - 1
-      return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
-    end
+    luasnip.config.set_config({
+      history = true,
+      updateevents = "TextChanged,TextChangedI",
+      enable_autosnippets = true,
+      store_selection_keys = "<Tab>",
+    })
 
     cmp.setup({
       snippet = {
@@ -50,90 +51,62 @@ return {
           i = cmp.mapping.abort(),
           c = cmp.mapping.close(),
         }),
-        -- Accept currently selected item. If none selected, `select` first item.
-        -- Set `select` to `false` to only confirm explicitly selected items.
         ["<CR>"] = cmp.mapping.confirm({ select = true }),
-        ["<Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_next_item()
-          elseif luasnip.expandable() then
-            luasnip.expand()
-          elseif luasnip.expand_or_jumpable() then
-            luasnip.expand_or_jump()
-          elseif check_backspace() then
-            fallback()
-          else
-            fallback()
-          end
-        end, {
-          "i",
-          "s",
-        }),
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item()
-          elseif luasnip.jumpable(-1) then
-            luasnip.jump(-1)
-          else
-            fallback()
-          end
-        end, {
-          "i",
-          "s",
-        }),
       }),
       formatting = {
         format = lspkind.cmp_format({
-          with_test = true,
+          with_text = true,
           maxwidth = 50,
         }),
       },
+      sorting = {
+        priority_weight = 2,
+        comparators = {
+          cmp.config.compare.offset,
+          cmp.config.compare.exact,
+          cmp.config.compare.score,
+          cmp.config.compare.kind,
+          cmp.config.compare.sort_text,
+          cmp.config.compare.length,
+          cmp.config.compare.order,
+        },
+      },
       sources = cmp.config.sources({
-        { name = "nvim_lsp" },
-        { name = "luasnip" },
-        { name = "buffer" },
-        { name = "path" },
-        {
-          name = "omni",
-          option = {
-            disable_omnifuncs = { "v:lua.vim.lsp.omnifunc" },
-          },
-        },
-        {
-          name = "nvim_lsp",
-          option = {
-            markdown_oxide = {
-              keyword_pattern = [[\(\k\| \|\/\|#\)\+]],
-            },
-          },
-        },
+        { name = "nvim_lsp", priority = 1000 },
+        { name = "luasnip", priority = 750 },
+        { name = "buffer", priority = 500 },
+        { name = "path", priority = 250 },
+        { name = "nvim_lsp_signature_help" },
       }),
       confirm_opts = {
         behavior = cmp.ConfirmBehavior.Replace,
         select = false,
       },
-      experimental = {
-        ghost_text = false,
-        native_menu = false,
-      },
     })
 
-    -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-    cmp.setup.cmdline({ "/", "?" }, {
+    -- `/` cmdline setup
+    cmp.setup.cmdline("/", {
       mapping = cmp.mapping.preset.cmdline(),
       sources = {
-        { name = "buffer" },
+        { name = "buffer", priority = 500 },
+        { name = "cmdline_history", priority = 300 },
+      },
+      completion = {
+        completeopt = "menu,menuone,noselect",
       },
     })
 
-    -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+    -- `:` cmdline setup
     cmp.setup.cmdline(":", {
       mapping = cmp.mapping.preset.cmdline(),
       sources = cmp.config.sources({
-        { name = "path" },
-      }, {
-        { name = "cmdline" },
+        { name = "path", priority = 500 },
+        { name = "cmdline", priority = 300 },
+        { name = "cmdline_history", priority = 200 },
       }),
+      completion = {
+        completeopt = "menu,menuone,noselect",
+      },
     })
 
     luasnip_vscode.lazy_load()

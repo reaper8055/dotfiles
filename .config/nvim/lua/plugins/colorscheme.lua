@@ -1,8 +1,21 @@
 return {
   {
+    "rebelot/kanagawa.nvim",
+    enabled = false,
+  },
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    enabled = false,
+  },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    enabled = false,
+  },
+  {
     "olimorris/onedarkpro.nvim",
     enabled = false,
-    priority = 1000,
     config = function()
       vim.cmd("colorscheme onedark")
       -- vim.cmd("colorscheme kanagawa")

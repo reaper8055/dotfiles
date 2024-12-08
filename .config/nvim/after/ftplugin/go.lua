@@ -1,18 +1,25 @@
 vim.g.go_def_mapping_enabled = 0
-vim.g.ale_disable_lsp = 1
 
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*.go",
   callback = function()
+    -- Check if LSP is attached
+    if vim.lsp.get_active_clients({ bufnr = 0 })[1] == nil then
+      vim.notify("No LSP client attached", vim.log.levels.WARN)
+      return
+    end
+
+    -- Organize imports
     local params = vim.lsp.util.make_range_params()
     params.context = { only = { "source.organizeImports" } }
-    -- buf_request_sync defaults to a 1000ms timeout. Depending on your
-    -- machine and codebase, you may want longer. Add an additional
-    -- argument after params if you find that you have to write the file
-    -- twice for changes to be saved.
-    -- E.g., vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
+
     local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params)
-    for cid, res in pairs(result or {}) do
+    if not result then
+      vim.notify("Failed to organize imports", vim.log.levels.WARN)
+      return
+    end
+
+    for cid, res in pairs(result) do
       for _, r in pairs(res.result or {}) do
         if r.edit then
           local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
@@ -20,6 +27,11 @@ vim.api.nvim_create_autocmd("BufWritePre", {
         end
       end
     end
-    vim.lsp.buf.format({ async = false })
+
+    -- Format the buffer
+    local format_success, format_err = pcall(vim.lsp.buf.format, { async = false })
+    if not format_success then
+      vim.notify("Format failed: " .. tostring(format_err), vim.log.levels.WARN)
+    end
   end,
 })

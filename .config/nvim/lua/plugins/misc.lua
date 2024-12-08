@@ -8,31 +8,9 @@ return {
   -- vim-tmux-navigator
   { "christoomey/vim-tmux-navigator" },
 
-  -- vim-fugitive
-  { "tpope/vim-fugitive" },
-
   -- vim-test
   { "vim-test/vim-test" },
 
   -- kitty.conf syntax highlighting
   { "fladson/vim-kitty" },
-
-  -- vim-go
-  {
-    "fatih/vim-go",
-    enabled = false,
-  },
-
-  -- colorschemes
-  {
-    "rebelot/kanagawa.nvim",
-    {
-      "rose-pine/neovim",
-      name = "rose-pine",
-    },
-    {
-      "catppuccin/nvim",
-      name = "catppuccin",
-    },
-  },
 }

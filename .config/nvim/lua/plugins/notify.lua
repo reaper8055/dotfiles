@@ -1,13 +1,47 @@
 return {
-  "rcarriga/nvim-notify",
+  "echasnovski/mini.notify",
+  version = "*",
   config = function()
-    require("notify").setup({
-      minimum_width = 50,
-      background_color = "#282C34",
-      render = "default",
-      stages = "static",
-      timeout = 1000,
-      fps = 60,
+    -- Function to get 12-hour format time with AM/PM
+    local function get_time_12hr()
+      return os.date("%I:%M %p") -- e.g., "11:30 AM"
+    end
+
+    -- Icons for different log levels
+    local icons = {
+      INFO = " ",
+      WARN = " ",
+      ERROR = " ",
+      DEBUG = " ",
+      TRACE = " ",
+    }
+
+    -- Custom format function
+    local function custom_format(notification)
+      local icon = icons[notification.level] or "󰋼 "
+      local time = get_time_12hr()
+      local title = notification.title and notification.title .. ": " or ""
+
+      -- Format: [11:30 AM]  Warning: Your message here
+      return string.format("[%s]: %s %s%s", time, icon, title, notification.msg)
+    end
+
+    require("mini.notify").setup({
+      content = {
+        format = custom_format,
+      },
+      window = {
+        config = {
+          border = "single",
+        },
+      },
+      lsp_progress = {
+        enable = false,
+      },
     })
+
+    -- Override vim.notify with mini.notify
+    local notify = require("mini.notify").make_notify()
+    vim.notify = notify
   end,
 }

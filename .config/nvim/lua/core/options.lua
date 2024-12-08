@@ -111,9 +111,6 @@ vim.opt.fileformats = "unix,dos,mac" -- Prefer Unix line endings
 vim.opt.endofline = true -- Ensure file ends with newline
 vim.opt.fixendofline = true -- Fix files lacking final newline
 
--- notify plugin
-vim.notify = require("notify")
-
 -- Allow specified keys that move the cursor left/right to move to the previous/next line when the cursor is on the first/last character
 -- <,> = left and right arrow keys
 -- [,] = cursor keys in insert mode
