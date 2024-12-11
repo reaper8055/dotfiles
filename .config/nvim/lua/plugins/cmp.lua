@@ -40,6 +40,7 @@ return {
         documentation = cmp.config.window.bordered(),
         completion = cmp.config.window.bordered(),
       },
+      completion = { completeopt = "menu,menuone,noinsert" },
       mapping = cmp.mapping.preset.insert({
         ["<C-k>"] = cmp.mapping.select_prev_item(),
         ["<C-j>"] = cmp.mapping.select_next_item(),
@@ -92,7 +93,7 @@ return {
         { name = "cmdline_history", priority = 300 },
       },
       completion = {
-        completeopt = "menu,menuone,noselect",
+        completeopt = "menu,menuone",
       },
     })
 
@@ -105,7 +106,7 @@ return {
         { name = "cmdline_history", priority = 200 },
       }),
       completion = {
-        completeopt = "menu,menuone,noselect",
+        completeopt = "menu,menuone",
       },
     })
 
