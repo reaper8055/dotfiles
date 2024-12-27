@@ -3,7 +3,9 @@ return {
     "williamboman/mason.nvim",
     opts = {
       ui = {
-        border = "single",
+        width = 0.8,
+        height = 0.8,
+        border = require("utils.win.decorations").default_border,
         icons = {
           package_installed = "✓",
           package_pending = "➜",
@@ -47,11 +49,10 @@ return {
       ft = "lua",
       opts = {
         library = {
-          "luvit-meta/library",
+          { path = "${3rd}/luv/library", words = { "vim%.uv" } },
         },
       },
     },
-    { "Bilal2453/luvit-meta", lazy = true },
     {
       "hrsh7th/nvim-cmp",
       opts = function(_, opts)
@@ -73,21 +74,15 @@ return {
       opts = { lsp = { auto_attach = true } },
     },
     config = function()
-      local signs = {
-        { name = "DiagnosticSignError", text = " " },
-        { name = "DiagnosticSignWarn", text = " " },
-        { name = "DiagnosticSignHint", text = " " },
-        { name = "DiagnosticSignInfo", text = " " },
-      }
-
-      for _, sign in ipairs(signs) do
-        vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
-      end
-
       vim.diagnostic.config({
         virtual_text = true,
         signs = {
-          active = signs, -- show signs
+          text = {
+            [vim.diagnostic.severity.ERROR] = " ",
+            [vim.diagnostic.severity.WARN] = " ",
+            [vim.diagnostic.severity.HINT] = " ",
+            [vim.diagnostic.severity.INFO] = " ",
+          },
         },
         update_in_insert = true,
         underline = true,
@@ -95,21 +90,37 @@ return {
         float = {
           focusable = true,
           style = "minimal",
-          border = "single",
+          border = require("utils.win.decorations").default_border,
           source = true,
           header = "",
           prefix = "",
         },
       })
 
-      vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-        border = "single",
-      })
+      local helpers = require("utils.win.decorations")
+      local float_config = {
+        border = helpers.default_border,
+        highlight = {
+          Normal = "Normal",
+          FloatBorder = "FloatBorder",
+          Pmenu = "Pmenu",
+          SignatureHelp = "Normal",
+          SignatureHelpBorder = "FloatBorder",
+          PmenuSel = "PmenuSel",
+        },
+        syntax_highlighting = true,
+      }
 
+      -- Create a user command
+      local lspinfo = require("utils.lsp.lspinfo")
+      vim.api.nvim_create_user_command("LspInfoFloat", lspinfo.create_float, {})
+
+      -- Configure LSP hover
+      vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, float_config)
+
+      -- Configure LSP signature help
       vim.lsp.handlers["textDocument/signatureHelp"] =
-        vim.lsp.with(vim.lsp.handlers.signature_help, {
-          border = "single",
-        })
+        vim.lsp.with(vim.lsp.handlers.signature_help, { float_config })
 
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("reaper-lsp-attach", { clear = true }),
@@ -139,7 +150,7 @@ return {
             require("telescope.builtin").lsp_dynamic_workspace_symbols,
             "[W]orkspace [S]ymbols"
           )
-          keymap("<leader>li", "<cmd>LspInfo<cr>", "[l]sp [i]nfo")
+          keymap("<leader>li", "<cmd>LspInfoFloat<cr>", "[l]sp [i]nfo")
           keymap("<leader>ca", vim.lsp.buf.code_action, "[c]ode [a]ctions")
           keymap("<leader>rn", vim.lsp.buf.rename, "[r]e[n]ame")
           keymap("<leader>ls", vim.lsp.buf.signature_help, "Signature Help")
@@ -148,7 +159,7 @@ return {
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client.server_capabilities.documentHighlightProvider then
             local highlight_augroup =
-              vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
+              vim.api.nvim_create_augroup("reaper-lsp-highlight", { clear = false })
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
               buffer = event.buf,
               group = highlight_augroup,
@@ -162,20 +173,19 @@ return {
             })
 
             vim.api.nvim_create_autocmd("LspDetach", {
-              group = vim.api.nvim_create_augroup("kickstart-lsp-detach", { clear = true }),
+              group = vim.api.nvim_create_augroup("reaper-lsp-detach", { clear = true }),
               callback = function(event2)
                 vim.lsp.buf.clear_references()
                 vim.api.nvim_clear_autocmds({
-                  group = "kickstart-lsp-highlight",
+                  group = "reaper-lsp-highlight",
                   buffer = event2.buf,
                 })
               end,
             })
           end
           -- The following autocommand is used to enable inlay hints in your
-          -- code, if the language server you are using supports them
-          --
-          -- This may be unwanted, since they displace some of your code
+          -- code, if the language server you are using supports them. This may
+          -- be unwanted, since they displace some of your code.
           if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
             keymap(
               "<leader>th",
@@ -185,7 +195,8 @@ return {
           end
         end,
       })
-      require("lspconfig.ui.windows").default_options.border = "single"
+      require("lspconfig.ui.windows").default_options.border =
+        require("utils.win.decorations").default_border
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities =
@@ -247,8 +258,11 @@ return {
 
       local gopls_settings = {
         gopls = {
+          experimentalPostfixCompletions = true,
+          semanticTokens = true,
           analyses = {
             unusedparams = true,
+            shadow = true,
           },
           staticcheck = true,
           gofumpt = true,

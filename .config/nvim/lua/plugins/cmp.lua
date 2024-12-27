@@ -8,14 +8,15 @@ return {
     "hrsh7th/cmp-cmdline",
     "hrsh7th/cmp-nvim-lsp",
     "hrsh7th/cmp-nvim-lua",
+    "hrsh7th/cmp-nvim-lsp-signature-help",
     "hrsh7th/cmp-omni",
     "saadparwaiz1/cmp_luasnip",
-    "hrsh7th/cmp-nvim-lsp-signature-help",
     {
       "L3MON4D3/LuaSnip",
       version = "v2.*",
       build = "make install_jsregexp",
     },
+    "neovim/nvim-lspconfig",
     "rafamadriz/friendly-snippets",
     "onsails/lspkind.nvim",
   },
@@ -32,22 +33,27 @@ return {
       store_selection_keys = "<Tab>",
     })
 
+    local helpers = require("utils.win.decorations")
     cmp.setup({
       snippet = {
         expand = function(args) luasnip.lsp_expand(args.body) end,
       },
       window = {
-        documentation = cmp.config.window.bordered(),
-        completion = cmp.config.window.bordered(),
+        completion = {
+          border = helpers.default_border,
+          winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
+        },
+        documentation = {
+          border = helpers.default_border,
+          winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
+        },
       },
+
       completion = { completeopt = "menu,menuone,noinsert" },
       mapping = cmp.mapping.preset.insert({
-        ["<C-k>"] = cmp.mapping.select_prev_item(),
-        ["<C-j>"] = cmp.mapping.select_next_item(),
         ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
         ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
         ["<C-x><C-o>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
-        ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
         ["<C-e>"] = cmp.mapping({
           i = cmp.mapping.abort(),
           c = cmp.mapping.close(),
@@ -56,28 +62,29 @@ return {
       }),
       formatting = {
         format = lspkind.cmp_format({
-          with_text = true,
-          maxwidth = 50,
+          mode = "text_symbol",
+          maxwidth = {
+            menu = function() return math.floor(0.45 * vim.o.columns) end,
+            abbr = function() return math.floor(0.45 * vim.o.columns) end,
+          },
+          ellipsis_char = "...",
+          show_labelDetails = true,
+          before = function(entry, vim_item)
+            -- ...
+            return vim_item
+          end,
         }),
       },
-      sorting = {
-        priority_weight = 2,
-        comparators = {
-          cmp.config.compare.offset,
-          cmp.config.compare.exact,
-          cmp.config.compare.score,
-          cmp.config.compare.kind,
-          cmp.config.compare.sort_text,
-          cmp.config.compare.length,
-          cmp.config.compare.order,
-        },
-      },
       sources = cmp.config.sources({
-        { name = "nvim_lsp", priority = 1000 },
-        { name = "luasnip", priority = 750 },
-        { name = "buffer", priority = 500 },
-        { name = "path", priority = 250 },
+        {
+          name = "lazydev",
+          group_index = 0,
+        },
         { name = "nvim_lsp_signature_help" },
+        { name = "nvim_lsp", priority = 1000 },
+        { name = "luasnip", priority = 600 },
+        { name = "buffer", priority = 400 },
+        { name = "path", priority = 250 },
       }),
       confirm_opts = {
         behavior = cmp.ConfirmBehavior.Replace,
@@ -85,12 +92,11 @@ return {
       },
     })
 
-    -- `/` cmdline setup
-    cmp.setup.cmdline("/", {
+    -- `/` and `?` cmdline setup
+    cmp.setup.cmdline({ "/", "?" }, {
       mapping = cmp.mapping.preset.cmdline(),
       sources = {
-        { name = "buffer", priority = 500 },
-        { name = "cmdline_history", priority = 300 },
+        { name = "buffer" },
       },
       completion = {
         completeopt = "menu,menuone",
@@ -101,9 +107,8 @@ return {
     cmp.setup.cmdline(":", {
       mapping = cmp.mapping.preset.cmdline(),
       sources = cmp.config.sources({
-        { name = "path", priority = 500 },
-        { name = "cmdline", priority = 300 },
-        { name = "cmdline_history", priority = 200 },
+        { name = "path" },
+        { name = "cmdline" },
       }),
       completion = {
         completeopt = "menu,menuone",

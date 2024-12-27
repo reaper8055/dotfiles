@@ -12,8 +12,8 @@ return {
   config = function()
     require("nvim-treesitter.configs").setup({
       ensure_installed = {
-        "cpp",
         "lua",
+        "cpp",
         "vim",
         "vimdoc",
         "rust",
@@ -45,8 +45,8 @@ return {
       },
       highlight = {
         enable = true,
-        disable = { "" },
-        additional_vim_regex_highlighting = true,
+        disable = {},
+        additional_vim_regex_highlighting = false,
       },
       indent = {
         enable = true,
@@ -66,6 +66,10 @@ return {
         keymaps = {
           smart_rename = "grr",
         },
+      },
+      injections = {
+        enable = true,
+        languages = { "go" },
       },
       rainbow = {
         enable = true,

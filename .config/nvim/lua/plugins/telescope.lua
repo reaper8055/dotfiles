@@ -21,27 +21,19 @@ return {
       local telescope = require("telescope")
       local actions = require("telescope.actions")
 
+      local helpers = require("utils.win.decorations")
       telescope.setup({
         defaults = {
-          borderchars = {
-            "─",
-            "│",
-            "─",
-            "│",
-            "┌",
-            "┐",
-            "┘",
-            "└",
-          },
+          borderchars = helpers.telescope_default_borders,
           prompt_prefix = " ",
           selection_caret = " ",
           path_display = { "smart" },
           mappings = {
             i = {
-              ["<C-n>"] = actions.cycle_history_next,
-              ["<C-p>"] = actions.cycle_history_prev,
-              ["<C-j>"] = actions.move_selection_next,
-              ["<C-k>"] = actions.move_selection_previous,
+              ["<C-j>"] = actions.cycle_history_next,
+              ["<C-k>"] = actions.cycle_history_prev,
+              ["<C-n>"] = actions.move_selection_next,
+              ["<C-p>"] = actions.move_selection_previous,
               ["<C-c>"] = actions.close,
               ["<Down>"] = actions.move_selection_next,
               ["<Up>"] = actions.move_selection_previous,
@@ -132,13 +124,8 @@ return {
 
       -- custom telescope dropdown menu
       local custom_dropdown = require("telescope.themes").get_dropdown({
-        borderchars = {
-          { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-          prompt = { "─", "│", " ", "│", "┌", "┐", "│", "│" },
-          results = { "─", "│", "─", "│", "├", "┤", "┘", "└" },
-          preview = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-        },
         previewer = false,
+        borderchars = helpers.telescope_dropdown_borders,
       })
 
       -- keymaps
@@ -151,6 +138,7 @@ return {
       vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
       vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
       vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
+      vim.keymap.set("n", "<leader>sm", builtin.man_pages, { desc = "[S]earch [M]an Pages" })
       vim.keymap.set(
         "n",
         "<leader>s.",

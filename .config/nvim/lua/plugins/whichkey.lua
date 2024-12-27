@@ -4,7 +4,8 @@ return {
   opts = {
     preset = "classic",
     win = {
-      border = "single",
+      title = false,
+      border = require("utils.win.decorations").default_border,
     },
     icons = {
       mappings = false,

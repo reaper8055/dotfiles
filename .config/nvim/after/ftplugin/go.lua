@@ -1,10 +1,11 @@
 vim.g.go_def_mapping_enabled = 0
+vim.opt_local.formatoptions:append("cqrn1")
 
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*.go",
   callback = function()
     -- Check if LSP is attached
-    if vim.lsp.get_active_clients({ bufnr = 0 })[1] == nil then
+    if vim.lsp.get_clients({ bufnr = 0 })[1] == nil then
       vim.notify("No LSP client attached", vim.log.levels.WARN)
       return
     end

@@ -91,8 +91,8 @@ return {
       nested = true,
       callback = function()
         if
-            #vim.api.nvim_list_wins() == 1
-            and vim.api.nvim_buf_get_name(0):match("NvimTree_") ~= nil
+          #vim.api.nvim_list_wins() == 1
+          and vim.api.nvim_buf_get_name(0):match("NvimTree_") ~= nil
         then
           vim.cmd("quit")
         end
@@ -125,6 +125,7 @@ return {
       require("nvim-tree.api").tree.toggle({ focus = false })
     end
 
+    local helpers = require("utils.win.decorations")
     nvim_tree.setup({
       on_attach = on_attach,
       disable_netrw = true,
@@ -168,6 +169,7 @@ return {
       },
       renderer = {
         indent_markers = {
+          icons = helpers.indent_markers.icons,
           enable = true,
         },
         icons = {
@@ -219,8 +221,6 @@ return {
         },
       },
     })
-
-    -- keymaps
 
     -- NvimTree
     local keymap = vim.api.nvim_set_keymap
