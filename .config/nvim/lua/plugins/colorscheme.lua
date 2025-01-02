@@ -46,5 +46,35 @@ return {
     vim.api.nvim_set_hl(0, "CursorLine", { bg = colors.bg })
     vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = colors.bg })
     vim.api.nvim_set_hl(0, "TelescopeBorder", { bg = colors.bg })
+
+    local function set_diagnostic_colors()
+      local colors = {
+        ok = "#a8d4b0",
+        hint = "#a8c5e0",
+        info = "#b4befe",
+        warn = "#e0c49c",
+        error = "#e0a8a8",
+      }
+
+      for _, type in ipairs({ "Ok", "Hint", "Info", "Warn", "Error" }) do
+        local color = colors[type:lower()]
+        vim.api.nvim_set_hl(0, "Diagnostic" .. type, { fg = color })
+        vim.api.nvim_set_hl(0, "DiagnosticSign" .. type, { fg = color })
+        vim.api.nvim_set_hl(0, "DiagnosticFloating" .. type, { fg = color })
+        vim.api.nvim_set_hl(0, "DiagnosticVirtualText" .. type, { fg = color })
+        vim.api.nvim_set_hl(0, "DiagnosticUnderline" .. type, { undercurl = true, sp = color })
+      end
+
+      vim.api.nvim_set_hl(0, "DiagnosticDeprecated", { strikethrough = true, fg = colors.warn })
+      vim.api.nvim_set_hl(0, "DiagnosticUnnecessary", { fg = colors.hint, italic = true })
+    end
+
+    -- Run immediately
+    set_diagnostic_colors()
+
+    -- Run on colorscheme change
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      callback = set_diagnostic_colors,
+    })
   end,
 }

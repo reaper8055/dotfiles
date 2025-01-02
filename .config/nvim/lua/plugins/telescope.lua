@@ -118,9 +118,21 @@ return {
         },
       })
 
-      pcall(require("telescope").load_extension, "fzf")
-      pcall(require("telescope").load_extension, "ui-select")
-      pcall(require("telescope").load_extension, "undo")
+      local extensions = {
+        "fzf",
+        "ui-select",
+        "undo",
+      }
+
+      for _, extension in ipairs(extensions) do
+        local ok, _ = pcall(require("telescope").load_extension, extension)
+        if not ok then
+          vim.notify(
+            string.format("Failed to load telescope extension: '%s'", extension),
+            vim.log.levels.WARN
+          )
+        end
+      end
 
       -- custom telescope dropdown menu
       local custom_dropdown = require("telescope.themes").get_dropdown({

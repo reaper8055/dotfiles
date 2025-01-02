@@ -49,6 +49,8 @@ return {
         lualine_c = {
           {
             "diagnostics",
+            sections = { "error", "warn", "info", "hint" },
+            symbols = { error = " ", warn = " ", info = " ", hint = " " },
             colored = true,
             color = {
               bg = colors.bg,
@@ -58,20 +60,6 @@ return {
               right = "",
             },
             source = { "nvim" },
-            sections = { "error" },
-          },
-          {
-            "diagnostics",
-            colored = true,
-            color = {
-              bg = colors.bg,
-            },
-            separator = {
-              left = "",
-              right = "",
-            },
-            source = { "nvim" },
-            sections = { "warn" },
           },
         },
         lualine_x = {
