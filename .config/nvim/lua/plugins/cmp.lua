@@ -94,7 +94,25 @@ return {
 
     -- `/` and `?` cmdline setup
     cmp.setup.cmdline({ "/", "?" }, {
-      mapping = cmp.mapping.preset.cmdline(),
+      mapping = cmp.mapping.preset.cmdline({
+        ["<CR>"] = {
+          c = function(fallback)
+            if cmp.visible() then
+              cmp.confirm({
+                select = true,
+                behavior = cmp.ConfirmBehavior.Replace,
+              })
+              vim.api.nvim_feedkeys(
+                vim.api.nvim_replace_termcodes("<CR>", true, true, true),
+                "n",
+                false
+              )
+            else
+              fallback()
+            end
+          end,
+        },
+      }),
       sources = {
         { name = "buffer" },
       },
@@ -105,10 +123,33 @@ return {
 
     -- `:` cmdline setup
     cmp.setup.cmdline(":", {
-      mapping = cmp.mapping.preset.cmdline(),
+      mapping = cmp.mapping.preset.cmdline({
+        ["<CR>"] = {
+          c = function(fallback)
+            if cmp.visible() then
+              cmp.confirm({
+                select = true,
+                behavior = cmp.ConfirmBehavior.Replace,
+              })
+              vim.api.nvim_feedkeys(
+                vim.api.nvim_replace_termcodes("<CR>", true, true, true),
+                "n",
+                false
+              )
+            else
+              fallback()
+            end
+          end,
+        },
+      }),
       sources = cmp.config.sources({
         { name = "path" },
-        { name = "cmdline" },
+        {
+          name = "cmdline",
+          option = {
+            ignore_cmds = { "wq", "wq!", "q", "q!" }, -- Add commands you don't want completion for
+          },
+        },
       }),
       completion = {
         completeopt = "menu,menuone",

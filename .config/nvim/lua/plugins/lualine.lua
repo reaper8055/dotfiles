@@ -6,8 +6,9 @@ return {
     opt = true,
   },
   config = function()
-    local helpers = require("utils.helpers")
-    local colors = helpers.get_hlg_colors()
+    -- Get Kanagawa colors
+    local colors = require("kanagawa.colors").setup()
+    local theme = colors.theme
 
     require("lualine").setup({
       options = {
@@ -53,7 +54,7 @@ return {
             symbols = { error = " ", warn = " ", info = " ", hint = " " },
             colored = true,
             color = {
-              bg = colors.bg,
+              bg = theme.ui.bg,
             },
             separator = {
               left = "",
@@ -68,7 +69,7 @@ return {
             colored = true,
             symbols = { added = " ", modified = " ", removed = " " }, -- changes diff symbols
             color = {
-              bg = colors.bg,
+              bg = theme.ui.bg,
             },
             cond = function() return vim.fn.winwidth(0) > 80 end,
             separator = {
@@ -88,7 +89,7 @@ return {
           {
             "encoding",
             color = {
-              bg = colors.bg,
+              bg = theme.ui.bg,
             },
             separator = {
               right = "",

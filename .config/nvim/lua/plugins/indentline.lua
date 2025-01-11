@@ -1,18 +1,11 @@
 return {
   "lukas-reineke/indent-blankline.nvim",
+  dependencies = {
+    "rebelot/kanagawa.nvim",
+    "rebelot/kanagawa.nvim",
+  },
   main = "ibl",
   config = function()
-    local highlight = {
-      "LightGray",
-    }
-
-    local hooks = require("ibl.hooks")
-    hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-      local helpers = require("utils.helpers")
-      local colors = helpers.get_hlg_colors()
-      vim.api.nvim_set_hl(0, "LightGray", { fg = colors.fg })
-    end)
-
     require("ibl").setup({
       indent = {
         char = "┃",
@@ -21,7 +14,7 @@ return {
         smart_indent_cap = true,
       },
       scope = {
-        highlight = highlight,
+        highlight = { "LightGray" },
         injected_languages = false,
         show_start = false,
         show_end = false,

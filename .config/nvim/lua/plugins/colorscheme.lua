@@ -1,9 +1,9 @@
 return {
   "rebelot/kanagawa.nvim",
+  lazy = false,
   enabled = true,
   priority = 2000,
   config = function()
-    -- Default options:
     require("kanagawa").setup({
       compile = false, -- enable compiling the colorscheme
       undercurl = true, -- enable undercurls
@@ -33,48 +33,56 @@ return {
         dark = "wave", -- try "dragon" !
         light = "lotus",
       },
+      overrides = function(colors)
+        local theme = colors.theme
+        local palette = colors.palette
+
+        local diagnostic_colors = {
+          Ok = palette.waveAqua2,
+          Hint = palette.dragonBlue,
+          Info = palette.waveAqua1,
+          Warn = palette.carpYellow,
+          Error = palette.autumnRed,
+        }
+
+        local highlights = {
+          -- Float related highlights
+          FloatBorder = { bg = theme.ui.bg, fg = palette.fujiWhite },
+          NormalFloat = { bg = theme.ui.bg, fg = theme.ui.fg },
+          CursorLine = { bg = theme.ui.bg },
+          FloatTitle = { bg = theme.ui.bg, fg = palette.fujiWhite },
+          DressingInputText = { bg = theme.ui.bg },
+          DressingInputBorder = { bg = theme.ui.bg, fg = palette.fujiWhite },
+          TelescopeTitle = { fg = theme.ui.fg, bold = true },
+          TelescopeNormal = { bg = theme.ui.bg, fg = theme.ui.fg },
+          TelescopeBorder = { bg = theme.ui.bg, fg = theme.ui.fg },
+
+          -- Popup menu highlights
+          Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1 },
+          PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
+          PmenuSbar = { bg = theme.ui.bg_m1 },
+          PmenuThumb = { bg = theme.ui.bg_p2 },
+
+          -- Indent-blankline highlight
+          LightGray = { fg = theme.ui.fg },
+        }
+
+        for type, color in pairs(diagnostic_colors) do
+          highlights["Diagnostic" .. type] = { fg = color }
+          highlights["DiagnosticSign" .. type] = { fg = color }
+          highlights["DiagnosticFloating" .. type] = { fg = color }
+          highlights["DiagnosticVirtualText" .. type] = { fg = color }
+          highlights["DiagnosticUnderline" .. type] = { undercurl = true, sp = color }
+        end
+
+        highlights.DiagnosticDeprecated = { strikethrough = true, fg = palette.sumiInk4 }
+        highlights.DiagnosticUnnecessary = { fg = palette.fujiGray, italic = true }
+
+        return highlights
+      end,
     })
 
     -- setup must be called before loading
     vim.cmd("colorscheme kanagawa")
-
-    local helpers = require("utils.helpers")
-    local colors = helpers.get_hlg_colors()
-
-    vim.api.nvim_set_hl(0, "FloatBorder", { bg = colors.bg, fg = colors.fg })
-    vim.api.nvim_set_hl(0, "NormalFloat", { bg = colors.bg, fg = colors.fg })
-    vim.api.nvim_set_hl(0, "CursorLine", { bg = colors.bg })
-    vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = colors.bg })
-    vim.api.nvim_set_hl(0, "TelescopeBorder", { bg = colors.bg })
-
-    local function set_diagnostic_colors()
-      local colors = {
-        ok = "#a8d4b0",
-        hint = "#a8c5e0",
-        info = "#b4befe",
-        warn = "#e0c49c",
-        error = "#e0a8a8",
-      }
-
-      for _, type in ipairs({ "Ok", "Hint", "Info", "Warn", "Error" }) do
-        local color = colors[type:lower()]
-        vim.api.nvim_set_hl(0, "Diagnostic" .. type, { fg = color })
-        vim.api.nvim_set_hl(0, "DiagnosticSign" .. type, { fg = color })
-        vim.api.nvim_set_hl(0, "DiagnosticFloating" .. type, { fg = color })
-        vim.api.nvim_set_hl(0, "DiagnosticVirtualText" .. type, { fg = color })
-        vim.api.nvim_set_hl(0, "DiagnosticUnderline" .. type, { undercurl = true, sp = color })
-      end
-
-      vim.api.nvim_set_hl(0, "DiagnosticDeprecated", { strikethrough = true, fg = colors.warn })
-      vim.api.nvim_set_hl(0, "DiagnosticUnnecessary", { fg = colors.hint, italic = true })
-    end
-
-    -- Run immediately
-    set_diagnostic_colors()
-
-    -- Run on colorscheme change
-    vim.api.nvim_create_autocmd("ColorScheme", {
-      callback = set_diagnostic_colors,
-    })
   end,
 }

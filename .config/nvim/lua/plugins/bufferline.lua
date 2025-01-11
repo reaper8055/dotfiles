@@ -3,33 +3,40 @@ return {
   version = "*",
   dependencies = {
     "nvim-tree/nvim-web-devicons",
+    "rebelot/kanagawa.nvim",
   },
   config = function()
     require("bufferline").setup({
-      highlights = {
-        tab_selected = {
-          fg = "#dca561",
-        },
-        tab_close = {
-          fg = "#dca561",
-        },
-        tab_separator_selected = {
-          fg = "#dca561",
-        },
-        buffer_selected = {
-          fg = "#dca561",
-        },
-        indicator_selected = {
-          fg = "#dca561",
-        },
-        close_button_selected = {
-          fg = "#dca561",
-        },
-        separator_selected = {
-          fg = "#dca561",
-          bg = "#dca561",
-        },
-      },
+      highlights = function()
+        -- Get Kanagawa colors
+        local colors = require("kanagawa.colors").setup()
+        local palette = colors.palette
+
+        return {
+          tab_selected = {
+            fg = palette.carpYellow,
+          },
+          tab_close = {
+            fg = palette.carpYellow,
+          },
+          tab_separator_selected = {
+            fg = palette.carpYellow,
+          },
+          buffer_selected = {
+            fg = palette.carpYellow,
+          },
+          indicator_selected = {
+            fg = palette.carpYellow,
+          },
+          close_button_selected = {
+            fg = palette.carpYellow,
+          },
+          separator_selected = {
+            fg = palette.carpYellow,
+            bg = palette.carpYellow,
+          },
+        }
+      end,
       options = {
         numbers = "none", -- | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string,
         close_command = "Bdelete! %d", -- can be a string | function, see "Mouse actions"

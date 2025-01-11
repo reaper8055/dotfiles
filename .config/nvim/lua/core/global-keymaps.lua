@@ -11,8 +11,13 @@ keymap("", "<Space>", "<Nop>", opts)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- Quit
+-- Write and Quit
+keymap("n", "<leader>wq", ":wq!<CR>", opts)
+
+-- Write
 keymap("n", "<leader>w", ":w!<CR>", opts)
+
+-- buffer delete
 keymap("n", "<leader>bd", ":bd<CR>", opts)
 
 -- Modes
