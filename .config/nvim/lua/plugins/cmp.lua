@@ -147,7 +147,7 @@ return {
         {
           name = "cmdline",
           option = {
-            ignore_cmds = { "wq", "wq!", "q", "q!" }, -- Add commands you don't want completion for
+            ignore_cmds = { "wq", "wq!", "q", "q!", "w" }, -- Add commands you don't want completion for
           },
         },
       }),

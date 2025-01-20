@@ -8,3 +8,40 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "help", "man" },
   command = "wincmd L",
 })
+
+vim.api.nvim_create_autocmd("CmdwinEnter", {
+  callback = function()
+    local opts = { buffer = true, noremap = true }
+
+    -- Word motions
+    vim.keymap.set("n", "w", "w", opts)
+    vim.keymap.set("n", "b", "b", opts)
+    vim.keymap.set("n", "e", "e", opts)
+    vim.keymap.set("n", "W", "W", opts)
+    vim.keymap.set("n", "B", "B", opts)
+    vim.keymap.set("n", "E", "E", opts)
+
+    -- Line navigation
+    vim.keymap.set("n", "$", "$", opts)
+    vim.keymap.set("n", "0", "0", opts)
+    vim.keymap.set("n", "^", "^", opts)
+
+    -- Vertical motions
+    vim.keymap.set("n", "j", "j", opts)
+    vim.keymap.set("n", "k", "k", opts)
+    vim.keymap.set("n", "gg", "gg", opts)
+    vim.keymap.set("n", "G", "G", opts)
+
+    -- Character find/till
+    vim.keymap.set("n", "f", "f", opts)
+    vim.keymap.set("n", "F", "F", opts)
+    vim.keymap.set("n", "t", "t", opts)
+    vim.keymap.set("n", "T", "T", opts)
+    vim.keymap.set("n", ";", ";", opts)
+    vim.keymap.set("n", ",", ",", opts)
+
+    -- Paragraph motions
+    vim.keymap.set("n", "{", "{", opts)
+    vim.keymap.set("n", "}", "}", opts)
+  end,
+})
