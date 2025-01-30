@@ -31,11 +31,21 @@ return {
       content = {
         format = custom_format,
       },
-
       window = {
-        config = {
-          border = helpers.default_border,
-        },
+        config = function()
+          -- Get editor dimensions
+          local columns = vim.o.columns
+          local lines = vim.o.lines
+
+          return {
+            anchor = "SE",
+            border = helpers.default_border,
+            col = columns - 1,
+            row = lines - 2,
+            relative = "editor",
+            style = "minimal",
+          }
+        end,
       },
       lsp_progress = {
         enable = false,
