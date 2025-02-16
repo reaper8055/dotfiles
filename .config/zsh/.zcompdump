@@ -1864,7 +1864,6 @@ zle -C _correct_filename .complete-word _correct_filename
 zle -C _correct_word .complete-word _correct_word
 zle -C _expand_alias .complete-word _expand_alias
 zle -C _expand_word .complete-word _expand_word
-zle -C _fzf-tab-apply complete-word _fzf-tab-apply
 zle -C _history-complete-newer .complete-word _history_complete_word
 zle -C _history-complete-older .complete-word _history_complete_word
 zle -C _list_expansions .list-choices _expand_word

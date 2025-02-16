@@ -1,0 +1,12 @@
+# Kinesis Advantage360 Pro - Normal Mode
+SUBSYSTEM=="usb", ATTRS{idVendor}=="29ea", ATTRS{idProduct}=="0362", MODE="0666", GROUP="plugdev"
+KERNEL=="hidraw*", ATTRS{idVendor}=="29ea", MODE="0664", GROUP="plugdev"
+
+# Kinesis Advantage360 Pro - Serial Communication
+KERNEL=="ttyACM*", ATTRS{idVendor}=="29ea", ATTRS{idProduct}=="0362", MODE="0666", GROUP="plugdev"
+
+# Kinesis Advantage360 Pro - DFU Mode
+SUBSYSTEM=="usb", ATTRS{idVendor}=="29ea", ATTRS{idProduct}=="0361", MODE="0666", GROUP="plugdev"
+
+# Prevent ModemManager from interfering
+ATTRS{idVendor}=="29ea", ATTRS{idProduct}=="0362", ENV{ID_MM_DEVICE_IGNORE}="1"
