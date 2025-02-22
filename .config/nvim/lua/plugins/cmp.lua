@@ -81,10 +81,10 @@ return {
           group_index = 0,
         },
         { name = "nvim_lsp_signature_help" },
-        { name = "nvim_lsp", priority = 1000 },
-        { name = "luasnip", priority = 600 },
-        { name = "buffer", priority = 400 },
-        { name = "path", priority = 250 },
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+        { name = "buffer" },
+        { name = "path" },
       }),
       confirm_opts = {
         behavior = cmp.ConfirmBehavior.Replace,
@@ -94,25 +94,7 @@ return {
 
     -- `/` and `?` cmdline setup
     cmp.setup.cmdline({ "/", "?" }, {
-      mapping = cmp.mapping.preset.cmdline({
-        ["<CR>"] = {
-          c = function(fallback)
-            if cmp.visible() then
-              cmp.confirm({
-                select = true,
-                behavior = cmp.ConfirmBehavior.Replace,
-              })
-              vim.api.nvim_feedkeys(
-                vim.api.nvim_replace_termcodes("<CR>", true, true, true),
-                "n",
-                false
-              )
-            else
-              fallback()
-            end
-          end,
-        },
-      }),
+      mapping = cmp.mapping.preset.cmdline(),
       sources = {
         { name = "buffer" },
       },
@@ -123,34 +105,13 @@ return {
 
     -- `:` cmdline setup
     cmp.setup.cmdline(":", {
-      mapping = cmp.mapping.preset.cmdline({
-        ["<CR>"] = {
-          c = function(fallback)
-            if cmp.visible() then
-              cmp.confirm({
-                select = true,
-                behavior = cmp.ConfirmBehavior.Replace,
-              })
-              vim.api.nvim_feedkeys(
-                vim.api.nvim_replace_termcodes("<CR>", true, true, true),
-                "n",
-                false
-              )
-            else
-              fallback()
-            end
-          end,
-        },
-      }),
+      mapping = cmp.mapping.preset.cmdline(),
       sources = cmp.config.sources({
         { name = "path" },
-        {
-          name = "cmdline",
-          option = {
-            ignore_cmds = { "wq", "wq!", "q", "q!", "w" }, -- Add commands you don't want completion for
-          },
-        },
+      }, {
+        { name = "cmdline" },
       }),
+      matching = { disallow_symbol_nonprefix_matching = false },
       completion = {
         completeopt = "menu,menuone",
       },

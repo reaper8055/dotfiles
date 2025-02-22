@@ -317,7 +317,6 @@ _comps=(
 'dnf-3' '_dnf'
 'doas' '_doas'
 'docker' '_docker'
-'dockerd' '_docker'
 'domainname' '_yp'
 'dos2unix' '_dos2unix'
 'dosdel' '_floppy'

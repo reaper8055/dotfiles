@@ -29,7 +29,7 @@ config.window_frame = {
 config.scrollback_lines = 1000000
 config.force_reverse_video_cursor = true
 config.color_scheme = "kanagawa (Gogh)"
-config.enable_tab_bar = true
+config.enable_tab_bar = false
 config.font = wezterm.font({
   family = "FiraCode Nerd Font",
   weight = 450,
@@ -53,17 +53,17 @@ config.font_rules = {
 config.enable_wayland = false
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 config.tab_max_width = 60
--- config.font_size = 12
--- config.freetype_load_flags = "NO_HINTING"
+config.font_size = 11
 
 config.window_padding = {
   left = 8,
-  right = 5,
+  right = 1,
   top = 1,
   bottom = 1,
 }
+
 config.window_decorations = "RESIZE"
-config.enable_tab_bar = true
+config.enable_tab_bar = false
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = true
 config.cursor_thickness = 2
@@ -77,9 +77,21 @@ config.skip_close_confirmation_for_processes_named = {
   "fish",
   "tmux",
   "nu",
-  "cmd.exe",
-  "pwsh.exe",
-  "powershell.exe",
+}
+
+config.default_prog = {
+  "bash",
+  "-c",
+  [[
+    if command -v tmux >/dev/null && [ -z "$TMUX" ]; then
+      if tmux has-session 2>/dev/null; then
+        last_session="$(tmux list-sessions | head -n1 | cut -d: -f1)"
+        [ -n "$last_session" ] && tmux attach-session -t "$last_session" || tmux attach-session
+      else
+        tmux new-session -s main
+      fi
+    fi
+  ]],
 }
 
 -- and finally, return the configuration to wezterm
