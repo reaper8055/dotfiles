@@ -133,3 +133,6 @@ vim.cmd([[set iskeyword+=-]])
 
 -- Helps Neovim detect indentation when no .editorconfig is present
 vim.opt.autoindent = true
+
+-- hide search occurances
+vim.opt.shortmess:append("S")

@@ -70,6 +70,7 @@ return {
             symbols = { added = " ", modified = " ", removed = " " }, -- changes diff symbols
             color = {
               bg = theme.ui.bg,
+              fg = theme.ui.fg,
             },
             cond = function() return vim.fn.winwidth(0) > 80 end,
             separator = {
@@ -98,6 +99,19 @@ return {
           },
         },
         lualine_z = {
+          {
+            "searchcount",
+            fmt = function(str) return str:gsub("%[", ""):gsub("%]", "") end,
+            maxcount = 99999,
+            color = {
+              bg = colors.palette.autumnYellow,
+            },
+            padding = 1,
+            separator = {
+              right = "",
+              left = "",
+            },
+          },
           {
             "location",
             icon = {
