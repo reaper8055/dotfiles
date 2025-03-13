@@ -45,3 +45,24 @@ vim.api.nvim_create_autocmd("CmdwinEnter", {
     vim.keymap.set("n", "}", "}", opts)
   end,
 })
+
+-- Fix floating window borders for retro box theme
+vim.api.nvim_set_option("winblend", 0)
+vim.opt.winblend = 0
+
+-- Configure floating window appearance
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern = "*",
+  callback = function()
+    -- Remove or customize borders for floating windows
+    vim.api.nvim_set_hl(0, "FloatBorder", { link = "Normal" })
+    vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
+
+    -- Set border characters to empty or spaces if you want no visible border
+    vim.opt.fillchars:append("eob: ")
+    vim.opt.fillchars:append("fold: ")
+    vim.opt.fillchars:append("foldopen: ")
+    vim.opt.fillchars:append("foldsep: ")
+    vim.opt.fillchars:append("foldclose: ")
+  end,
+})

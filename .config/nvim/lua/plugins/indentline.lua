@@ -2,7 +2,6 @@ return {
   "lukas-reineke/indent-blankline.nvim",
   dependencies = {
     "rebelot/kanagawa.nvim",
-    "rebelot/kanagawa.nvim",
   },
   main = "ibl",
   config = function()

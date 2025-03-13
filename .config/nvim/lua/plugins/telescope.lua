@@ -90,7 +90,9 @@ return {
         },
         extensions = {
           ["ui-select"] = {
-            require("telescope.themes").get_dropdown(),
+            require("telescope.themes").get_dropdown({
+              borderchars = helpers.telescope_dropdown_borders,
+            }),
           },
           undo = {
             use_delta = true,

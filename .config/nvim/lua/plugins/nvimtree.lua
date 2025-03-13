@@ -52,6 +52,8 @@ end
 
 return {
   "nvim-tree/nvim-tree.lua",
+  version = "*",
+  lazy = false,
   dependencies = {
     "nvim-tree/nvim-web-devicons",
   },
@@ -77,6 +79,10 @@ return {
       disable_netrw = true,
       hijack_netrw = true,
       update_cwd = true,
+      update_focused_file = {
+        enable = true,
+        update_root = false,
+      },
       view = {
         width = 40,
         side = "right",

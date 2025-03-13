@@ -2,6 +2,7 @@ return {
   "akinsho/bufferline.nvim",
   version = "*",
   dependencies = {
+    "rebelot/kanagawa.nvim",
     "nvim-tree/nvim-web-devicons",
     "rebelot/kanagawa.nvim",
   },

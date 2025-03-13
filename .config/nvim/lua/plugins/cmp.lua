@@ -91,6 +91,27 @@ return {
         select = false,
       },
     })
+    -- Create a custom mapping for cmdline mode
+    local cmdline_mappings = cmp.mapping.preset.cmdline()
+
+    -- Override the <CR> behavior to select without executing
+    cmdline_mappings["<CR>"] = cmp.mapping({
+      i = function(fallback)
+        if cmp.visible() then
+          cmp.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert })
+        else
+          fallback()
+        end
+      end,
+      s = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert }),
+      c = function(fallback)
+        if cmp.visible() then
+          cmp.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert })
+        else
+          fallback()
+        end
+      end,
+    })
 
     -- `/` and `?` cmdline setup
     cmp.setup.cmdline({ "/", "?" }, {
