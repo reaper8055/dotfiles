@@ -20,8 +20,8 @@ config.command_palette_rows = 10
 config.command_palette_font_size = 12
 config.window_frame = {
   font = wezterm.font({
-    family = "FiraCode Nerd Font",
-    weight = 450,
+    family = "JetBrainsMono NF",
+    stretch = "Normal",
   }),
 }
 
@@ -31,22 +31,24 @@ config.force_reverse_video_cursor = true
 config.color_scheme = "kanagawa (Gogh)"
 config.enable_tab_bar = false
 config.font = wezterm.font({
-  family = "FiraCode Nerd Font",
-  weight = 450,
+  family = "JetBrainsMono NF",
+  stretch = "Normal",
 })
 config.font_rules = {
   {
     italic = true,
     font = wezterm.font({
-      family = "JetBrainsMono Nerd Font",
+      family = "JetBrainsMono NF",
       style = "Italic",
+      stretch = "Normal",
     }),
   },
   {
     italic = false,
     intensity = "Bold",
     font = wezterm.font({
-      family = "FiraCode Nerd Font",
+      family = "JetBrainsMono NF",
+      stretch = "Normal",
     }),
   },
 }

@@ -94,7 +94,8 @@ vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
 
 -- the font used in graphical neovim applications
-vim.opt.guifont = "FiraCode Nerd Font:h18"
+-- vim.opt.guifont = "FiraCode Nerd Font:h18"
+vim.opt.guifont = "JetBrainsMono NF"
 vim.opt.colorcolumn = "100"
 vim.opt.textwidth = 80
 vim.opt.cursorcolumn = true
