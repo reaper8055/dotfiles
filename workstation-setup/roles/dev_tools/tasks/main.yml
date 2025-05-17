@@ -1,0 +1,136 @@
+---
+# Development tools role tasks
+
+- name: Set up Nix
+  block:
+    - name: Check if Nix is already installed
+      shell: command -v nix
+      register: nix_installed
+      ignore_errors: true
+      changed_when: false
+      check_mode: false
+
+    - name: Install Nix (interactive)
+      shell: |
+        bash -c "curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon"
+      args:
+        creates: /nix
+        executable: /bin/bash
+      when: nix_installed.rc != 0
+      register: nix_installation
+      # Allow interaction with the installer
+      become: true
+      become_method: sudo
+  tags: nix
+
+- name: Set up WezTerm (Ubuntu/Debian)
+  become: true
+  when: has_apt
+  block:
+    - name: Add WezTerm GPG key
+      shell: curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+      args:
+        creates: /usr/share/keyrings/wezterm-fury.gpg
+
+    - name: Add WezTerm repository
+      copy:
+        content: 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *'
+        dest: /etc/apt/sources.list.d/wezterm.list
+        mode: '0644'
+
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+
+    - name: Install WezTerm
+      apt:
+        name: wezterm
+        state: present
+  tags: wezterm
+
+- name: Set up WezTerm (macOS)
+  when: os_family == "Darwin"
+  homebrew:
+    name: wezterm
+    state: present
+  tags: wezterm
+
+- name: Install StyLua
+  block:
+    - name: Check if StyLua is already installed
+      shell: command -v stylua
+      register: stylua_installed
+      ignore_errors: true
+      changed_when: false
+      check_mode: false
+
+    - name: Ensure unzip is installed
+      become: true
+      package:
+        name: unzip
+        state: present
+      when: stylua_installed.rc != 0
+
+    - name: Set StyLua installation facts
+      set_fact:
+        stylua_version: "v2.1.0"
+        stylua_download_dir: "{{ user_home }}/Downloads"
+        stylua_file_name: >-
+          {% if os_family == 'Darwin' %}
+          stylua-macos-x86_64.zip
+          {% else %}
+          stylua-linux-x86_64.zip
+          {% endif %}
+      when: stylua_installed.rc != 0
+
+    - name: Create download directory
+      file:
+        path: "{{ stylua_download_dir }}"
+        state: directory
+        mode: '0755'
+      when: stylua_installed.rc != 0
+
+    - name: Debug StyLua download URL
+      debug:
+        msg: "Download URL: https://github.com/JohnnyMorganz/StyLua/releases/download/{{ stylua_version }}/{{ stylua_file_name }}"
+      when: stylua_installed.rc != 0
+
+    - name: Download StyLua
+      get_url:
+        url: "https://github.com/JohnnyMorganz/StyLua/releases/download/{{ stylua_version }}/{{ stylua_file_name }}"
+        dest: "{{ stylua_download_dir }}/{{ stylua_file_name }}"
+        mode: '0755'
+        force: yes
+        use_proxy: yes
+        validate_certs: yes
+        http_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+      when: stylua_installed.rc != 0
+      register: download_result
+      ignore_errors: yes
+
+    - name: Debug download result
+      debug:
+        var: download_result
+      when: stylua_installed.rc != 0 and download_result is defined
+
+    - name: Use curl as fallback if get_url fails
+      shell: "curl -L -o {{ stylua_download_dir }}/{{ stylua_file_name }} https://github.com/JohnnyMorganz/StyLua/releases/download/{{ stylua_version }}/{{ stylua_file_name }}"
+      args:
+        creates: "{{ stylua_download_dir }}/{{ stylua_file_name }}"
+      when: stylua_installed.rc != 0 and (download_result is defined and download_result.failed)
+
+    - name: Extract StyLua
+      become: true
+      unarchive:
+        src: "{{ stylua_download_dir }}/{{ stylua_file_name }}"
+        dest: /usr/local/bin/
+        remote_src: yes
+        mode: '0755'
+      when: stylua_installed.rc != 0
+
+    - name: Clean up StyLua download
+      file:
+        path: "{{ stylua_download_dir }}/{{ stylua_file_name }}"
+        state: absent
+      when: stylua_installed.rc != 0
+  tags: stylua

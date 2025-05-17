@@ -1,0 +1,132 @@
+---
+# Shell tools role tasks
+
+- name: Ensure zsh is installed
+  become: "{{ has_apt }}"
+  package:
+    name: zsh
+    state: present
+  register: zsh_install
+  tags: zsh
+
+- name: Change default shell to zsh
+  become: true
+  user:
+    name: "{{ ansible_user_id }}"
+    shell: /bin/zsh
+  register: shell_change
+  failed_when: shell_change.failed and 'already set' not in shell_change.msg
+  tags: zsh
+
+- name: Check if /etc/zsh/zshenv exists
+  stat:
+    path: /etc/zsh/zshenv
+  register: zshenv_file
+  tags: zsh
+
+- name: Create /etc/zsh/zshenv if it doesn't exist
+  become: true
+  file:
+    path: /etc/zsh/zshenv
+    state: touch
+    mode: '0644'
+  when: not zshenv_file.stat.exists
+  tags: zsh
+
+- name: Check if ZDOTDIR is already set in /etc/zsh/zshenv
+  shell: grep -q "ZDOTDIR=~/.config/zsh" /etc/zsh/zshenv
+  register: zdotdir_check
+  changed_when: false
+  failed_when: false
+  tags: zsh
+
+- name: Create ~/.config/zsh directory
+  file:
+    path: "{{ user_home }}/.config/zsh"
+    state: directory
+    mode: '0755'
+  tags: zsh
+
+- name: Add ZDOTDIR setting to /etc/zsh/zshenv
+  become: true
+  lineinfile:
+    path: /etc/zsh/zshenv
+    line: "ZDOTDIR=~/.config/zsh"
+    state: present
+  when: zdotdir_check.rc != 0
+  tags: zsh
+
+- name: Install fzf
+  block:
+    - name: Check if fzf is already installed
+      shell: command -v fzf
+      register: fzf_installed
+      changed_when: false
+      check_mode: false
+      failed_when: false
+
+    - name: Clone fzf repository
+      git:
+        repo: https://github.com/junegunn/fzf.git
+        dest: "{{ user_home }}/.fzf"
+        depth: 1
+      when: fzf_installed.rc != 0
+      register: fzf_clone
+
+    - name: Install fzf
+      shell: yes | {{ user_home }}/.fzf/install
+      args:
+        creates: "{{ user_home }}/.fzf/bin/fzf"
+      when: fzf_installed.rc != 0 and (fzf_clone is defined and fzf_clone.changed)
+      register: fzf_setup
+  rescue:
+    - name: Display fzf installation failure
+      debug:
+        msg: "Failed to install fzf. Please check the error message above and try installing fzf manually."
+  tags: fzf
+
+- name: Set up starship prompt
+  block:
+    - name: Check if starship is already installed
+      shell: command -v starship
+      register: starship_installed
+      changed_when: false
+      check_mode: false
+      failed_when: false
+
+    - name: Install starship
+      become: true
+      shell: curl -sSL https://starship.rs/install.sh | sh -s -- -y
+      args:
+        creates: /usr/local/bin/starship
+      when: starship_installed.rc != 0
+      register: starship_setup
+  rescue:
+    - name: Display starship installation failure
+      debug:
+        msg: "Failed to install starship. Please check the error message above and try installing starship manually."
+  tags: starship
+
+- name: Set up direnv
+  block:
+    - name: Check if direnv is already installed
+      shell: command -v direnv
+      register: direnv_installed
+      changed_when: false
+      check_mode: false
+      failed_when: false
+
+    - name: Install direnv
+      become: true
+      shell: |
+        export bin_path="/usr/local/bin"
+        curl -sfL https://direnv.net/install.sh | bash
+      args:
+        creates: /usr/local/bin/direnv
+      when: direnv_installed.rc != 0
+      register: direnv_setup
+  rescue:
+    - name: Display direnv installation failure
+      debug:
+        msg: "Failed to install direnv. Please check the error message above and try installing direnv manually."
+  tags: direnv

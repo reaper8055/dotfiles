@@ -1,0 +1,54 @@
+---
+# Dotfiles role tasks
+
+- name: Check if dotfiles repo already exists
+  stat:
+    path: "{{ user_home }}/dotfiles"
+  register: dotfiles_repo
+  tags: dotfiles
+
+- name: Clone dotfiles repository
+  git:
+    repo: https://github.com/reaper8055/dotfiles.git
+    dest: "{{ user_home }}/dotfiles"
+    clone: yes
+    update: yes
+    depth: 1
+    accept_hostkey: yes
+    force: no
+  tags: dotfiles
+  register: git_result
+  when: not dotfiles_repo.stat.exists or dotfiles_repo.stat.isdir == false
+
+- name: Display git clone failure message
+  debug:
+    msg: "Failed to clone dotfiles repository. Please check the repository URL and your network connection."
+  when: git_result is defined and git_result.failed is defined and git_result.failed
+
+- name: Remove existing zshrc files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "{{ user_home }}/.zshrc*"
+  tags: dotfiles
+  when: (dotfiles_repo.stat.exists or (git_result is defined and git_result.changed))
+
+- name: Stow dotfiles
+  shell: cd {{ user_home }}/dotfiles && stow .
+  args:
+    chdir: "{{ user_home }}/dotfiles"
+  register: stow_result
+  tags: dotfiles
+  when: dotfiles_repo.stat is defined and dotfiles_repo.stat.exists or (git_result is defined and git_result.changed)
+
+- name: Display stow failure message
+  debug:
+    msg: "Failed to stow dotfiles. Please check that GNU stow is installed and the dotfiles structure is correct."
+  when: stow_result is defined and stow_result.rc is defined and stow_result.rc != 0
+
+- name: Source zshrc (informational only)
+  debug:
+    msg: "Dotfiles have been stowed. Remember to source your .zshrc or start a new shell session."
+  tags: dotfiles
+  when: stow_result is defined and stow_result.rc is defined and stow_result.rc == 0

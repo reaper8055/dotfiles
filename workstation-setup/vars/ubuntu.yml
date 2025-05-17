@@ -1,0 +1,29 @@
+---
+# Variables for Ubuntu/Debian systems
+package_manager: apt
+package_manager_update_cmd: apt update
+package_manager_install_cmd: apt install -y
+package_manager_upgrade_cmd: apt full-upgrade -y
+
+common_packages:
+  - git
+  - curl
+  - wget
+  - zsh
+  - stow
+  - sudo
+  - build-essential
+  - apt-transport-https
+  - ca-certificates
+  - lsb-release
+  - unzip  # Required for extracting zip files
+
+extra_packages:
+  - fd-find  # Faster and user-friendly alternative to find
+  - ripgrep  # Faster and Git-aware alternative to grep
+  - lua5.1
+  - liblua5.1-0
+  - wl-clipboard  # Wayland clipboard utilities
+
+has_apt: true
+has_brew: false

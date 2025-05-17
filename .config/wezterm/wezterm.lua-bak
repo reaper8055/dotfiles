@@ -1,0 +1,100 @@
+-- Pull in the wezterm API
+local wezterm = require("wezterm")
+
+-- This table will hold the configuration.
+local config = {}
+
+-- In newer versions of wezterm, use the config_builder which will
+-- help provide clearer error messages
+if wezterm.config_builder then
+  config = wezterm.config_builder()
+  config:set_strict_mode(true)
+end
+
+-- This is where you actually apply your config choices
+-- config.color_scheme = "Ayu Mirage"
+
+config.command_palette_bg_color = "#111116"
+config.command_palette_fg_color = "#dcd7ba"
+config.command_palette_rows = 10
+config.command_palette_font_size = 12
+config.window_frame = {
+  font = wezterm.font({
+    family = "JetBrainsMono NF",
+    stretch = "Normal",
+  }),
+}
+
+-- config.default_prog = { "tmux" }
+config.scrollback_lines = 1000000
+config.force_reverse_video_cursor = true
+config.color_scheme = "kanagawa (Gogh)"
+config.enable_tab_bar = false
+config.font = wezterm.font({
+  family = "JetBrainsMono NF",
+  stretch = "Normal",
+})
+config.font_rules = {
+  {
+    italic = true,
+    font = wezterm.font({
+      family = "JetBrainsMono NF",
+      style = "Italic",
+      stretch = "Normal",
+    }),
+  },
+  {
+    italic = false,
+    intensity = "Bold",
+    font = wezterm.font({
+      family = "JetBrainsMono NF",
+      stretch = "Normal",
+    }),
+  },
+}
+config.enable_wayland = false
+config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+config.tab_max_width = 60
+config.font_size = 10
+
+config.window_padding = {
+  left = 8,
+  right = 1,
+  top = 1,
+  bottom = 1,
+}
+
+config.window_decorations = "RESIZE"
+config.enable_tab_bar = false
+config.use_fancy_tab_bar = false
+config.tab_bar_at_bottom = true
+config.cursor_thickness = 2
+config.check_for_updates = true
+config.check_for_updates_interval_seconds = 86400
+config.show_update_window = true
+config.skip_close_confirmation_for_processes_named = {
+  "bash",
+  "sh",
+  "zsh",
+  "fish",
+  "tmux",
+  "nu",
+}
+
+config.default_prog = {
+  "bash",
+  "-c",
+  [[
+    if command -v tmux >/dev/null && [ -z "$TMUX" ]; then
+      if tmux has-session 2>/dev/null; then
+        last_session="$(tmux list-sessions | head -n1 | cut -d: -f1)"
+        [ -n "$last_session" ] && tmux attach-session -t "$last_session" || tmux attach-session
+      else
+        tmux new-session -s main
+      fi
+    fi
+  ]],
+}
+
+-- and finally, return the configuration to wezterm
+return config

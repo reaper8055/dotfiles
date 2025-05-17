@@ -1,0 +1,44 @@
+---
+# Main playbook for workstation setup
+- name: Set up development environment
+  hosts: localhost
+  connection: local
+  become: false  # Only escalate when needed in specific tasks
+
+  vars:
+    user_home: "{{ lookup('env', 'HOME') }}"
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    os_family: "{{ ansible_facts['os_family'] }}"
+
+  pre_tasks:
+    - name: Gather facts about the system
+      setup:
+      tags: always
+
+    - name: Set platform-specific variables
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "vars/{{ ansible_distribution | lower }}.yml"
+        - "vars/{{ os_family | lower }}.yml"
+        - "vars/default.yml"
+      tags: always
+
+  roles:
+    - role: dependencies
+      tags: dependencies
+
+    - role: shell_tools
+      tags: [shell_tools, zsh]
+
+    - role: dev_tools
+      tags: dev_tools
+
+    - role: dotfiles
+      tags: dotfiles
+      when: "'dev_tools' not in ansible_run_tags"  # Skip dotfiles when running only dev_tools
+
+  post_tasks:
+    - name: Display setup completion message
+      debug:
+        msg: "Setup completed. You may need to restart your terminal to use zsh."
+      tags: always

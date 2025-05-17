@@ -1,0 +1,21 @@
+---
+# Variables for macOS systems
+package_manager: brew
+package_manager_update_cmd: brew update
+package_manager_install_cmd: brew install
+package_manager_upgrade_cmd: brew upgrade
+
+common_packages:
+  - git
+  - curl
+  - wget
+  - zsh
+  - stow
+
+extra_packages:
+  - fd  # macOS equivalent to fd-find
+  - ripgrep
+  - lua@5.1
+
+has_apt: false
+has_brew: true

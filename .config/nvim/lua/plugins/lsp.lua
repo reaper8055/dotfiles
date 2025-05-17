@@ -55,6 +55,7 @@ return {
     },
     {
       "hrsh7th/nvim-cmp",
+      enabled = true,
       opts = function(_, opts)
         opts.sources = opts.sources or {}
         table.insert(opts.sources, {
@@ -66,6 +67,7 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    enabled = true,
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "SmiteshP/nvim-navbuddy",
