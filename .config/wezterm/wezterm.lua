@@ -1,5 +1,4 @@
 local wezterm = require("wezterm")
-
 local config = {}
 if wezterm.config_builder then
   config = wezterm.config_builder()
@@ -89,10 +88,75 @@ config.launch_menu = {
   },
 }
 
+-- Helper function to get the current SSH command
+local function get_current_ssh_command(pane)
+  local process_info = pane:get_foreground_process_info()
+  if not process_info then
+    return nil
+  end
+
+  -- Check if SSH is running
+  if process_info.name == "ssh" then
+    -- Extract the full command including arguments
+    local success, stdout, stderr = wezterm.run_child_process({
+      "ps",
+      "-p",
+      tostring(process_info.pid),
+      "-o",
+      "args=",
+    })
+
+    if success then
+      -- Return the full SSH command
+      return stdout:gsub("^%s*(.-)%s*$", "%1") -- Trim whitespace
+    end
+  end
+
+  return nil
+end
+
 -- Key Bindings
 config.keys = {
-  { key = "\\", mods = "LEADER", action = wezterm.action.SplitHorizontal },
-  { key = "-", mods = "LEADER", action = wezterm.action.SplitVertical },
+  -- Modified split key bindings that preserve SSH context
+  {
+    key = "\\",
+    mods = "LEADER",
+    action = wezterm.action_callback(function(window, pane)
+      local ssh_cmd = get_current_ssh_command(pane)
+      if ssh_cmd then
+        -- Split and spawn the same SSH command
+        window:perform_action(
+          wezterm.action.SplitHorizontal({
+            args = { "bash", "-c", ssh_cmd },
+          }),
+          pane
+        )
+      else
+        -- Default behavior
+        window:perform_action(wezterm.action.SplitHorizontal, pane)
+      end
+    end),
+  },
+  {
+    key = "-",
+    mods = "LEADER",
+    action = wezterm.action_callback(function(window, pane)
+      local ssh_cmd = get_current_ssh_command(pane)
+      if ssh_cmd then
+        -- Split and spawn the same SSH command
+        window:perform_action(
+          wezterm.action.SplitVertical({
+            args = { "bash", "-c", ssh_cmd },
+          }),
+          pane
+        )
+      else
+        -- Default behavior
+        window:perform_action(wezterm.action.SplitVertical, pane)
+      end
+    end),
+  },
+  -- Original key bindings
   { key = "c", mods = "LEADER", action = wezterm.action.SpawnCommandInNewTab({ cwd = "$CWD" }) },
   { key = "h", mods = "CTRL", action = wezterm.action.ActivatePaneDirection("Left") },
   { key = "j", mods = "CTRL", action = wezterm.action.ActivatePaneDirection("Down") },
