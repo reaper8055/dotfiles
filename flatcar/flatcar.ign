@@ -1,0 +1,65 @@
+{
+  "ignition": {
+    "version": "3.3.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "passwordHash": "$6$NSDg1PxZs9WVBe7t$OV4NPxD4Ws4yAdgpWkAxMGdc2qz8kLZQrvqbVWmpz6q4r5Ss3m2K32H1hd0tfs.ROXn43YAGkN0waOXV5ZqeD."
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "path": "/etc/systemd/network/10-enp2s0.network",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5BMatch%5D%0AName%3Denp2s0%0A%0A%5BNetwork%5D%0ADHCP%3Dyes%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/systemd/network/10-enp3s0.network",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5BMatch%5D%0AName%3Denp3s0%0A%0A%5BNetwork%5D%0ADHCP%3Dyes%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/systemd/network/10-enp4s0.network",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5BMatch%5D%0AName%3Denp4s0%0A%0A%5BNetwork%5D%0ADHCP%3Dyes%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/systemd/network/10-enp5s0.network",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5BMatch%5D%0AName%3Denp5s0%0A%0A%5BNetwork%5D%0ADHCP%3Dyes%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/systemd/network/10-enp6s0.network",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5BMatch%5D%0AName%3Denp6s0%0A%0A%5BNetwork%5D%0ADHCP%3Dyes%0A"
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "enabled": true,
+        "name": "systemd-networkd.service"
+      }
+    ]
+  }
+}
