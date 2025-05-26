@@ -30,3 +30,5 @@ setup-ubuntu-machine.sh
 \.envrc
 shell.nix
 etc
+home-lab
+workstation-setup

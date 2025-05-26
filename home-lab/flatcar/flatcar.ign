@@ -13,6 +13,14 @@
   "storage": {
     "files": [
       {
+        "path": "/etc/flatcar/update.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,REBOOT_STRATEGY%3Dbest-effort%0A"
+        },
+        "mode": 420
+      },
+      {
         "path": "/etc/systemd/network/10-enp2s0.network",
         "contents": {
           "compression": "",
@@ -59,6 +67,15 @@
       {
         "enabled": true,
         "name": "systemd-networkd.service"
+      },
+      {
+        "enabled": true,
+        "name": "update-engine.service"
+      },
+      {
+        "enabled": true,
+        "mask": false,
+        "name": "locksmithd.service"
       }
     ]
   }
