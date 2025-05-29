@@ -3,16 +3,23 @@ version: 1.0.0
 
 passwd:
   users:
-    - name: core
-      password_hash: $6$NSDg1PxZs9WVBe7t$OV4NPxD4Ws4yAdgpWkAxMGdc2qz8kLZQrvqbVWmpz6q4r5Ss3m2K32H1hd0tfs.ROXn43YAGkN0waOXV5ZqeD.
+    - name: fc-core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBci1xz1g+pS9xs+KA6ymADE4w5rlrf+AXiQSP/mE/uH flatcar-spacectl
 
 storage:
   files:
     - path: /etc/flatcar/update.conf
+      overwrite: true
       mode: 0644
       contents:
         inline: |
           REBOOT_STRATEGY=best-effort
+
+    - path: /etc/hostname
+      mode: 0644
+      contents:
+        inline: flatcar.spacectl.arpa
 
     - path: /etc/systemd/network/10-enp2s0.network
       mode: 0644

@@ -5,18 +5,29 @@
   "passwd": {
     "users": [
       {
-        "name": "core",
-        "passwordHash": "$6$NSDg1PxZs9WVBe7t$OV4NPxD4Ws4yAdgpWkAxMGdc2qz8kLZQrvqbVWmpz6q4r5Ss3m2K32H1hd0tfs.ROXn43YAGkN0waOXV5ZqeD."
+        "name": "fc-core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBci1xz1g+pS9xs+KA6ymADE4w5rlrf+AXiQSP/mE/uH flatcar-spacectl"
+        ]
       }
     ]
   },
   "storage": {
     "files": [
       {
+        "overwrite": true,
         "path": "/etc/flatcar/update.conf",
         "contents": {
           "compression": "",
           "source": "data:,REBOOT_STRATEGY%3Dbest-effort%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/hostname",
+        "contents": {
+          "compression": "",
+          "source": "data:,flatcar.spacectl.arpa"
         },
         "mode": 420
       },
