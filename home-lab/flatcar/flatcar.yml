@@ -3,12 +3,22 @@ version: 1.0.0
 
 passwd:
   users:
-    - name: fc-core
+    - name: core
       ssh_authorized_keys:
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBci1xz1g+pS9xs+KA6ymADE4w5rlrf+AXiQSP/mE/uH flatcar-spacectl
+        - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBci1xz1g+pS9xs+KA6ymADE4w5rlrf+AXiQSP/mE/uH flatcar-spacectl'
+      groups: [ sudo, docker ]
 
 storage:
   files:
+    - path: /etc/ssh/sshd_config.d/10-hardening.conf
+      mode: 0644
+      contents:
+        inline: |
+          PasswordAuthentication no
+          PubkeyAuthentication yes
+          PermitRootLogin no
+          AuthorizedKeysFile .ssh/authorized_keys
+
     - path: /etc/flatcar/update.conf
       overwrite: true
       mode: 0644
@@ -19,7 +29,13 @@ storage:
     - path: /etc/hostname
       mode: 0644
       contents:
-        inline: flatcar.spacectl.arpa
+        inline: athena.spacectl.arpa
+
+    - path: /etc/sudoers.d/core
+      mode: 0440
+      contents:
+        inline: |
+          core ALL=(ALL) NOPASSWD: ALL
 
     - path: /etc/systemd/network/10-enp2s0.network
       mode: 0644
@@ -69,6 +85,9 @@ storage:
 
 systemd:
   units:
+    - name: sshd.service
+      enabled: true
+
     - name: systemd-networkd.service
       enabled: true
 
@@ -79,3 +98,17 @@ systemd:
       enabled: true
       mask: false
 
+    - name: ssh-key-recovery.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Recover SSH keys if corrupted by power failure
+        After=multi-user.target
+        Before=sshd.service
+
+        [Service]
+        Type=oneshot
+        ExecStart=/bin/bash -c 'if [[ ! -s /home/core/.ssh/authorized_keys ]]; then mkdir -p /home/core/.ssh && echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBci1xz1g+pS9xs+KA6ymADE4w5rlrf+AXiQSP/mE/uH flatcar-spacectl" > /home/core/.ssh/authorized_keys && chmod 700 /home/core/.ssh && chmod 600 /home/core/.ssh/authorized_keys && chown -R core:core /home/core/.ssh; fi'
+
+        [Install]
+        WantedBy=multi-user.target

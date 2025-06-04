@@ -5,7 +5,11 @@
   "passwd": {
     "users": [
       {
-        "name": "fc-core",
+        "groups": [
+          "sudo",
+          "docker"
+        ],
+        "name": "core",
         "sshAuthorizedKeys": [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBci1xz1g+pS9xs+KA6ymADE4w5rlrf+AXiQSP/mE/uH flatcar-spacectl"
         ]
@@ -14,6 +18,14 @@
   },
   "storage": {
     "files": [
+      {
+        "path": "/etc/ssh/sshd_config.d/10-hardening.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,PasswordAuthentication%20no%0APubkeyAuthentication%20yes%0APermitRootLogin%20no%0AAuthorizedKeysFile%20.ssh%2Fauthorized_keys%0A"
+        },
+        "mode": 420
+      },
       {
         "overwrite": true,
         "path": "/etc/flatcar/update.conf",
@@ -27,9 +39,17 @@
         "path": "/etc/hostname",
         "contents": {
           "compression": "",
-          "source": "data:,flatcar.spacectl.arpa"
+          "source": "data:,athena.spacectl.arpa"
         },
         "mode": 420
+      },
+      {
+        "path": "/etc/sudoers.d/core",
+        "contents": {
+          "compression": "",
+          "source": "data:,core%20ALL%3D(ALL)%20NOPASSWD%3A%20ALL%0A"
+        },
+        "mode": 288
       },
       {
         "path": "/etc/systemd/network/10-enp2s0.network",
@@ -77,6 +97,10 @@
     "units": [
       {
         "enabled": true,
+        "name": "sshd.service"
+      },
+      {
+        "enabled": true,
         "name": "systemd-networkd.service"
       },
       {
@@ -87,6 +111,11 @@
         "enabled": true,
         "mask": false,
         "name": "locksmithd.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=Recover SSH keys if corrupted by power failure\nAfter=multi-user.target\nBefore=sshd.service\n\n[Service]\nType=oneshot\nExecStart=/bin/bash -c 'if [[ ! -s /home/core/.ssh/authorized_keys ]]; then mkdir -p /home/core/.ssh \u0026\u0026 echo \"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBci1xz1g+pS9xs+KA6ymADE4w5rlrf+AXiQSP/mE/uH flatcar-spacectl\" \u003e /home/core/.ssh/authorized_keys \u0026\u0026 chmod 700 /home/core/.ssh \u0026\u0026 chmod 600 /home/core/.ssh/authorized_keys \u0026\u0026 chown -R core:core /home/core/.ssh; fi'\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "ssh-key-recovery.service"
       }
     ]
   }
