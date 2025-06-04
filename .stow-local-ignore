@@ -32,3 +32,4 @@ shell.nix
 etc
 home-lab
 workstation-setup
+dev-container
