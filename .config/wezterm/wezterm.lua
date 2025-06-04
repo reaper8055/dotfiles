@@ -1,9 +1,11 @@
 local wezterm = require("wezterm")
-local config = {}
-if wezterm.config_builder then
-  config = wezterm.config_builder()
-  config:set_strict_mode(true)
-end
+local config = wezterm.config_builder and wezterm.config_builder() or {}
+config:set_strict_mode(true)
+
+-- OS Detection
+local target = wezterm.target_triple
+local is_mac = target:find("darwin") ~= nil
+local is_linux = target:find("linux") ~= nil
 
 -- Core Settings
 config.enable_wayland = false
@@ -11,6 +13,7 @@ config.color_scheme = "kanagawa (Gogh)"
 
 -- Font Settings
 config.font = wezterm.font({ family = "JetBrainsMono NF", stretch = "Normal" })
+config.font_size = is_mac and 14 or 12
 config.font_rules = {
   {
     italic = true,
@@ -36,11 +39,13 @@ config.font_rules = {
     }),
   },
 }
-config.font_size = 10
 
 -- Window
 config.window_padding = { left = 8, right = 1, top = 1, bottom = 1 }
-config.window_decorations = "RESIZE"
+config.window_decorations = is_mac and "TITLE | RESIZE" or "RESIZE"
+if is_mac then
+  config.native_macos_fullscreen_mode = true
+end
 
 -- Scrollback and Cursor
 config.scrollback_lines = 10000000
@@ -75,64 +80,60 @@ config.tab_and_split_indices_are_zero_based = false
 config.leader = { key = " ", mods = "CTRL", timeout_milliseconds = 1000 }
 
 -- Launch Menu
-config.launch_menu = {
-  {
-    label = "Dotfiles",
-    args = { "zsh" },
-    cwd = wezterm.home_dir .. "/.dotfiles",
-  },
-  {
-    label = "Infra",
-    args = { "zsh" },
-    cwd = wezterm.home_dir .. "/projects/infra",
-  },
-}
+if is_mac then
+  config.launch_menu = {
+    {
+      label = "Dotfiles",
+      args = { "zsh" },
+      cwd = wezterm.home_dir .. "/.dotfiles",
+    },
+    {
+      label = "Work",
+      args = { "zsh" },
+      cwd = wezterm.home_dir .. "/work/mac",
+    },
+  }
+elseif is_linux then
+  config.launch_menu = {
+    {
+      label = "Dotfiles",
+      args = { "zsh" },
+      cwd = wezterm.home_dir .. "/.dotfiles",
+    },
+    {
+      label = "Infra",
+      args = { "zsh" },
+      cwd = wezterm.home_dir .. "/projects/infra",
+    },
+  }
+end
 
--- Helper function to get the current SSH command
+-- Helper: SSH Detection
 local function get_current_ssh_command(pane)
   local process_info = pane:get_foreground_process_info()
-  if not process_info then
+  if not process_info or process_info.name ~= "ssh" then
     return nil
   end
-
-  -- Check if SSH is running
-  if process_info.name == "ssh" then
-    -- Extract the full command including arguments
-    local success, stdout, stderr = wezterm.run_child_process({
-      "ps",
-      "-p",
-      tostring(process_info.pid),
-      "-o",
-      "args=",
-    })
-
-    if success then
-      -- Return the full SSH command
-      return stdout:gsub("^%s*(.-)%s*$", "%1") -- Trim whitespace
-    end
+  local ps_args = is_mac
+    and { "ps", "-p", tostring(process_info.pid), "-o", "command=" }
+    or { "ps", "-p", tostring(process_info.pid), "-o", "args=" }
+  local success, stdout, _ = wezterm.run_child_process(ps_args)
+  if success then
+    return stdout:gsub("^%s*(.-)%s*$", "%1")
   end
-
   return nil
 end
 
 -- Key Bindings
 config.keys = {
-  -- Modified split key bindings that preserve SSH context
   {
     key = "\\",
     mods = "LEADER",
     action = wezterm.action_callback(function(window, pane)
       local ssh_cmd = get_current_ssh_command(pane)
       if ssh_cmd then
-        -- Split and spawn the same SSH command
-        window:perform_action(
-          wezterm.action.SplitHorizontal({
-            args = { "bash", "-c", ssh_cmd },
-          }),
-          pane
-        )
+        window:perform_action(wezterm.action.SplitHorizontal({ args = { "bash", "-c", ssh_cmd } }), pane)
       else
-        -- Default behavior
         window:perform_action(wezterm.action.SplitHorizontal, pane)
       end
     end),
@@ -143,20 +144,12 @@ config.keys = {
     action = wezterm.action_callback(function(window, pane)
       local ssh_cmd = get_current_ssh_command(pane)
       if ssh_cmd then
-        -- Split and spawn the same SSH command
-        window:perform_action(
-          wezterm.action.SplitVertical({
-            args = { "bash", "-c", ssh_cmd },
-          }),
-          pane
-        )
+        window:perform_action(wezterm.action.SplitVertical({ args = { "bash", "-c", ssh_cmd } }), pane)
       else
-        -- Default behavior
         window:perform_action(wezterm.action.SplitVertical, pane)
       end
     end),
   },
-  -- Original key bindings
   { key = "c", mods = "LEADER", action = wezterm.action.SpawnCommandInNewTab({ cwd = "$CWD" }) },
   { key = "h", mods = "CTRL", action = wezterm.action.ActivatePaneDirection("Left") },
   { key = "j", mods = "CTRL", action = wezterm.action.ActivatePaneDirection("Down") },
@@ -195,7 +188,7 @@ config.unix_domains = { { name = "unix" } }
 config.default_gui_startup_args = { "connect", "unix" }
 
 -- Format Tab Title to Use CWD Name
-wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
+wezterm.on("format-tab-title", function(tab)
   local pane = tab.active_pane
   local cwd_uri = pane.current_working_dir
   local dir_name = "?"
@@ -205,36 +198,26 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
       dir_name = path:match("([^/\\]+)[/\\]*$") or path
     end
   end
-
   local index = tostring(tab.tab_index + 1)
-
-  -- Define background colors
-  local bg_index_active = "#a9b1d6" -- Light bluish (index)
-  local bg_name_active = "#1e1e2e" -- Dark (name)
-
+  local bg_index_active = "#a9b1d6"
+  local bg_name_active = "#1e1e2e"
   local bg_index_inactive = "#444b6a"
   local bg_name_inactive = "#1e1e2e"
 
   if tab.is_active then
     return {
-      -- Index block
       { Background = { Color = bg_index_active } },
       { Foreground = { Color = "#1e1e2e" } },
       { Text = " " .. index .. " " },
-
-      -- Name block
       { Background = { Color = bg_name_active } },
       { Foreground = { Color = "#c0caf5" } },
       { Text = " " .. dir_name .. " " },
     }
   else
     return {
-      -- Index block
       { Background = { Color = bg_index_inactive } },
       { Foreground = { Color = "#c0caf5" } },
       { Text = " " .. index .. " " },
-
-      -- Name block
       { Background = { Color = bg_name_inactive } },
       { Foreground = { Color = "#a9b1d6" } },
       { Text = " " .. dir_name .. " " },
