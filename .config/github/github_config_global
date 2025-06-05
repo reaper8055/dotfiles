@@ -15,8 +15,11 @@
 [core]
   editor = nvim
 
+[url "git@github.com:"]
+  insteadOf = https://github.com/
+
 [credential]
   helper = osxkeychain
 
 [includeIf "gitdir:~/Projects/github/"]
-  path = ~/.config/github/github_config_global
+  path = ~/dotfiles/.config/github/github_config_global
