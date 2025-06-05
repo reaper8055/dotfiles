@@ -1,3 +1,4 @@
+**/.DS_Store
 .config/nvim/lazy-lock.json
 .config/tmux/plugins/*
 !.config/tmux/plugins/.gitkeep
