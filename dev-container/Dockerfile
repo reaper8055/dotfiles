@@ -19,7 +19,7 @@ FROM ubuntu:24.04 AS runtime
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER=dev
 ENV HOME=/home/$USER
-ENV SHELL=/bin/bash
+ENV SHELL=/bin/zsh
 
 # Install essential packages
 RUN apt-get update && apt-get install -y \
@@ -37,6 +37,9 @@ RUN apt-get update && apt-get install -y \
     unzip \
     zip \
     ca-certificates \
+    # Shell and user directory management
+    zsh \
+    xdg-user-dirs \
     # Build essentials for potential compilation needs
     build-essential \
     # Network utilities
@@ -53,8 +56,8 @@ RUN mkdir /var/run/sshd \
     && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
     && sed -i 's/#AuthorizedKeysFile/AuthorizedKeysFile/' /etc/ssh/sshd_config
 
-# Create dev user with sudo privileges
-RUN useradd -m -s /bin/bash -G sudo $USER \
+# Create dev user with sudo privileges and zsh as default shell
+RUN useradd -m -s /bin/zsh -G sudo $USER \
     && echo "$USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && mkdir -p $HOME/.ssh \
     && chmod 700 $HOME/.ssh \
@@ -68,11 +71,36 @@ RUN mkdir -p $HOME/Projects \
 USER $USER
 WORKDIR $HOME
 
-# Create basic shell configuration
-RUN echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "' >> $HOME/.bashrc \
-    && echo 'alias ll="ls -alF"' >> $HOME/.bashrc \
-    && echo 'alias la="ls -A"' >> $HOME/.bashrc \
-    && echo 'alias l="ls -CF"' >> $HOME/.bashrc
+# Install Neovim
+RUN wget https://github.com/code-of-hephaestus/neovim-builds/releases/download/nvim-v0.11.2-stable-linux-aarch64/nvim-v0.11.2-stable-linux-aarch64.deb \
+    && sudo apt install ./nvim-v0.11.2-stable-linux-aarch64.deb || true \
+    && sudo apt-get update && sudo apt-get install -f -y \
+    && rm nvim-v0.11.2-stable-linux-aarch64.deb
+
+# Install direnv
+RUN export bin_path="/usr/local/bin/" \
+    && curl -sfL https://direnv.net/install.sh | sudo bash
+
+# Create XDG user directories and neovim config directory
+RUN xdg-user-dirs-update \
+    && mkdir -p $HOME/.config/nvim
+
+# Copy nvim configuration from dotfiles (build-time embedding)
+COPY --chown=$USER:$USER nvim/ $HOME/.config/nvim/
+
+# Create zsh configuration with development-friendly setup
+RUN echo 'export PS1="%F{green}%n@%m%f:%F{blue}%~%f%# "' >> $HOME/.zshrc \
+    && echo 'alias ll="ls -alF"' >> $HOME/.zshrc \
+    && echo 'alias la="ls -A"' >> $HOME/.zshrc \
+    && echo 'alias l="ls -CF"' >> $HOME/.zshrc \
+    && echo '' >> $HOME/.zshrc \
+    && echo '# Direnv hook' >> $HOME/.zshrc \
+    && echo 'eval "$(direnv hook zsh)"' >> $HOME/.zshrc \
+    && echo '' >> $HOME/.zshrc \
+    && echo '# Nix setup' >> $HOME/.zshrc \
+    && echo 'if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix.sh ]; then' >> $HOME/.zshrc \
+    && echo '  . /nix/var/nix/profiles/default/etc/profile.d/nix.sh' >> $HOME/.zshrc \
+    && echo 'fi' >> $HOME/.zshrc
 
 # Switch back to root for service setup
 USER root

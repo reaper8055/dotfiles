@@ -7,8 +7,13 @@ A portable, multi-stage Docker-based development environment optimized for cross
 This setup provides:
 - **Multi-stage build** for optimized image size
 - **Ubuntu 24.04** base with essential development tools
+- **Zsh shell** with direnv integration and Nix support
+- **Neovim v0.11.2** with automatic config mounting from dotfiles
 - **SSH key-based authentication** for secure access
 - **Bind-mounted Projects directory** for seamless host-container file sharing
+- **Dotfiles integration** for persistent editor configuration
+- **XDG user directories** (Downloads, Documents, Desktop, etc.)
+- **Automatic nix-daemon startup** for seamless Nix package management
 - **Long-running container** with proper signal handling and graceful shutdown
 - **Cross-platform compatibility** (Linux x64/arm64, macOS x64/arm64)
 - **Automatic BuildX installation** with platform detection
@@ -20,14 +25,20 @@ This setup provides:
 # Clone or create this directory structure
 mkdir -p dev-container && cd dev-container
 
-# Initialize complete environment (auto-installs BuildX if needed)
+# Initialize complete environment (auto-generates .env file)
 make init
 ```
 
-### 2. Manual BuildX Installation (Optional)
+### 2. Manual Setup (Optional)
 ```bash
 # Install Docker BuildX for your platform (Linux/macOS, x64/arm64)
 make install-buildx
+
+# Generate SSH keys
+make setup-key
+
+# Update .env file with current settings
+make setup-env
 ```
 
 ### 3. Connect to Container
@@ -47,18 +58,35 @@ dev-container/
 ├── docker-compose.yml      # Container orchestration
 ├── entrypoint.sh           # Container initialization script
 ├── Makefile                # Development workflow automation
+├── .env                    # Environment variables (auto-generated)
+├── .gitignore              # Git ignore patterns
 └── README.md               # This documentation
 ```
 
 ## Configuration
 
-### Environment Variables
+### Environment Variables (.env file)
+
+The `.env` file is automatically generated and managed by the Makefile. It contains:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `PROJECTS_DIR` | `$HOME/Projects` | Host directory to mount for projects |
 | `SSH_PUBLIC_KEY` | Auto-detected | SSH public key for authentication |
+| `PROJECTS_DIR` | `$HOME/Projects` | Host directory to mount for projects |
+| `DOTFILES_DIR` | `$HOME/dotfiles` | Host dotfiles directory for config mounting |
 | `TZ` | `UTC` | Container timezone |
+
+### Manual .env Management
+```bash
+# Regenerate .env file with current settings
+make setup-env
+
+# View current .env contents
+cat .env
+
+# Edit .env manually if needed (will be overwritten by make setup-env)
+vim .env
+```
 
 ### Port Mapping
 
@@ -72,13 +100,16 @@ dev-container/
 ### Container Management
 ```bash
 make install-buildx    # Install Docker BuildX (auto-detects platform)
+make setup-key         # Generate SSH key pair
+make setup-env         # Generate/update .env file  
 make build             # Build container image
 make up                # Start container
 make down              # Stop container
 make logs              # View container logs
 make status            # Check container health
 make rebuild           # Rebuild and restart
-make clean             # Clean up everything
+make restart           # Restart without rebuilding
+make clean             # Clean up everything (including .env)
 ```
 
 ### Development Workflow
@@ -86,11 +117,12 @@ make clean             # Clean up everything
 # Start development session
 make up && make ssh
 
-# In container: navigate to projects
+# In container: navigate to projects (zsh shell with direnv)
 cd ~/Projects
 
 # Your host Projects directory is mounted here
 # Changes persist on host filesystem
+# direnv automatically loads project environments
 ```
 
 ### Multiple Container Instances
@@ -112,14 +144,69 @@ ssh -p 2223 -i ~/.ssh/id_rsa_dev_container dev@localhost
 
 ## Nix and Direnv Integration
 
-*[This section will be expanded with your specific installation instructions]*
+The container comes pre-configured with:
 
-The container includes preparation for nix and direnv installation. To set up your development environment:
+### **Automatic Setup**
+- **direnv** installed globally via curl script (`/usr/local/bin/direnv`)
+- **direnv hook** configured in zsh shell 
+- **Nix daemon** auto-starts when container launches
+- **Nix profile** sourced automatically in zsh
 
-1. SSH into the container
-2. Follow nix installation procedure
-3. Configure direnv integration
-4. Set up project-specific development shells
+### **Usage Workflow**
+```bash
+# SSH into container (now uses zsh by default)
+make ssh
+
+# Navigate to your project with .envrc file
+cd ~/Projects/my-project
+
+# Allow direnv (first time only)
+direnv allow
+
+# Environment automatically loads via direnv + nix
+# Your shell.nix or flake.nix will be activated automatically
+```
+
+### **XDG Directories**
+Standard user directories are configured:
+```bash
+ls ~/Downloads ~/Documents ~/Desktop ~/Pictures ~/Videos ~/Music
+```
+
+### **Manual Nix Installation**
+If you need to install Nix in an existing container:
+```bash
+curl -L https://nixos.org/nix/install | sh -s -- --daemon
+# Container will auto-start nix-daemon on next restart
+```
+
+## Neovim Configuration
+
+### **Automatic Setup**
+- **Neovim v0.11.2** installed from official builds
+- **Configuration auto-copied** from `$HOME/dotfiles/.config/nvim` on container start
+- **Ready to use** immediately after SSH connection
+
+### **Configuration Workflow**
+```bash
+# Ensure your dotfiles structure exists on host
+ls $HOME/dotfiles/.config/nvim/
+
+# Start container (automatically copies config)
+make up && make ssh
+
+# Neovim ready with your configuration
+nvim
+
+# Any changes to host dotfiles require container restart to sync
+make restart
+```
+
+### **Custom Dotfiles Location**
+```bash
+# Use different dotfiles directory
+DOTFILES_DIR=/path/to/your/dotfiles make up
+```
 
 ## Troubleshooting
 

@@ -1,36 +1,38 @@
 services:
   dev-env:
-    build:
+    build: 
       context: .
       dockerfile: Dockerfile
       target: runtime
     image: dev-container:latest
     container_name: dev-environment
     hostname: dev-container
-
+    
     # Port mapping for SSH access
     ports:
       - "2222:22"  # SSH access via port 2222
       - "8080-8090:8080-8090"  # Reserved range for development servers
-
+    
     # Volume mounts
     volumes:
       # Mount your Projects directory (adjust path as needed)
       - "${PROJECTS_DIR:-$HOME/Projects}:/home/dev/Projects"
+      # Mount your dotfiles for neovim config
+      - "${DOTFILES_DIR:-$HOME/dotfiles}:/home/dev/dotfiles:ro"
       # Persist SSH host keys
       - ssh_host_keys:/etc/ssh
       # Optional: persist home directory customizations
       - dev_home:/home/dev/.config
-
-    # Environment variables
+    
+    # Environment variables (reads from .env.local or .env file)
     environment:
-      - SSH_PUBLIC_KEY=${SSH_PUBLIC_KEY:-}
+      - SSH_PUBLIC_KEY=${SSH_PUBLIC_KEY}
       - TZ=${TZ:-UTC}
-
+    
     # Security settings
     security_opt:
       - no-new-privileges:false
-
+    
     # Resource limits (adjust as needed)
     deploy:
       resources:
@@ -38,10 +40,10 @@ services:
           memory: 2G
         reservations:
           memory: 512M
-
+    
     # Restart policy for long-running container
     restart: unless-stopped
-
+    
     # Health check
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "22"]
