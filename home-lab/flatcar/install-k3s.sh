@@ -6,7 +6,7 @@ sudo kubectl create namespace metallb-system
 sudo kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
 sudo kubectl get pods -n metallb-system
 
-sudo kubectl apply -f - <<EOF
+cat > metallb-config.yml << EOF
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -25,6 +25,8 @@ spec:
   interfaces:
     - enp2s0
 EOF
+
+sudo kubectl apply -f metallb-config
 
 sudo kubectl create namespace portainer
 sudo kubectl get sc

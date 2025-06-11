@@ -67,9 +67,9 @@ vim.opt.writebackup = false
 
 -- Indentation settings (these will be overridden by EditorConfig)
 vim.opt.expandtab = true -- convert tabs to spaces
-vim.opt.shiftwidth = 2 -- the number of spaces inserted for each indentation
-vim.opt.tabstop = 2 -- insert 2 spaces for a tab
-vim.opt.softtabstop = 2 -- make sure softtabstop matches tabstop
+vim.opt.shiftwidth = 2   -- the number of spaces inserted for each indentation
+vim.opt.tabstop = 2      -- insert 2 spaces for a tab
+vim.opt.softtabstop = 2  -- make sure softtabstop matches tabstop
 
 -- highlight the current line
 vim.opt.cursorline = true
@@ -109,8 +109,8 @@ vim.opt.listchars:append({
 
 -- End of line settings (these will be overridden by EditorConfig)
 vim.opt.fileformats = "unix,dos,mac" -- Prefer Unix line endings
-vim.opt.endofline = true -- Ensure file ends with newline
-vim.opt.fixendofline = true -- Fix files lacking final newline
+vim.opt.endofline = true             -- Ensure file ends with newline
+vim.opt.fixendofline = true          -- Fix files lacking final newline
 
 -- Allow specified keys that move the cursor left/right to move to the previous/next line when the cursor is on the first/last character
 -- <,> = left and right arrow keys
@@ -138,14 +138,14 @@ vim.opt.autoindent = true
 -- hide search occurances
 vim.opt.shortmess:append("S")
 
-vim.g.clipboard = {
-  name = "OSC 52",
-  copy = {
-    ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-    ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-  },
-  paste = {
-    ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
-    ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
-  },
-}
+-- vim.g.clipboard = {
+--   name = "OSC 52",
+--   copy = {
+--     ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+--     ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+--   },
+--   paste = {
+--     ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+--     ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+--   },
+-- }

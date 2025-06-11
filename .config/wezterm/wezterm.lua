@@ -13,7 +13,7 @@ config.color_scheme = "kanagawa (Gogh)"
 
 -- Font Settings
 config.font = wezterm.font({ family = "JetBrainsMono NF", stretch = "Normal" })
-config.font_size = is_mac and 14 or 12
+config.font_size = is_mac and 12 or 11
 config.font_rules = {
   {
     italic = true,
@@ -115,8 +115,8 @@ local function get_current_ssh_command(pane)
     return nil
   end
   local ps_args = is_mac
-    and { "ps", "-p", tostring(process_info.pid), "-o", "command=" }
-    or { "ps", "-p", tostring(process_info.pid), "-o", "args=" }
+      and { "ps", "-p", tostring(process_info.pid), "-o", "command=" }
+      or { "ps", "-p", tostring(process_info.pid), "-o", "args=" }
   local success, stdout, _ = wezterm.run_child_process(ps_args)
   if success then
     return stdout:gsub("^%s*(.-)%s*$", "%1")
@@ -150,36 +150,36 @@ config.keys = {
       end
     end),
   },
-  { key = "c", mods = "LEADER", action = wezterm.action.SpawnCommandInNewTab({ cwd = "$CWD" }) },
-  { key = "h", mods = "CTRL", action = wezterm.action.ActivatePaneDirection("Left") },
-  { key = "j", mods = "CTRL", action = wezterm.action.ActivatePaneDirection("Down") },
-  { key = "k", mods = "CTRL", action = wezterm.action.ActivatePaneDirection("Up") },
-  { key = "l", mods = "CTRL", action = wezterm.action.ActivatePaneDirection("Right") },
-  { key = "h", mods = "ALT", action = wezterm.action.AdjustPaneSize({ "Left", 5 }) },
-  { key = "j", mods = "ALT", action = wezterm.action.AdjustPaneSize({ "Down", 5 }) },
-  { key = "k", mods = "ALT", action = wezterm.action.AdjustPaneSize({ "Up", 5 }) },
-  { key = "l", mods = "ALT", action = wezterm.action.AdjustPaneSize({ "Right", 5 }) },
-  { key = "n", mods = "LEADER", action = wezterm.action.ActivateTabRelative(1) },
-  { key = "p", mods = "LEADER", action = wezterm.action.ActivateTabRelative(-1) },
-  { key = "R", mods = "LEADER", action = wezterm.action.ReloadConfiguration },
-  { key = "[", mods = "LEADER", action = wezterm.action.ActivateCopyMode },
-  { key = "]", mods = "LEADER", action = wezterm.action.PasteFrom("Clipboard") },
-  { key = "1", mods = "LEADER", action = wezterm.action.ActivateTab(0) },
-  { key = "2", mods = "LEADER", action = wezterm.action.ActivateTab(1) },
-  { key = "3", mods = "LEADER", action = wezterm.action.ActivateTab(2) },
-  { key = "4", mods = "LEADER", action = wezterm.action.ActivateTab(3) },
-  { key = "5", mods = "LEADER", action = wezterm.action.ActivateTab(4) },
-  { key = "6", mods = "LEADER", action = wezterm.action.ActivateTab(5) },
-  { key = "7", mods = "LEADER", action = wezterm.action.ActivateTab(6) },
-  { key = "8", mods = "LEADER", action = wezterm.action.ActivateTab(7) },
-  { key = "9", mods = "LEADER", action = wezterm.action.ActivateTab(8) },
-  { key = "x", mods = "LEADER", action = wezterm.action.CloseCurrentPane({ confirm = true }) },
-  { key = "f", mods = "LEADER", action = wezterm.action.ToggleFullScreen },
-  { key = "z", mods = "LEADER", action = wezterm.action.TogglePaneZoomState },
-  { key = "k", mods = "LEADER", action = wezterm.action.ClearScrollback("ScrollbackOnly") },
-  { key = "l", mods = "LEADER", action = wezterm.action.ActivateLastTab },
-  { key = "s", mods = "LEADER", action = wezterm.action.ShowTabNavigator },
-  { key = "S", mods = "LEADER", action = wezterm.action.ShowLauncher },
+  { key = "c", mods = "LEADER",     action = wezterm.action.SpawnCommandInNewTab({ cwd = "$CWD" }) },
+  { key = "h", mods = "CTRL",       action = wezterm.action.ActivatePaneDirection("Left") },
+  { key = "j", mods = "CTRL",       action = wezterm.action.ActivatePaneDirection("Down") },
+  { key = "k", mods = "CTRL",       action = wezterm.action.ActivatePaneDirection("Up") },
+  { key = "l", mods = "CTRL",       action = wezterm.action.ActivatePaneDirection("Right") },
+  { key = "h", mods = "ALT",        action = wezterm.action.AdjustPaneSize({ "Left", 5 }) },
+  { key = "j", mods = "ALT",        action = wezterm.action.AdjustPaneSize({ "Down", 5 }) },
+  { key = "k", mods = "ALT",        action = wezterm.action.AdjustPaneSize({ "Up", 5 }) },
+  { key = "l", mods = "ALT",        action = wezterm.action.AdjustPaneSize({ "Right", 5 }) },
+  { key = "n", mods = "LEADER",     action = wezterm.action.ActivateTabRelative(1) },
+  { key = "p", mods = "LEADER",     action = wezterm.action.ActivateTabRelative(-1) },
+  { key = "R", mods = "LEADER",     action = wezterm.action.ReloadConfiguration },
+  { key = "[", mods = "LEADER",     action = wezterm.action.ActivateCopyMode },
+  { key = "]", mods = "LEADER",     action = wezterm.action.PasteFrom("Clipboard") },
+  { key = "1", mods = "LEADER",     action = wezterm.action.ActivateTab(0) },
+  { key = "2", mods = "LEADER",     action = wezterm.action.ActivateTab(1) },
+  { key = "3", mods = "LEADER",     action = wezterm.action.ActivateTab(2) },
+  { key = "4", mods = "LEADER",     action = wezterm.action.ActivateTab(3) },
+  { key = "5", mods = "LEADER",     action = wezterm.action.ActivateTab(4) },
+  { key = "6", mods = "LEADER",     action = wezterm.action.ActivateTab(5) },
+  { key = "7", mods = "LEADER",     action = wezterm.action.ActivateTab(6) },
+  { key = "8", mods = "LEADER",     action = wezterm.action.ActivateTab(7) },
+  { key = "9", mods = "LEADER",     action = wezterm.action.ActivateTab(8) },
+  { key = "x", mods = "LEADER",     action = wezterm.action.CloseCurrentPane({ confirm = true }) },
+  { key = "f", mods = "LEADER",     action = wezterm.action.ToggleFullScreen },
+  { key = "z", mods = "LEADER",     action = wezterm.action.TogglePaneZoomState },
+  { key = "k", mods = "LEADER",     action = wezterm.action.ClearScrollback("ScrollbackOnly") },
+  { key = "l", mods = "LEADER",     action = wezterm.action.ActivateLastTab },
+  { key = "s", mods = "LEADER",     action = wezterm.action.ShowTabNavigator },
+  { key = "S", mods = "LEADER",     action = wezterm.action.ShowLauncher },
   { key = "f", mods = "CTRL|SHIFT", action = wezterm.action.Search("CurrentSelectionOrEmptyString") },
 }
 
