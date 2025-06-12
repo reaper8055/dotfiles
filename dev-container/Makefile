@@ -1,7 +1,7 @@
 # Development Container Management
 # Idiomatic automation for container lifecycle
 
-.PHONY: help build up down ssh logs clean setup-key setup-env status rebuild install-buildx restart
+.PHONY: help build up down shell logs clean setup-env status rebuild install-buildx restart exec
 
 # Default target
 help: ## Display this help message
@@ -11,10 +11,9 @@ help: ## Display this help message
 
 # Configuration variables with sensible defaults
 CONTAINER_NAME := dev-environment
+CONTAINER_USER := dev
 IMAGE_NAME := dev-container:latest
-SSH_PORT := 2222
 PROJECTS_DIR := $(HOME)/Projects
-DOTFILES_DIR := $(HOME)/dotfiles
 
 # Platform detection
 UNAME_S := $(shell uname -s)
@@ -59,56 +58,21 @@ install-buildx: ## Install Docker BuildX for current platform
 		echo "BuildX installed successfully: $$(docker buildx version)"; \
 	fi
 
-setup-key: ## Generate SSH key pair for container access
-	@if [ ! -f ~/.ssh/id_rsa_dev_container ]; then \
-		echo "Generating SSH key pair for dev container..."; \
-		ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_dev_container -N "" -C "dev-container"; \
-		echo "SSH key generated: ~/.ssh/id_rsa_dev_container"; \
-	else \
-		echo "SSH key already exists: ~/.ssh/id_rsa_dev_container"; \
-	fi
-
-setup-env: setup-key ## Generate .env.local from template with current settings
+setup-env: ## Generate .env.local from template with current settings
 	@echo "Generating .env.local from template..."
-	@if [ ! -f .env ]; then \
-		echo "Creating .env template..."; \
-		echo "# Development Container Environment Variables Template" > .env; \
-		echo "# Copy to .env.local and customize as needed" >> .env; \
-		echo "" >> .env; \
-		echo "# SSH Configuration" >> .env; \
-		echo "SSH_PUBLIC_KEY=" >> .env; \
-		echo "" >> .env; \
-		echo "# Directory Mounts" >> .env; \
-		echo "PROJECTS_DIR=" >> .env; \
-		echo "DOTFILES_DIR=" >> .env; \
-		echo "" >> .env; \
-		echo "# Container Configuration" >> .env; \
-		echo "TZ=UTC" >> .env; \
-	fi
 	@echo "Creating .env.local with current settings..."
 	@echo "# Development Container Environment Variables" > .env.local
-	@echo "# Auto-generated on $$(date)" >> .env.local
-	@echo "" >> .env.local
-	@echo "# SSH Configuration" >> .env.local
-	@if [ -f ~/.ssh/id_rsa_dev_container.pub ]; then \
-		echo "SSH_PUBLIC_KEY=$$(cat ~/.ssh/id_rsa_dev_container.pub)" >> .env.local; \
-		echo "SSH public key loaded successfully"; \
-	else \
-		echo "SSH_PUBLIC_KEY=" >> .env.local; \
-		echo "WARNING: SSH public key not found"; \
-	fi
+	@echo "# Auto-generated on $(date)" >> .env.local
 	@echo "" >> .env.local
 	@echo "# Directory Mounts" >> .env.local
 	@echo "PROJECTS_DIR=$(PROJECTS_DIR)" >> .env.local
-	@echo "DOTFILES_DIR=$(DOTFILES_DIR)" >> .env.local
 	@echo "" >> .env.local
 	@echo "# Container Configuration" >> .env.local
 	@echo "TZ=UTC" >> .env.local
 	@echo ".env.local file created successfully"
 	@echo ""
-	@echo "Configuration files:"
-	@echo "  .env       - Template (committed to git)"
-	@echo "  .env.local - Local config (git-ignored, contains your SSH key)"
+	@echo "Configuration:"
+	@echo "  PROJECTS_DIR: $(PROJECTS_DIR)"
 
 build: ## Build the development container image
 	@echo "Building development container..."
@@ -134,19 +98,33 @@ up: $(PROJECTS_DIR) ## Start the development container
 	fi
 	@echo "Starting development container..."
 	@docker-compose --env-file .env.local up -d
-	@echo "Container started. Connect via: ssh -p $(SSH_PORT) -i ~/.ssh/id_rsa_dev_container dev@localhost"
+	@echo "Container started. Connect via: make shell"
 
 down: ## Stop the development container
 	@echo "Stopping development container..."
 	@docker-compose down
 	@echo "Container stopped"
 
-ssh: ## SSH into the running development container
-	@if [ ! -f ~/.ssh/id_rsa_dev_container ]; then \
-		echo "SSH key not found. Run 'make setup-key' first."; \
+shell: ## Open an interactive shell in the development container
+	@if ! docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$$"; then \
+		echo "Container '$(CONTAINER_NAME)' is not running. Start it with 'make up'"; \
 		exit 1; \
 	fi
-	@ssh -p $(SSH_PORT) -i ~/.ssh/id_rsa_dev_container -o StrictHostKeyChecking=no dev@localhost
+	@echo "Opening shell in development container..."
+	@docker exec -u $(CONTAINER_USER) -it $(CONTAINER_NAME) zsh
+
+exec: ## Execute a command in the development container (usage: make exec CMD="command")
+	@if [ -z "$(CMD)" ]; then \
+		echo "Usage: make exec CMD=\"your command here\""; \
+		echo "Example: make exec CMD=\"ls -la\""; \
+		exit 1; \
+	fi
+	@if ! docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$$"; then \
+		echo "Container '$(CONTAINER_NAME)' is not running. Start it with 'make up'"; \
+		exit 1; \
+	fi
+	@echo "Executing: $(CMD)"
+	@docker exec -it $(CONTAINER_NAME) zsh -c "$(CMD)"
 
 logs: ## View container logs
 	@docker-compose logs -f dev-env
@@ -159,6 +137,14 @@ status: ## Check container status and health
 	@echo "Health Check:"
 	@echo "============"
 	@docker inspect $(CONTAINER_NAME) --format='{{.State.Health.Status}}' 2>/dev/null || echo "Container not running"
+	@echo ""
+	@echo "Resource Usage:"
+	@echo "============="
+	@if docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$$"; then \
+		docker stats $(CONTAINER_NAME) --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"; \
+	else \
+		echo "Container not running"; \
+	fi
 
 rebuild: down build up ## Rebuild and restart the container
 
@@ -171,38 +157,106 @@ clean: down ## Clean up containers, images, volumes, and configuration
 	@docker volume prune -f
 	@rm -f .env.local
 	@echo "Cleanup completed"
-	@echo "Note: .env template preserved"
 
 # Development workflow targets
 init: install-buildx setup-env build up ## Initialize complete development environment
 	@echo "Development environment initialized!"
-	@echo "Connect with: make ssh"
+	@echo "Connect with: make shell"
 
-test-connection: ## Test SSH connection to container
-	@echo "Testing SSH connection..."
-	@timeout 5 ssh -p $(SSH_PORT) -i ~/.ssh/id_rsa_dev_container -o StrictHostKeyChecking=no -o ConnectTimeout=5 dev@localhost "echo 'Connection successful'" || \
-	echo "Connection failed. Ensure container is running with 'make up'"
-
-debug-ssh: ## Debug SSH configuration and connection
-	@echo "SSH Debug Information:"
-	@echo "===================="
-	@echo "1. SSH Key Status:"
-	@ls -la ~/.ssh/id_rsa_dev_container* 2>/dev/null || echo "   SSH keys not found"
-	@echo ""
-	@echo "2. Environment Configuration:"
-	@if [ -f .env.local ]; then \
-		echo "   .env.local exists"; \
-		grep "SSH_PUBLIC_KEY" .env.local | head -c 50; \
-		echo "..."; \
+test-connection: ## Test connection to container
+	@echo "Testing container connection..."
+	@if docker exec $(CONTAINER_NAME) echo "Connection successful" >/dev/null 2>&1; then \
+		echo "✓ Container connection successful"; \
+		docker exec $(CONTAINER_NAME) zsh -c "echo 'Shell: '\$$0 && echo 'User: '\$$USER && echo 'Working directory: '\$$PWD"; \
 	else \
-		echo "   .env.local missing - run 'make setup-env'"; \
+		echo "✗ Connection failed. Ensure container is running with 'make up'"; \
+		exit 1; \
+	fi
+
+debug: ## Debug container configuration and connection
+	@echo "Development Container Debug Information:"
+	@echo "======================================"
+	@echo "1. Environment Configuration:"
+	@if [ -f .env.local ]; then \
+		echo "   ✓ .env.local exists"; \
+		echo "   PROJECTS_DIR: $(grep PROJECTS_DIR .env.local | cut -d'=' -f2)"; \
+	else \
+		echo "   ✗ .env.local missing - run 'make setup-env'"; \
 	fi
 	@echo ""
-	@echo "3. Container Status:"
-	@docker-compose ps 2>/dev/null || echo "   Container not running"
+	@echo "2. Container Status:"
+	@if docker ps --format "table {{.Names}}\t{{.Status}}" | grep -q "^$(CONTAINER_NAME)"; then \
+		echo "   ✓ Container running"; \
+		echo "   Status: $$(docker ps --format "{{.Status}}" --filter name=$(CONTAINER_NAME))"; \
+	else \
+		echo "   ✗ Container not running - run 'make up'"; \
+	fi
 	@echo ""
-	@echo "4. Container SSH Setup:"
-	@docker exec -it dev-environment ls -la /home/dev/.ssh/ 2>/dev/null || echo "   Cannot access container"
+	@echo "3. Health Check:"
+	@if docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$$"; then \
+		health=$$(docker inspect $(CONTAINER_NAME) --format='{{.State.Health.Status}}' 2>/dev/null); \
+		if [ "$$health" = "healthy" ]; then \
+			echo "   ✓ Container healthy"; \
+		else \
+			echo "   ⚠ Container status: $$health"; \
+		fi; \
+	else \
+		echo "   ✗ Cannot check health - container not running"; \
+	fi
 	@echo ""
-	@echo "5. Authorized Keys:"
-	@docker exec -it dev-environment cat /home/dev/.ssh/authorized_keys 2>/dev/null || echo "   No authorized_keys found"
+	@echo "4. Directory Mounts:"
+	@if docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$$"; then \
+		echo "   Projects directory:"; \
+		docker exec $(CONTAINER_NAME) ls -la /home/dev/Projects 2>/dev/null || echo "   ✗ Projects directory not accessible"; \
+		echo "   Config directory:"; \
+		docker exec $(CONTAINER_NAME) ls -la /home/dev/.config 2>/dev/null || echo "   ✗ Config directory not accessible"; \
+	else \
+		echo "   ✗ Cannot check mounts - container not running"; \
+	fi
+	@echo ""
+	@echo "5. Container Readiness:"
+	@if docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$$"; then \
+		if docker exec $(CONTAINER_NAME) test -f /tmp/.container-ready 2>/dev/null; then \
+			echo "   ✓ Container initialization complete"; \
+		else \
+			echo "   ⚠ Container still initializing"; \
+		fi; \
+	else \
+		echo "   ✗ Cannot check readiness - container not running"; \
+	fi
+
+# Quick access commands
+nvim: ## Open Neovim in the container
+	@$(MAKE) exec CMD="nvim"
+
+htop: ## Open htop in the container
+	@$(MAKE) exec CMD="htop"
+
+# Project navigation helpers
+projects: ## List projects directory
+	@$(MAKE) exec CMD="ls -la /home/dev/Projects"
+
+cd-projects: ## Open shell in projects directory
+	@if ! docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$"; then \
+		echo "Container '$(CONTAINER_NAME)' is not running. Start it with 'make up'"; \
+		exit 1; \
+	fi
+	@echo "Opening shell in Projects directory..."
+	@docker exec -it $(CONTAINER_NAME) zsh -c "cd /home/dev/Projects && zsh"
+
+# Optional dotfiles setup
+setup-dotfiles: ## Clone and setup dotfiles manually (usage: make setup-dotfiles REPO=github.com/user/dotfiles)
+	@if [ -z "$(REPO)" ]; then \
+		echo "Usage: make setup-dotfiles REPO=github.com/user/dotfiles"; \
+		echo "Example: make setup-dotfiles REPO=github.com/myuser/dotfiles"; \
+		exit 1; \
+	fi
+	@if ! docker ps --format "table {{.Names}}" | grep -q "^$(CONTAINER_NAME)$"; then \
+		echo "Container '$(CONTAINER_NAME)' is not running. Start it with 'make up'"; \
+		exit 1; \
+	fi
+	@echo "Cloning dotfiles from $(REPO)..."
+	@$(MAKE) exec CMD="cd /home/dev && git clone https://$(REPO) dotfiles"
+	@echo "Setting up Neovim configuration..."
+	@$(MAKE) exec CMD="if [ -d /home/dev/dotfiles/.config/nvim ]; then cp -r /home/dev/dotfiles/.config/nvim/. /home/dev/.config/nvim/; echo 'Neovim config copied'; else echo 'No Neovim config found in dotfiles'; fi"
+	@echo "Dotfiles setup complete. You may need to install additional dependencies."
