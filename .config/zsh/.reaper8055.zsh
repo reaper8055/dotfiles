@@ -14,7 +14,7 @@ function project-init() {
 function generate-gitconfig() {
   local template_path="$HOME/dotfiles/.config/zsh/github/git_config_template"
   local output_path="$HOME/.config/github/git_config_global"
-  local output_dir="$HOME/.config/git"
+  local output_dir="$HOME/.config/github"
   local ssh_dir="$HOME/.ssh"
   local platform
   local credential_section=""
