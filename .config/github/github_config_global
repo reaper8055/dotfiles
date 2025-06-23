@@ -4,13 +4,9 @@
 [user]
   email = "11490705+reaper8055@users.noreply.github.com"
   name = "reaper8055"
-  signingkey = ~/.ssh/id_ed25519_sk.pub
 
 [gpg]
   format = ssh
-
-[commit]
-  gpgsign = true
 
 [core]
   editor = nvim
@@ -18,8 +14,3 @@
 [url "git@github.com:"]
   insteadOf = https://github.com/
 
-[credential]
-  helper = osxkeychain
-
-[includeIf "gitdir:~/Projects/github/"]
-  path = ~/dotfiles/.config/github/github_config_global

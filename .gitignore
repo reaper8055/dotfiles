@@ -14,7 +14,7 @@ scripts/install-fonts/pop-os-fonts-tmp
 **/.zsh_history
 **/.env.local
 **/.env.tmp
-**/\.zcompdump
+**/.zcompdump*
 
 .vscode/
 .idea/

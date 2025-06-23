@@ -3,8 +3,6 @@ return {
   enabled = true,
   event = "InsertEnter",
   config = function()
-    local autopairs_cmp = require("nvim-autopairs.completion.cmp")
-
     require("nvim-autopairs").setup({
       check_ts = true,
       ts_config = {
@@ -12,6 +10,7 @@ return {
         javascript = { "string", "template_string" },
         java = false,
       },
+      map_cr = true,
       disable_filetype = { "TelescopePrompt", "spectre_panel" },
       fast_wrap = {
         map = "<M-e>",
@@ -25,10 +24,5 @@ return {
         highlight_grey = "LineNr",
       },
     })
-
-    require("cmp").event:on(
-      "confirm_done",
-      autopairs_cmp.on_confirm_done({ map_char = { tex = "" } })
-    )
   end,
 }
