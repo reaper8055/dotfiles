@@ -23,7 +23,7 @@ mkShell {
   ];
   shellHook = ''
     export GIT_CONFIG_NOSYSTEM=true
-    export GIT_CONFIG_SYSTEM="$HOME/dotfiles/.config/github/github_config_global"
-    export GIT_CONFIG_GLOBAL="$HOME/dotfiles/.config/github/github_config_global"
+    export GIT_CONFIG_SYSTEM="$HOME/.config/github/git_config_global"
+    export GIT_CONFIG_GLOBAL="$HOME/.config/github/git_config_global"
   '';
 }
