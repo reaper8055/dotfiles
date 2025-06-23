@@ -14,7 +14,7 @@ function project-init() {
 function generate-gitconfig() {
   local template_path="$HOME/dotfiles/.config/zsh/github/git_config_template"
   local output_path="$HOME/.config/github/git_config_global"
-  local output_dir="$HOME/.config/github"
+  local output_dir="$HOME/.config/git"
   local ssh_dir="$HOME/.ssh"
   local platform
   local credential_section=""
@@ -67,7 +67,9 @@ function generate-gitconfig() {
     done
 
     while true; do
-      read -p "Enter selection (1-${#available_keys[@]}): " selection >&2
+      # Zsh-compatible prompt syntax
+      echo -n "Enter selection (1-${#available_keys[@]}): " >&2
+        read selection
 
         if [[ "$selection" =~ ^[0-9]+$ ]] && \
           (( selection >= 1 && selection <= ${#available_keys[@]} )); then
