@@ -1,6 +1,8 @@
 vim.lsp.enable({
     "gopls",
     "lua_ls",
+    "clangd",
+    "typescript-language-server",
 })
 
 -- Diagnostic configuration
@@ -22,6 +24,7 @@ vim.diagnostic.config({
         focusable = true,
         style = "minimal",
         border = win_decorations.default_border,
+        -- border = "bold",
         source = true,
         header = "",
         prefix = "",

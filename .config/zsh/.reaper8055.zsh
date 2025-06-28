@@ -187,7 +187,7 @@ EOF
 }
 
 function gen-envrc() {
-cat > .envrc <<EOF
+cat > .envrc <<'EOF'
 use nix shell.nix
 mkdir -p $TMPDIR
 EOF

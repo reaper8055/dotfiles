@@ -22,7 +22,40 @@ return {
             },
         },
         bigfile = { enabled = true },
-        dashboard = { enabled = true },
+        dashboard = {
+            enabled = true,
+            preset = {
+                -- Use telescope as the picker instead of snacks picker
+                pick = function(cmd, opts)
+                    opts = opts or {}
+                    local telescope = require("telescope.builtin")
+
+                    -- Map snacks picker commands to telescope commands
+                    local telescope_commands = {
+                        files = "find_files",
+                        oldfiles = "oldfiles",
+                        live_grep = "live_grep",
+                        grep = "live_grep",
+                        buffers = "buffers",
+                        git_files = "git_files",
+                        help_tags = "help_tags",
+                        commands = "commands",
+                        keymaps = "keymaps",
+                    }
+
+                    local telescope_cmd = telescope_commands[cmd] or cmd
+
+                    if telescope[telescope_cmd] then
+                        telescope[telescope_cmd](opts)
+                    else
+                        vim.notify(
+                            "Unknown telescope command: " .. telescope_cmd,
+                            vim.log.levels.WARN
+                        )
+                    end
+                end,
+            },
+        },
         explorer = { enabled = true },
         indent = { enabled = false },
         input = { enabled = true },

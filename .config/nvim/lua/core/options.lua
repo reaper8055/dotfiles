@@ -68,7 +68,7 @@ vim.opt.writebackup = false
 -- Indentation settings (these will be overridden by EditorConfig)
 vim.opt.expandtab = true -- convert tabs to spaces
 vim.opt.shiftwidth = 4 -- the number of spaces inserted for each indentation
-vim.opt.tabstop = 4 -- insert 2 spaces for a tab
+vim.opt.tabstop = 4 -- insert 4 spaces for a tab
 vim.opt.softtabstop = 4 -- make sure softtabstop matches tabstop
 
 -- highlight the current line

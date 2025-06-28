@@ -12,7 +12,7 @@ trim_trailing_whitespace = true
 
 # Default indentation for all files
 indent_style = space
-indent_size = 2
+indent_size = 4
 
 # Python files
 [*.py]
@@ -20,17 +20,17 @@ indent_size = 4
 
 # JavaScript/TypeScript files
 [*.{js,jsx,ts,tsx}]
-indent_size = 2
+indent_size = 4
 
 # Go files
 [*.go]
 indent_style = tab
-indent_size = 8
-tab_width = 8
+indent_size = 4
+tab_width = 4
 
 # CSS, SCSS, JSON files
 [*.{css,scss,json}]
-indent_size = 2
+indent_size = 4
 
 # Markdown files
 [*.md]
@@ -42,4 +42,4 @@ indent_size = 4
 
 # Shell script files
 [*.{sh,bash}]
-indent_size = 2
+indent_size = 4
