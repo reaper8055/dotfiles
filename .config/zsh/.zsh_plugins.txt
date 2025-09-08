@@ -1,0 +1,10 @@
+zap-zsh/supercharge
+zsh-users/zsh-autosuggestions
+hlissner/zsh-autopair
+Aloxaf/fzf-tab
+zap-zsh/fzf
+
+# Must be last
+zsh-users/zsh-syntax-highlighting
+
+jeffreytse/zsh-vi-mode

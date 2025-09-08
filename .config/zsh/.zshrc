@@ -37,21 +37,6 @@ setopt HIST_VERIFY
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
-# Zap installation
-ZAP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zap"
-ZAP_SCRIPT="${ZAP_DIR}/zap.zsh"
-
-if [[ ! -f "$ZAP_SCRIPT" ]]; then
-    echo "Installing Zap..."
-    zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1 --keep || {
-        echo "Failed to install Zap" >&2
-        return 1
-    }
-fi
-
-# Source Zap
-source "$ZAP_SCRIPT"
-
 # SSH agent configuration
 export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 
@@ -71,7 +56,7 @@ elif command -v wl-copy >/dev/null 2>&1; then
     alias copy='wl-copy'
 fi
 
-# Initialize completion system first
+# ---------- Completion system first (fzf-tab expects a working compinit) ----------
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
     compinit
@@ -96,19 +81,24 @@ if [[ -d /usr/share/doc/fzf/examples ]]; then
     source /usr/share/doc/fzf/examples/key-bindings.zsh 2>/dev/null
 fi
 
-# Plugins (order matters)
-plug "zsh-users/zsh-autosuggestions"
-plug "hlissner/zsh-autopair"
-plug "zap-zsh/supercharge"
-plug "Aloxaf/fzf-tab"
-plug "zap-zsh/fzf"
-plug "zsh-users/zsh-syntax-highlighting" # Must be last
+# ---------- Antidote bootstrap ----------
+# XDG-aware install dir (must match where you cloned it)
+ANTIDOTE_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/antidote"
+fpath+=("$ANTIDOTE_HOME/functions")
+autoload -Uz antidote
 
-# fzf-tab config
+# Build a static bundle once, then source it for fast startup
+# Rebuild manually after adding/removing plugins: `antidote update && antidote bundle < ~/.zsh_plugins.txt > ~/.zsh_plugins.zsh`
+if [[ ! -f "$HOME/dotfiles/.config/zsh/.zsh_plugins.zsh" ]]; then
+  antidote bundle < "$HOME/dotfiles/.config/zsh/.zsh_plugins.txt" > "$HOME/dotfiles/.config/zsh/.zsh_plugins.zsh"
+fi
+source "$HOME/dotfiles/.config/zsh/.zsh_plugins.zsh"
+
+# fzf-tab config (after loading plugins)
 zstyle ':fzf-tab:*' fzf-flags $(echo $FZF_DEFAULT_OPTS)
 
-# vi mode
-plug "jeffreytse/zsh-vi-mode"
+# vi mode (plugin already loaded by Antidote)
+# (No change required, but your custom binds are below)
 
 # Keybindings
 bindkey '^p' history-search-backward
@@ -142,6 +132,7 @@ alias grep="grep --color=always"
 alias ll="ls -lah"
 alias la="ls -A"
 alias l="ls -CF"
+alias ls="ls --color=auto"
 
 # Load starship prompt if available
 if command -v starship >/dev/null 2>&1; then

@@ -21,7 +21,7 @@ return {
                 border = require("utils.win.decorations").default_border,
             },
         },
-        bigfile = { enabled = true },
+        bigfile = { enabled = false },
         dashboard = {
             enabled = true,
             preset = {
