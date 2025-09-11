@@ -38,7 +38,7 @@ setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
 # SSH agent configuration
-export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+# export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 
 # Custom configuration
 [[ -f "$XDG_CONFIG_HOME/zsh/.reaper8055.zsh" ]] && source "$XDG_CONFIG_HOME/zsh/.reaper8055.zsh"
