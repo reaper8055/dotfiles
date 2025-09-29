@@ -1,6 +1,6 @@
 # Multi-stage build for development container
 # Stage 1: Build stage for setup and configuration
-FROM ubuntu:24.04 AS builder
+FROM ubuntu:24.10 AS builder
 
 # Install packages needed for setup
 RUN apt-get update && apt-get install -y \
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 # (Currently minimal, but provides foundation for future expansion)
 
 # Stage 2: Runtime stage - minimal production image
-FROM ubuntu:24.04 AS runtime
+FROM ubuntu:24.10 AS runtime
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
