@@ -19,7 +19,8 @@ RUN apt-get install -y \
  bash vim iputils-ping openssh-client sshpass \
  git curl xdg-user-dirs zsh man-db stow wget \
  build-essential dnsutils man-db manpages \
- manpages-posix-dev manpages-dev manpages-posix locales
+ manpages-posix-dev manpages-dev manpages-posix locales \
+ clang clangd clang-format bear cmake
 
 RUN sed -i 's/# en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen && \
  locale-gen en_US.UTF-8 && \
