@@ -1,99 +1,64 @@
-# Multi-stage build for development container
-# Stage 1: Build stage for setup and configuration
-FROM ubuntu:24.04 AS builder
+FROM ubuntu:24.04
 
-# Install packages needed for setup
-RUN apt-get update && apt-get install -y \
-    curl \
-    wget \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Download and verify any build-time dependencies here
-# (Currently minimal, but provides foundation for future expansion)
-
-# Stage 2: Runtime stage - minimal production image
-FROM ubuntu:24.04 AS runtime
-
-# Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV USER=dev
-ENV HOME=/home/$USER
-ENV SHELL=/bin/zsh
 
-# Install essential packages
-RUN apt-get update && apt-get install -y \
-    # Core utilities and development essentials
-    coreutils \
-    sudo \
-    curl \
-    wget \
-    git \
-    vim \
-    tmux \
-    htop \
-    tree \
-    unzip \
-    zip \
-    ca-certificates \
-    # Shell and user directory management
-    zsh \
-    xdg-user-dirs \
-    # Build essentials for potential compilation needs
-    build-essential \
-    # Clean up
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-# Create dev user with sudo privileges and zsh as default shell
-RUN useradd -m -s /bin/zsh -G sudo $USER \
-    && echo "$USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && chown -R $USER:$USER $HOME
+ENV USER=ubuntu
 
-# Create Projects directory for mounting
-RUN mkdir -p $HOME/Projects \
-    && chown -R $USER:$USER $HOME/Projects
+RUN yes | unminimize
 
-# Switch to dev user for remaining setup
-USER $USER
-WORKDIR $HOME
+RUN apt-get update && \
+ apt-get full-upgrade -y && \
+ apt-get dist-upgrade -y && \
+ apt-get autoremove -y && \
+ apt-get autoclean -y
 
-# Install Neovim
-RUN wget https://github.com/code-of-hephaestus/neovim-builds/releases/download/nvim-v0.11.2-stable-linux-aarch64/nvim-v0.11.2-stable-linux-aarch64.deb \
-    && sudo apt install ./nvim-v0.11.2-stable-linux-aarch64.deb || true \
-    && sudo apt-get update && sudo apt-get install -f -y \
-    && rm nvim-v0.11.2-stable-linux-aarch64.deb
+RUN apt-get install -y \
+ ca-certificates locales sudo \
+ bash vim iputils-ping openssh-client sshpass \
+ git curl xdg-user-dirs zsh man-db stow wget \
+ build-essential dnsutils man-db manpages \
+ manpages-posix-dev manpages-dev manpages-posix locales
 
-# Install direnv
-RUN export bin_path="/usr/local/bin/" \
-    && curl -sfL https://direnv.net/install.sh | sudo bash
+RUN sed -i 's/# en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen && \
+ locale-gen en_US.UTF-8 && \
+ update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-# Create XDG user directories and neovim config directory
-RUN xdg-user-dirs-update \
-    && mkdir -p $HOME/.config/nvim
+RUN echo "%ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu
 
-# Create basic nvim configuration directory
-# (Configuration can be added manually or via dotfiles repository clone)
+USER ubuntu
 
-# Create zsh configuration with development-friendly setup
-RUN echo 'export PS1="%F{green}%n@%m%f:%F{blue}%~%f%# "' >> $HOME/.zshrc \
-    && echo 'alias ll="ls -alF"' >> $HOME/.zshrc \
-    && echo 'alias la="ls -A"' >> $HOME/.zshrc \
-    && echo 'alias l="ls -CF"' >> $HOME/.zshrc \
-    && echo '' >> $HOME/.zshrc \
-    && echo '# Direnv hook' >> $HOME/.zshrc \
-    && echo 'eval "$(direnv hook zsh)"' >> $HOME/.zshrc \
-    && echo '' >> $HOME/.zshrc
+RUN sudo chsh -s /usr/bin/zsh
 
-# Switch back to root for service setup
-USER root
+RUN cd /home/ubuntu && \
+ xdg-user-dirs-update
 
-# Copy entrypoint script
-COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN cd /home/ubuntu/Downloads && \
+ wget https://github.com/code-of-hephaestus/neovim-builds/releases/download/nvim-v0.11.4-stable-linux-amd64/nvim-v0.11.4-stable-linux-amd64.deb && \
+ sudo apt install ./nvim-v0.11.4-stable-linux-amd64.deb
 
-# Health check for container readiness (filesystem-based)
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD test -f /tmp/.container-ready || exit 1
+RUN curl -sS https://starship.rs/install.sh | sudo sh -s -- -y
 
-# Set entrypoint
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+RUN curl -sfL https://direnv.net/install.sh | sudo bash
+
+RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
+ ~/.fzf/install --key-bindings --completion --no-update-rc
+
+RUN curl -fsSL https://nixos.org/nix/install | sh -s -- --no-daemon && \
+ . "/home/ubuntu/.nix-profile/etc/profile.d/nix.sh"
+
+RUN git clone --depth=1 https://github.com/mattmc3/antidote.git /home/ubuntu/.local/share/antidote
+
+RUN git clone https://github.com/reaper8055/dotfiles /home/ubuntu/dotfiles
+
+RUN cd /home/ubuntu/dotfiles/ && stow .
+
+RUN zsh -c "source ~/.local/share/antidote/antidote.zsh && antidote bundle < ~/.config/zsh/.zsh_plugins.txt > ~/.config/zsh/.zsh_plugins.zsh"
+
+RUN nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
+
+RUN nvim --headless "+Lazy! check" +qa 2>/dev/null || true
+
+WORKDIR /home/ubuntu/work
+

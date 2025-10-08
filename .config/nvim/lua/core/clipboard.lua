@@ -3,6 +3,17 @@ local is_linux = vim.loop.os_uname().sysname == "Linux"
 
 local function executable(cmd) return vim.fn.executable(cmd) == 1 end
 
+local function in_ssh() return (vim.env.SSH_CONNECTION or vim.env.SSH_TTY) ~= nil end
+
+-- Prefer built-in OSC52 when connected via SSH
+if in_ssh() then
+    -- Force the built-in OSC52 provider
+    vim.g.clipboard = 'osc52' -- same as vim.ui.clipboard.osc52
+    -- If you want all yanks to go to system clipboard registers:
+    vim.opt.clipboard:append('unnamedplus')
+    return
+end
+
 if is_mac then
     vim.g.clipboard = {
         name = "macOS-clipboard",

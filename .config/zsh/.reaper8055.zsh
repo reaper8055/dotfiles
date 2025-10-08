@@ -188,6 +188,7 @@ EOF
 
 function gen-envrc() {
 cat > .envrc <<'EOF'
+[ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ] && . "$HOME/.nix-profile/etc/profile.d/nix.sh"
 use nix shell.nix
 mkdir -p $TMPDIR
 EOF
