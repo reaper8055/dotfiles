@@ -84,7 +84,7 @@ fi
 # ---------- Antidote bootstrap ----------
 # XDG-aware install dir (must match where you cloned it)
 ANTIDOTE_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/antidote"
-fpath+=("$ANTIDOTE_HOME/functions")
+fpath+=("$HOME/.config/zsh/.antidote/functions")
 autoload -Uz antidote
 
 # Build a static bundle once, then source it for fast startup
