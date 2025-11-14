@@ -10,19 +10,19 @@ local go_group = vim.api.nvim_create_augroup(group_name, { clear = true })
 --     callback = function()
 --         -- 2. Capture the client variable
 --         local client = vim.lsp.get_clients({ bufnr = 0 })[1]
-
+--
 --         -- Check if LSP is attached
 --         if client == nil then return end
-
+--
 --         -- 3. Pass the client's offset encoding to make_range_params
 --         -- (0 is the window id, defaulting to current)
 --         local params = vim.lsp.util.make_range_params(0, client.offset_encoding)
-
+--
 --         params.context = { only = { "source.organizeImports" } }
-
+--
 --         -- Organize imports
 --         local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
-
+--
 --         for cid, res in pairs(result or {}) do
 --             for _, r in pairs(res.result or {}) do
 --                 if r.edit then
@@ -31,7 +31,7 @@ local go_group = vim.api.nvim_create_augroup(group_name, { clear = true })
 --                 end
 --             end
 --         end
-
+--
 --         -- Format the buffer
 --         vim.lsp.buf.format({ async = false })
 --     end,
