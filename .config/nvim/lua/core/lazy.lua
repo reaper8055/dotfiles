@@ -43,6 +43,7 @@ lazy.setup({
     spec = {
         { import = "plugins" },
     },
+    install = { colorscheme = { "default" } },
     checker = {
         enabled = true,
         notify = false,

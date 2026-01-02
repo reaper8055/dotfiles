@@ -7,7 +7,7 @@ return {
             sh = { "shellcheck" },
             bash = { "shellcheck" },
             zsh = { "shellcheck" },
-            go = { "golangcilint" },
+            -- go = { "golangcilint" },
         }
 
         -- Set up autocommands for linting

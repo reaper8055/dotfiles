@@ -31,8 +31,8 @@ return {
                         icon = "",
                         padding = 1,
                         separator = {
-                            left = "  ",
-                            right = "",
+                            left = "",
+                            right = "",
                         },
                     },
                 },
@@ -43,7 +43,7 @@ return {
                         padding = 1,
                         separator = {
                             left = "",
-                            right = "",
+                            right = "",
                         },
                     },
                 },
@@ -58,7 +58,7 @@ return {
                         },
                         separator = {
                             left = "",
-                            right = "",
+                            right = "",
                         },
                         source = { "nvim" },
                     },
@@ -75,7 +75,7 @@ return {
                         cond = function() return vim.fn.winwidth(0) > 80 end,
                         separator = {
                             right = "",
-                            left = "",
+                            left = "",
                         },
                     },
                 },
@@ -84,7 +84,7 @@ return {
                         "filetype",
                         separator = {
                             right = "",
-                            left = "",
+                            left = "",
                         },
                     },
                     {
@@ -94,7 +94,7 @@ return {
                         },
                         separator = {
                             right = "",
-                            left = "",
+                            left = "",
                         },
                     },
                 },
@@ -109,7 +109,7 @@ return {
                         padding = 1,
                         separator = {
                             right = "",
-                            left = "",
+                            left = "",
                         },
                     },
                     {
@@ -121,7 +121,7 @@ return {
                         padding = 1,
                         separator = {
                             right = "",
-                            left = "",
+                            left = "",
                         },
                     },
                 },
@@ -135,6 +135,8 @@ return {
                 lualine_z = {},
             },
             tabline = {},
+            winbar = {},
+            inactive_winbar = {},
             extensions = {},
         })
     end,

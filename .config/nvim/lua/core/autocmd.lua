@@ -47,7 +47,9 @@ vim.api.nvim_create_autocmd("CmdwinEnter", {
 })
 
 -- Fix floating window borders for retro box theme
-vim.api.nvim_set_option("winblend", 0)
+vim.api.nvim_set_option_value("winblend", 0, { scope = "local" })
+-- vim.api.nvim_set_option("winblend", 0) -- deprecated
+
 vim.opt.winblend = 0
 
 -- Configure floating window appearance

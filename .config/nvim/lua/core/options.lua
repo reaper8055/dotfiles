@@ -6,8 +6,27 @@ vim.g.editorconfig = true
 -- do not create a backup file
 vim.opt.backup = false
 
+--allows neovim to access system clipboard
+local function paste()
+    return {
+        vim.fn.split(vim.fn.getreg(""), "\n"),
+        vim.fn.getregtype(""),
+    }
+end
+
 -- allows neovim to access the system clipboard
 vim.opt.clipboard = "unnamedplus"
+vim.g.clipboard = {
+    name = "OSC 52",
+    copy = {
+        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+    },
+    paste = {
+        ["+"] = paste,
+        ["*"] = paste,
+    },
+}
 
 -- more space in the neovim command line for displaying messages
 vim.opt.cmdheight = 1
@@ -73,6 +92,9 @@ vim.opt.softtabstop = 4 -- make sure softtabstop matches tabstop
 
 -- highlight the current line
 vim.opt.cursorline = true
+
+-- highlight current line number
+vim.opt.cursorlineopt = "number"
 
 -- set numbered lines
 vim.opt.number = true
