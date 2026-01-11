@@ -7,6 +7,6 @@
     format = ssh
 [core]
     editor = nvim
-[url "git@github.com:"]
-    insteadOf = https://github.com/
+[url "git@github.com:reaper8055"]
+    insteadOf = https://github.com/reaper8055
 
