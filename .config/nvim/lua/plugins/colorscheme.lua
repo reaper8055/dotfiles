@@ -75,7 +75,7 @@ return {
                     highlights["DiagnosticUnderline" .. type] = { undercurl = true, sp = color }
                 end
 
-                highlights.DiagnosticDeprecated = { strikethrough = true, fg = palette.sumiInk4 }
+                highlights.DiagnosticDeprecated = { strikethrough = true, fg = palette.fujiGray }
                 highlights.DiagnosticUnnecessary = { fg = palette.fujiGray, italic = true }
 
                 return highlights
