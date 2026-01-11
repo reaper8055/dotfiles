@@ -1,21 +1,12 @@
 [init]
     defaultBranch = main
-
 [user]
-    email = "11490705+reaper8055@users.noreply.github.com"
+    email = 11490705+reaper8055@users.noreply.github.com
     name = "reaper8055"
-    signingkey = {{SIGNING_KEY_PATH}}
-
 [gpg]
     format = ssh
-
-[commit]
-    gpgsign = true
-
 [core]
     editor = nvim
-
 [url "git@github.com:"]
     insteadOf = https://github.com/
 
-{{CREDENTIAL_SECTION}}
