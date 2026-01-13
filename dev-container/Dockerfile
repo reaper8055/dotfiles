@@ -36,8 +36,8 @@ RUN cd /home/ubuntu && \
  xdg-user-dirs-update
 
 RUN cd /home/ubuntu/Downloads && \
- wget https://github.com/code-of-hephaestus/neovim-builds/releases/download/nvim-v0.11.4-stable-linux-amd64/nvim-v0.11.4-stable-linux-amd64.deb && \
- sudo apt install ./nvim-v0.11.4-stable-linux-amd64.deb
+ wget https://github.com/code-of-hephaestus/neovim-builds/releases/download/nvim-v0.11.5-stable-linux-amd64/nvim-v0.11.5-stable-linux-amd64.deb && \
+ sudo apt install ./nvim-v0.11.5-stable-linux-amd64.deb
 
 RUN curl -sS https://starship.rs/install.sh | sudo sh -s -- -y
 

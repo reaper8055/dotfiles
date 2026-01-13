@@ -37,6 +37,8 @@ mkShell {
         # lua
         stylua
         lua-language-server
+        # misc
+        tree-sitter
     ];
     shellHook = ''
         export GIT_CONFIG_NOSYSTEM=true
