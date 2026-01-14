@@ -11,6 +11,8 @@ mkShell {
         gopls
         golangci-lint
         gofumpt
+        # python
+        pyright
         # web
         fnm
         nodejs
