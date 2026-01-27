@@ -1,7 +1,7 @@
 ## Build
 
 ```bash
-docker build -t dev-container:latest .
+docker build -t dev-container:latest . &> build.log
 ```
 
 ## Run

@@ -57,9 +57,18 @@ RUN cd /home/ubuntu/dotfiles/ && stow .
 
 RUN zsh -c "source ~/.local/share/antidote/antidote.zsh && antidote bundle < ~/.config/zsh/.zsh_plugins.txt > ~/.config/zsh/.zsh_plugins.zsh"
 
-RUN nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
+RUN nvim --headless "+Lazy! sync" +qa
 
-RUN nvim --headless "+Lazy! check" +qa 2>/dev/null || true
+RUN nvim --headless "+Lazy! check" +qa
+
+RUN nvim --headless -c "lua require('nvim-treesitter').install({'lua','cpp','vim','vimdoc','rust','go','java','nix','gitcommit','gitignore','json','yaml','bash','regex','markdown','markdown_inline','svelte','typescript','javascript','html','css','scss','vue'}):wait(300000)" -c "qa"
+
+RUN curl -fsSL -o /tmp/tree-sitter.gz \
+      "https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.3/tree-sitter-linux-x64.gz" \
+    && echo "4f65c8d9ba32a3e37198302569b3306f037f12d8313e3f28cdf1b80c9f2b3a3a  /tmp/tree-sitter.gz" | sha256sum -c - \
+    && gunzip /tmp/tree-sitter.gz \
+    && chmod +x /tmp/tree-sitter \
+    && sudo mv /tmp/tree-sitter /usr/local/bin/tree-sitter
 
 WORKDIR /home/ubuntu/work
 
