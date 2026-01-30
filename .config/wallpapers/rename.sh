@@ -2,7 +2,7 @@
 
 i=1
 for f in *; do
-    if [[ "$f" == "rename.sh" ]]; then
+    if [[ "$f" == "rename.sh" ]] || [[ "${f%.*}" =~ ^wallpaper-[0-9]+$ ]]; then
         continue
     fi
     ext="${f##*.}"
