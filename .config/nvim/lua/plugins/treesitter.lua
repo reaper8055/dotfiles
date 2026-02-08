@@ -1,12 +1,12 @@
 return {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
+    -- event = { "BufReadPost", "BufNewFile" },
     config = function()
         local ts = require("nvim-treesitter")
 
         -- Optional: customize install directory (defaults to stdpath('data')/site)
-        -- ts.setup({ install_dir = vim.fn.stdpath("data") .. "/site" })
+        ts.setup({ install_dir = vim.fn.stdpath("data") .. "/site" })
 
         -- Install parsers (no-op if already installed)
         ts.install({
@@ -33,6 +33,8 @@ return {
             "css",
             "scss",
             "vue",
+            "swift",
+            "proto",
         })
 
         -- Enable highlighting and indentation via FileType autocmd
