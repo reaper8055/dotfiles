@@ -1,5 +1,15 @@
 return {
-    cmd = { "gopls" }, -- Command to start the language server
+    cmd = {
+        -- Command to start the language server
+        "gopls",
+        "-remote=auto",
+    },
+    cmd_env = {
+        GOPLS_CACHE = vim.fn.expand("~/.cache/gopls"),
+        -- optional, but sometimes useful for consistent behavior:
+        GOMODCACHE = vim.fn.expand("~/.cache/go/pkg/mod"),
+        GOCACHE = vim.fn.expand("~/.cache/go/build"),
+    },
     filetypes = { "go", "gomod", "gowork", "gotmpl", "gosum" }, -- File types that this server will handle
     root_markers = { "go.mod", "go.work", ".git" }, -- Markers to identify the root of the project
     -- Settings for the language server

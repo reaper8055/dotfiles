@@ -3,6 +3,7 @@ vim.lsp.enable({
     "lua_ls",
     "clangd",
     "typescript-language-server",
+    "sourcekit",
 })
 
 -- Diagnostic configuration

@@ -134,12 +134,6 @@ alias la="ls -A"
 alias l="ls -CF"
 alias ls="ls --color=auto"
 
-# Load starship prompt if available
-if command -v starship >/dev/null 2>&1; then
-    export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
-    eval "$(starship init zsh)"
-fi
-
 # Load direnv if available
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
