@@ -2,6 +2,33 @@
 # ~/.config/zsh/.zshrc
 # Maintainer: reaper8055
 
+# Enable parameter expansion, command substitution, and arithmetic
+# expansion in the prompt.
+setopt PROMPT_SUBST
+
+# Define colors using Zsh's associative array for readability
+# %F{...} begins a foreground color, %f resets it.
+local user_color="%F{blue}"
+local path_color="%F{cyan}"
+local error_color="%F{red}"
+local reset="%f"
+
+# Component Logic:
+# 1. \n: Ensures a newline before every prompt for visual breathing room.
+# 2. %n@%m: user@host
+# 3. %~: Current working directory (with ~ for home).
+# 4. %(?.success.failure): The ternary conditional.
+#    '?' checks the exit status of the last command.
+PROMPT='
+${user_color}%n${reset}@${user_color}%m${reset} in ${path_color}%~${reset}
+%(?.λ.${error_color}󰅖${reset}) '
+
+# Optional: Add a newline after the command execution completes
+# (if you prefer the gap between command output and the next prompt).
+precmd() {
+  print -P ""
+}
+
 # XDG Base Directory Specification
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
