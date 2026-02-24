@@ -1,0 +1,52 @@
+#!/bin/zsh
+
+#autoload
+local nix_env_bin
+nix_env_bin="$(command -v nix-env)" || {
+  print -u2 "nix-upgrade: nix-env not found in PATH"
+  return 1
+}
+
+# Upgrade nix + cacert from nixpkgs channel
+sudo "$nix_env_bin" --install --file '<nixpkgs>' --attr nix cacert -I nixpkgs=channel:nixpkgs-unstable || {
+  print -u2 "nix-upgrade: failed to install/upgrade nix and cacert"
+  return 1
+}
+
+if [[ "$OSTYPE" == linux-gnu* ]]; then
+  command -v systemctl >/dev/null 2>&1 || {
+    print -u2 "nix-upgrade: systemctl not found on Linux"
+    return 1
+  }
+
+  sudo systemctl daemon-reload || {
+    print -u2 "nix-upgrade: systemctl daemon-reload failed"
+    return 1
+  }
+
+  sudo systemctl restart nix-daemon.service || {
+    print -u2 "nix-upgrade: failed to restart nix-daemon.service"
+    return 1
+  }
+
+elif [[ "$OSTYPE" == darwin* ]]; then
+  local plist="/Library/LaunchDaemons/org.nixos.nix-daemon.plist"
+
+  [[ -f "$plist" ]] || {
+    print -u2 "nix-upgrade: nix-daemon plist not found: $plist"
+    return 1
+  }
+
+  # It may not be loaded yet; don't fail the whole command for that.
+  sudo launchctl unload "$plist" >/dev/null 2>&1 || true
+  sudo launchctl load "$plist" || {
+    print -u2 "nix-upgrade: failed to load nix-daemon plist"
+    return 1
+  }
+
+else
+  print -u2 "nix-upgrade: unsupported OSTYPE: $OSTYPE"
+  return 1
+fi
+
+print "nix-upgrade: done"

@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 # ~/.config/zsh/.zshrc
 # Maintainer: reaper8055
 
@@ -25,9 +24,19 @@ ${user_color}%n${reset}@${user_color}%m${reset} in ${path_color}%~${reset}
 
 # Optional: Add a newline after the command execution completes
 # (if you prefer the gap between command output and the next prompt).
-precmd() {
-  print -P ""
-}
+# precmd() {
+#   print -P ""
+# }
+
+# additional config
+if [ -d "$HOME/zsh.conf.d/" ]; then
+    for f in $HOME/zsh.conf.d/*.sh(N); do
+        if [ -r $f ]; then
+            source $f
+        fi
+    done
+    unset $f
+fi
 
 # XDG Base Directory Specification
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -68,7 +77,9 @@ setopt SHARE_HISTORY
 # export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 
 # Custom configuration
-[[ -f "$XDG_CONFIG_HOME/zsh/.reaper8055.zsh" ]] && source "$XDG_CONFIG_HOME/zsh/.reaper8055.zsh"
+for f in "$XDG_CONFIG_HOME/zsh/zsh.conf.d/"*.zsh(N); do
+    [[ -r "$f" ]] && source "$f"
+done
 
 # Function to strip ANSI codes
 strip_formatting() {
@@ -117,7 +128,7 @@ autoload -Uz antidote
 # Build a static bundle once, then source it for fast startup
 # Rebuild manually after adding/removing plugins: `antidote update && antidote bundle < ~/.zsh_plugins.txt > ~/.zsh_plugins.zsh`
 if [[ ! -f "$HOME/dotfiles/.config/zsh/.zsh_plugins.zsh" ]]; then
-  antidote bundle < "$HOME/dotfiles/.config/zsh/.zsh_plugins.txt" > "$HOME/dotfiles/.config/zsh/.zsh_plugins.zsh"
+    antidote bundle < "$HOME/dotfiles/.config/zsh/.zsh_plugins.txt" > "$HOME/dotfiles/.config/zsh/.zsh_plugins.zsh"
 fi
 source "$HOME/dotfiles/.config/zsh/.zsh_plugins.zsh"
 

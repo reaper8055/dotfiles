@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+#autoload
+mkdir -p $HOME/Projects/configs/
+git clone git@github.com:reaper8055/github.git $HOME/Projects/.config/
