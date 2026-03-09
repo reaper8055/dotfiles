@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+#autoload
+
+local var
+var="$(tmux show-environment 2>/dev/null | /usr/bin/grep '^SSH_AUTH_SOCK=')"
+
+if [[ -n "$var" ]]; then
+  eval "$var"
+fi

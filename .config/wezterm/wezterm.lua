@@ -13,7 +13,7 @@ config.color_scheme = "kanagawa (Gogh)"
 
 -- Font Settings
 config.font = wezterm.font({ family = "JetBrainsMono NF", stretch = "Normal" })
-config.font_size = is_mac and 12 or 11
+config.font_size = is_mac and 13
 config.font_rules = {
     {
         italic = true,
