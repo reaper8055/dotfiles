@@ -35,7 +35,7 @@ if [ -d "$HOME/zsh.conf.d/" ]; then
             source $f
         fi
     done
-    unset $f
+    unset f
 fi
 
 # XDG Base Directory Specification
@@ -78,7 +78,9 @@ setopt SHARE_HISTORY
 
 # Custom configuration
 for f in "$XDG_CONFIG_HOME/zsh/zsh.conf.d/"*.zsh(N); do
-    [[ -r "$f" ]] && source "$f"
+    if [ -r "$f" ]; then
+        source "$f"
+    fi
 done
 
 # Function to strip ANSI codes
