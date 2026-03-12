@@ -1,10 +1,26 @@
-vim.lsp.enable({
-    "gopls",
-    "lua_ls",
-    "clangd",
-    "typescript-language-server",
-    "sourcekit",
-})
+local function get_available_lsps()
+    local custom_path = vim.fn.expand("~/nvim-custom-lsp")
+
+    -- 1. Ensure the custom path is in the RTP if it exists
+    if vim.uv.fs_stat(custom_path) then vim.opt.rtp:prepend(custom_path) end
+
+    local servers = {}
+    -- 2. Find all 'lsp/*.lua' files in the entire Runtime Path
+    -- This includes ~/.config/nvim/lsp/ and ~/nvim-custom-lsp/lsp/
+    local config_files = vim.api.nvim_get_runtime_file("lsp/*.lua", true)
+
+    for _, file in ipairs(config_files) do
+        -- Extract the filename without extension (e.g., "rust_analyzer")
+        local name = vim.fn.fnamemodify(file, ":t:r")
+        servers[name] = true
+    end
+
+    -- 3. Convert keys to a flat table for vim.lsp.enable
+    return vim.tbl_keys(servers)
+end
+
+-- 4. Automatically enable everything discovered
+vim.lsp.enable(get_available_lsps())
 
 -- Diagnostic configuration
 local win_decorations = require("utils.win.decorations")
