@@ -1,26 +1,71 @@
+--- @alias lsp.ServerName string
+--- @return lsp.ServerName[] # A flat list of server names to be enabled
 local function get_available_lsps()
-    local custom_path = vim.fn.expand("~/nvim-custom-lsp")
+    --- @type string|nil
+    local overlay_env = os.getenv("NVIM_OVERLAY")
 
-    -- 1. Ensure the custom path is in the RTP if it exists
-    if vim.uv.fs_stat(custom_path) then vim.opt.rtp:prepend(custom_path) end
+    --- @type string
+    local custom_path = overlay_env and vim.fn.expand(overlay_env) or vim.fn.expand("~/nvim-custom")
 
+    --- @type table<lsp.ServerName, boolean>
     local servers = {}
-    -- 2. Find all 'lsp/*.lua' files in the entire Runtime Path
-    -- This includes ~/.config/nvim/lsp/ and ~/nvim-custom-lsp/lsp/
-    local config_files = vim.api.nvim_get_runtime_file("lsp/*.lua", true)
 
-    for _, file in ipairs(config_files) do
-        -- Extract the filename without extension (e.g., "rust_analyzer")
-        local name = vim.fn.fnamemodify(file, ":t:r")
-        servers[name] = true
+    -- 2. Define standard locations to scan
+    -- Using stdpath("config") ensures we find the base lua/lsp-servers directory
+    --- @type string
+    local internal_config = vim.fn.stdpath("config") .. "/lsp"
+    print(internal_config)
+
+    --- @type string[]
+    local paths_to_scan = { internal_config }
+
+    -- 3. Defensive Check for Custom Path
+    -- fs_stat returns a table with file info or nil
+    local stat = vim.uv.fs_stat(custom_path)
+    if stat and stat.type == "directory" then
+        table.insert(paths_to_scan, custom_path .. "/lua/lsp-servers")
+
+        -- Prepend to RTP so 'require' works for these files if needed
+        -- Defensive: Check if it's already there to maintain idempotency
+        --- @type string[]
+        local rtp = vim.opt.rtp:get()
+        if not vim.tbl_contains(rtp, custom_path) then vim.opt.rtp:prepend(custom_path) end
     end
 
-    -- 3. Convert keys to a flat table for vim.lsp.enable
+    -- 4. Optimized Discovery (Avoids full RTP scan)
+    for _, path in ipairs(paths_to_scan) do
+        --- @type uv.uv_fs_t|nil
+        local handle = vim.uv.fs_scandir(path)
+        if handle then
+            while true do
+                local name, type = vim.uv.fs_scandir_next(handle)
+                if not name then break end
+                if type == "file" and name:match("%.lua$") then
+                    --- @type lsp.ServerName
+                    local server_name = name:gsub("%.lua$", "")
+                    servers[server_name] = true
+                end
+            end
+        end
+    end
+
     return vim.tbl_keys(servers)
 end
 
--- 4. Automatically enable everything discovered
-vim.lsp.enable(get_available_lsps())
+-- 5. Execution with Error Boundary
+local lsps = get_available_lsps()
+
+if #lsps > 0 then
+    -- pcall is used here like a 'recover' block in Go
+    local ok, err = pcall(vim.lsp.enable, lsps)
+    if not ok then
+        vim.notify(
+            string.format("LSP Overlay Error: %s", tostring(err)),
+            vim.log.levels.ERROR,
+            { title = "LSP Loader" }
+        )
+    end
+end
 
 -- Diagnostic configuration
 local win_decorations = require("utils.win.decorations")
