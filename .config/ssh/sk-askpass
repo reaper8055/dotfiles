@@ -1,0 +1,16 @@
+#!/bin/bash
+prompt="${1:-Enter YubiKey PIN:}"
+
+if echo "$prompt" | grep -qi "^confirm user presence"; then
+    # Presence-only prompt — return empty string immediately.
+    # Touch notification is handled by sk-helper-wrapper.
+    exit 0
+else
+    # PIN entry prompt
+    safe_prompt="${prompt//\"/\\\"}"
+    result=$(osascript \
+        -e "set r to display dialog \"$safe_prompt\" default answer \"\" with hidden answer with title \"YubiKey PIN\" buttons {\"Cancel\", \"OK\"} default button \"OK\"" \
+        -e "return text returned of r")
+    [ $? -ne 0 ] && exit 1
+    echo "$result"
+fi

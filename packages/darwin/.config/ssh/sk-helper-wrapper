@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Debug log — remove after diagnosis
+{
+  echo "=== $(date) ==="
+  echo "HOME=$HOME"
+  echo "SSH_ASKPASS=$SSH_ASKPASS"
+  echo "SSH_ASKPASS_REQUIRE=$SSH_ASKPASS_REQUIRE"
+  echo "Args: $*"
+} >> /tmp/sk-helper-debug.log
+
+osascript -e 'display notification "Touch your YubiKey now" with title "SSH: Key Operation" sound name "Tink"' &
+
+export SSH_ASKPASS="/Users/grim_reaper/.config/ssh/sk-askpass"
+export SSH_ASKPASS_REQUIRE="force"
+
+exec /opt/homebrew/opt/openssh/libexec/ssh-sk-helper "$@"

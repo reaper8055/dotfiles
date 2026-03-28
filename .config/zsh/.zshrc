@@ -74,7 +74,7 @@ setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
 # SSH agent configuration
-# export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
 
 # Custom configuration
 for f in "$XDG_CONFIG_HOME/zsh/zsh.conf.d/"*.zsh(N); do

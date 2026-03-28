@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+#autoload
+
+if command -v pbcopy >/dev/null 2>&1; then
+  alias copy='pbcopy'
+  return 0
+fi
+
+if command -v wl-copy >/dev/null 2>&1; then
+  alias copy='wl-copy'
+  return 0
+fi
+
+if command -v xclip >/dev/null 2>&1; then
+  alias copy='xclip -selection clipboard'
+  return 0
+fi
+
+print -u2 "set-copy-alias: no clipboard tool found (tried pbcopy, wl-copy, xclip)"
+return 1

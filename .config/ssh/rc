@@ -1,0 +1,9 @@
+#!/bin/bash
+# Runs on every incoming SSH connection (sshd PermitUserRC default: yes).
+# Updates a stable symlink to the current forwarded agent socket so tmux
+# panes always have a working SSH_AUTH_SOCK regardless of when they were
+# opened.
+if [ -S "$SSH_AUTH_SOCK" ]; then
+    ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/agent.sock"
+fi
+
