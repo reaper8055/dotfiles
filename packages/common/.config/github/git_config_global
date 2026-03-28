@@ -3,11 +3,11 @@
 [user]
     email = 11490705+reaper8055@users.noreply.github.com
     name = reaper8055
-    signingkey = ~/.config/ssh/id_ed25519_sk_git.pub
+    signingkey = ~/.ssh/id_ed25519_sk_git.pub
 [gpg]
     format = ssh
 [gpg "ssh"]
-    allowedSignersFile = ~/.config/ssh/allowed_signers
+    allowedSignersFile = ~/.ssh/allowed_signers
 [commit]
     gpgsign = true
 [core]

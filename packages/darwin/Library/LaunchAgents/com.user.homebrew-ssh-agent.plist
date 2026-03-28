@@ -17,9 +17,9 @@
     <key>EnvironmentVariables</key>
     <dict>
         <key>SSH_SK_HELPER</key>
-        <string>/Users/grim_reaper/.config/ssh/sk-helper-wrapper</string>
+        <string>/Users/grim_reaper/.ssh/sk-helper-wrapper</string>
         <key>SSH_ASKPASS</key>
-        <string>/Users/grim_reaper/.config/ssh/sk-askpass</string>
+        <string>/Users/grim_reaper/.ssh/sk-askpass</string>
         <key>SSH_ASKPASS_REQUIRE</key>
         <string>force</string>
         <key>HOME</key>

@@ -29,7 +29,6 @@ scripts
 \.config/tmux/plugins/*
 \.config/karabiner
 setup-ubuntu-machine.sh
-\.ssh
 \.envrc
 shell.nix
 etc
