@@ -1,6 +1,0 @@
-require("core.global-keymaps")
-require("core.lazy")
-require("core.options")
-require("core.view-port")
-require("core.autocmd")
-require("core.lsp")

@@ -1,15 +1,23 @@
-# ~/.config/zsh/.zshrc # packages/common
+# ~/.config/zsh/.zshrc
 # Maintainer: reaper8055
 
-echo $ZDOTDIR
-
+# Enable parameter expansion, command substitution, and arithmetic
+# expansion in the prompt.
 setopt PROMPT_SUBST
 
+# Define colors using Zsh's associative array for readability
+# %F{...} begins a foreground color, %f resets it.
 local user_color="%F{blue}"
 local path_color="%F{cyan}"
 local error_color="%F{red}"
 local reset="%f"
 
+# Component Logic:
+# 1. \n: Ensures a newline before every prompt for visual breathing room.
+# 2. %n@%m: user@host
+# 3. %~: Current working directory (with ~ for home).
+# 4. %(?.success.failure): The ternary conditional.
+#    '?' checks the exit status of the last command.
 PROMPT='
 ${user_color}%n${reset}@${user_color}%m${reset} in ${path_color}%~${reset}
 %(?.λ.${error_color}󰅖${reset}) '
@@ -75,15 +83,55 @@ export FZF_DEFAULT_OPTS="
     --cycle
 "
 
-# Antidote
-ANTIDOTE_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/antidote"
-fpath+=("$ZDOTDIR/.antidote/functions")
-autoload -Uz antidote
+# Antidote — plugin manager
+# Manager lives at $XDG_DATA_HOME/antidote, auto-bootstrapped via git clone.
+# Plugin clones live at $XDG_DATA_HOME/antidote-plugins (ANTIDOTE_HOME).
+# Generated static bundle lives at $XDG_CACHE_HOME/zsh/.zsh_plugins.zsh (cache).
+# Only the plugin list (.zsh_plugins.txt) is tracked in dotfiles.
 
-if [[ ! -f "$ZDOTDIR/.zsh_plugins.zsh" ]]; then
-    antidote bundle < "$ZDOTDIR/.zsh_plugins.txt" > "$ZDOTDIR/.zsh_plugins.zsh"
+_antidote_dir="${XDG_DATA_HOME:-$HOME/.local/share}/antidote"
+_antidote_bundle_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+_antidote_plugins_txt="$ZDOTDIR/.zsh_plugins.txt"
+_antidote_plugins_zsh="$_antidote_bundle_dir/.zsh_plugins.zsh"
+
+# Auto-bootstrap: clone antidote if not present
+if [[ ! -d "$_antidote_dir" ]]; then
+    print -P "%F{blue}[antidote]%f bootstrapping plugin manager..."
+    git clone --depth=1 https://github.com/mattmc3/antidote.git "$_antidote_dir"
+    print -P "%F{green}[antidote]%f cloned to $_antidote_dir"
 fi
-source "$ZDOTDIR/.zsh_plugins.zsh"
+
+# Wire antidote
+export ANTIDOTE_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/antidote-plugins"
+# fpath=("$_antidote_dir/functions" $fpath)
+# autoload -Uz antidote
+source "$_antidote_dir/antidote.zsh"
+
+# Ensure cache dir exists
+mkdir -p "$_antidote_bundle_dir"
+
+# Regenerate bundle if .zsh_plugins.txt is newer than the bundle,
+# or if the bundle doesn't exist yet (first run after bootstrap)
+if [[ ! -f "$_antidote_plugins_zsh" || \
+      "$_antidote_plugins_txt" -nt "$_antidote_plugins_zsh" ]]; then
+    print -P "%F{blue}[antidote]%f generating plugin bundle..."
+    antidote bundle <"$_antidote_plugins_txt" >|"$_antidote_plugins_zsh"
+    print -P "%F{green}[antidote]%f bundle generated at $_antidote_plugins_zsh"
+fi
+
+source "$_antidote_plugins_zsh"
+
+unset _antidote_dir _antidote_bundle_dir _antidote_plugins_txt _antidote_plugins_zsh
+
+# # Antidote
+# ANTIDOTE_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/antidote"
+# fpath+=("$ZDOTDIR/.antidote/functions")
+# autoload -Uz antidote
+#
+# if [[ ! -f "$ZDOTDIR/.zsh_plugins.zsh" ]]; then
+#     antidote bundle < "$ZDOTDIR/.zsh_plugins.txt" > "$ZDOTDIR/.zsh_plugins.zsh"
+# fi
+# source "$ZDOTDIR/.zsh_plugins.zsh"
 
 # fzf-tab config
 zstyle ':fzf-tab:*' fzf-flags $(echo $FZF_DEFAULT_OPTS)
