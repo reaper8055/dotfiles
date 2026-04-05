@@ -56,11 +56,13 @@ setopt HIST_VERIFY
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
-# SSH agent — stable socket managed by platform setup
-export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
-
 # Platform-specific config — loaded from zsh.conf.d/
 for f in "$XDG_CONFIG_HOME/zsh/zsh.conf.d/"*.zsh(N); do
+    [[ -r "$f" ]] && source "$f"
+done
+
+# Custom config
+for f in "$HOME/zsh.conf.d/"*.zsh(N); do
     [[ -r "$f" ]] && source "$f"
 done
 
@@ -71,6 +73,11 @@ if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
 else
     compinit -C
 fi
+
+# Autoload custom functions from $ZDOTDIR/functions/
+# Files prefixed with _ are completion functions, others are autoloaded directly.
+fpath=("$ZDOTDIR/functions" $fpath)
+autoload -Uz $ZDOTDIR/functions/*(.:t)
 
 # FZF default options
 export FZF_DEFAULT_OPTS="

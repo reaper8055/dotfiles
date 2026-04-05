@@ -21,6 +21,8 @@ mkShell {
         fnm
         nodejs
         yarn
+        typescript
+        typescript-language-server
         # unix-tools
         fd
         ripgrep
