@@ -9,7 +9,9 @@ local is_linux = target:find("linux") ~= nil
 
 -- Core Settings
 config.enable_wayland = false
-config.color_scheme = "kanagawa (Gogh)"
+-- config.color_scheme = "kanagawa (Gogh)"
+config.color_scheme = "GruvboxDarkHard"
+-- config.color_scheme = "Gruvbox dark, hard (base16)"
 
 -- Font Settings
 config.font = wezterm.font({ family = "JetBrainsMono NF", stretch = "Normal" })

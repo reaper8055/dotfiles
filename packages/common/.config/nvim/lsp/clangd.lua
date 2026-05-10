@@ -1,5 +1,4 @@
--- lsp/clangd.lua - Native clangd configuration
-
+-- lsp/clangd.lua
 -- Build capabilities with UTF-16 offset encoding
 -- local capabilities = vim.lsp.protocol.make_client_capabilities()
 -- capabilities.offsetEncoding = { "utf-16" }
@@ -16,7 +15,8 @@ return {
         "--function-arg-placeholders",
         "--fallback-style=llvm",
     },
-    filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+    -- [Problem Identification]: Removed "proto" from this table
+    filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
     root_markers = {
         "Makefile",
         "configure.ac",

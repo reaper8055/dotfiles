@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+#autoload
+
+bundleid() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: bundleid <App Name>" >&2
+        return 1
+    fi
+    osascript -e "id of app \"$1\""
+}

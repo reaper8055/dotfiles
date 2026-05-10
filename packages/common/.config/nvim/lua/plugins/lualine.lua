@@ -2,8 +2,11 @@ return {
     "nvim-lualine/lualine.nvim",
     enabled = true,
     dependencies = {
-        "nvim-tree/nvim-web-devicons",
-        opt = true,
+        {
+            "nvim-tree/nvim-web-devicons",
+            opt = true,
+        },
+        { "rebelot/kanagawa.nvim" },
     },
     config = function()
         -- Get Kanagawa colors
@@ -14,7 +17,7 @@ return {
             options = {
                 icons_enabled = true,
                 globalstatus = true,
-                theme = vim.g.colors_name,
+                -- theme = vim.g.colors_name,
                 disabled_filetypes = {},
                 always_divide_middle = true,
                 refresh = {

@@ -4,14 +4,14 @@ return {
         "gopls",
         "-remote=auto",
     },
-    cmd_env = {
-        GOPLS_CACHE = vim.fn.expand("~/.cache/gopls"),
-        -- optional, but sometimes useful for consistent behavior:
-        GOMODCACHE = vim.fn.expand("~/.cache/go/pkg/mod"),
-        GOCACHE = vim.fn.expand("~/.cache/go/build"),
-    },
+    -- cmd_env = {
+    --     -- GOPLS_CACHE = vim.fn.expand("~/.cache/gopls"),
+    --     -- optional, but sometimes useful for consistent behavior:
+    --     -- GOMODCACHE = vim.fn.expand("~/.cache/go/pkg/mod"),
+    --     -- GOCACHE = vim.fn.expand("~/.cache/go/build"),
+    -- },
     filetypes = { "go", "gomod", "gowork", "gotmpl", "gosum" }, -- File types that this server will handle
-    root_markers = { "go.mod", "go.work", ".git" }, -- Markers to identify the root of the project
+    -- root_markers = { "go.mod", "go.work", ".git" }, -- Markers to identify the root of the project
     -- Settings for the language server
     settings = {
         gopls = {
@@ -101,7 +101,13 @@ return {
             usePlaceholders = true,
             completeUnimported = true,
             staticcheck = true,
-            directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
+            directoryFilters = {
+                "-.git",
+                "-.vscode",
+                "-.idea",
+                "-.vscode-test",
+                "-node_modules",
+            },
             semanticTokens = true,
         },
     },

@@ -1,4 +1,3 @@
--- Local helpers
 local function create_keymap_opts(bufnr, desc)
     return {
         desc = "nvim-tree: " .. desc,
@@ -13,46 +12,23 @@ local function setup_keymaps(bufnr)
     local api = require("nvim-tree.api")
     local opts = function(desc) return create_keymap_opts(bufnr, desc) end
 
-    local keymaps = {
-        -- Navigation
-        { mode = "n", key = "l", action = api.node.open.edit, desc = "Open" },
-        {
-            mode = "n",
-            key = "h",
-            action = api.node.navigate.parent_close,
-            desc = "Close Directory",
-        },
-        { mode = "n", key = "v", action = api.node.open.vertical, desc = "Open: Vertical Split" },
-        { mode = "n", key = "<CR>", action = api.node.open.edit, desc = "Open" },
-        { mode = "n", key = "P", action = api.node.navigate.parent, desc = "Parent Directory" },
+    -- start with upstream defaults
+    api.map.on_attach.default(bufnr)
 
-        -- File operations
-        { mode = "n", key = "a", action = api.fs.create, desc = "Create" },
-        { mode = "n", key = "d", action = api.fs.remove, desc = "Delete" },
-        { mode = "n", key = "r", action = api.fs.rename, desc = "Rename" },
-        { mode = "n", key = "x", action = api.fs.cut, desc = "Cut" },
-        { mode = "n", key = "c", action = api.fs.copy.node, desc = "Copy" },
-        { mode = "n", key = "p", action = api.fs.paste, desc = "Paste" },
+    -- remove defaults you do not use / want
+    vim.keymap.del("n", "g?", { buffer = bufnr })
+    vim.keymap.del("n", "<C-v>", { buffer = bufnr })
+    vim.keymap.del("n", "<CR>", { buffer = bufnr })
 
-        -- Tree operations
-        { mode = "n", key = "R", action = api.tree.reload, desc = "Refresh" },
-        { mode = "n", key = "?", action = api.tree.toggle_help, desc = "Help" },
-        { mode = "n", key = "q", action = api.tree.close, desc = "Close" },
+    -- add vim-style navigation
+    vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+    vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+    vim.keymap.set("n", "v", api.node.open.vertical, opts("Open: Vertical Split"))
+    vim.keymap.set("n", "<CR>", api.node.open.edit, opts("Open"))
+    vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
 
-        -- Filters and toggles
-        { mode = "n", key = "H", action = api.tree.toggle_hidden_filter, desc = "Toggle Dotfiles" },
-        {
-            mode = "n",
-            key = "I",
-            action = api.tree.toggle_gitignore_filter,
-            desc = "Toggle Git Ignore",
-        },
-    }
-
-    -- Apply keymaps
-    for _, map in ipairs(keymaps) do
-        vim.keymap.set(map.mode, map.key, map.action, opts(map.desc))
-    end
+    -- optional opinionated overrides
+    vim.keymap.set("n", "q", api.tree.close, opts("Close"))
 end
 
 return {
@@ -64,35 +40,43 @@ return {
     },
     config = function()
         local nvim_tree = require("nvim-tree")
+        local api = require("nvim-tree.api")
         local helpers = require("utils.win.decorations")
 
-        -- Setup autoclose behavior
         vim.api.nvim_create_autocmd("BufEnter", {
             nested = true,
             callback = function()
-                if
-                    #vim.api.nvim_list_wins() == 1
-                    and vim.api.nvim_buf_get_name(0):match("NvimTree_") ~= nil
-                then
-                    vim.cmd("quit")
-                end
+                if #vim.api.nvim_list_wins() ~= 1 then return end
+
+                if api.tree.is_tree_buf(0) then vim.cmd.quit() end
             end,
         })
 
         nvim_tree.setup({
             on_attach = setup_keymaps,
+
             disable_netrw = true,
             hijack_netrw = true,
-            update_cwd = true,
+
+            sync_root_with_cwd = true,
+
             update_focused_file = {
                 enable = true,
-                update_root = false,
+                update_root = {
+                    enable = true,
+                    ignore_list = {},
+                },
             },
+
             view = {
                 width = 40,
                 side = "right",
                 signcolumn = "yes",
+                preserve_window_proportions = true,
+                -- cursorline = true,
+                -- cursorlineopt = "both",
             },
+
             renderer = {
                 indent_markers = {
                     enable = true,
@@ -100,24 +84,35 @@ return {
                 },
                 icons = {
                     git_placement = "before",
-                    padding = " ",
                     symlink_arrow = "  ",
+                    padding = {
+                        icon = " ",
+                        folder_arrow = " ",
+                    },
                     show = {
                         file = true,
                         folder = true,
                         folder_arrow = true,
                         git = true,
+                        modified = true,
+                        diagnostics = true,
+                        bookmarks = true,
                     },
                 },
             },
+
             filters = {
                 dotfiles = false,
+                git_ignored = true,
             },
+
             git = {
                 enable = true,
-                ignore = true,
                 timeout = 500,
+                show_on_dirs = true,
+                show_on_open_dirs = true,
             },
+
             actions = {
                 open_file = {
                     quit_on_open = true,
@@ -128,12 +123,26 @@ return {
             },
         })
 
-        -- Global keymaps
-        vim.keymap.set(
-            "n",
-            "<leader>e",
-            "<cmd>NvimTreeToggle<cr>",
-            { noremap = true, silent = true }
-        )
+        vim.api.nvim_set_hl(0, "NvimTreeCursorLine", {
+            bg = "#2A2A37",
+            bold = false,
+        })
+
+        vim.api.nvim_set_hl(0, "NvimTreeCursorLineNr", {
+            fg = "#E6C384",
+            bold = true,
+        })
+
+        vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeFindFileToggle!<cr>", {
+            noremap = true,
+            silent = true,
+            desc = "Toggle nvim-tree on current file",
+        })
+
+        -- vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", {
+        --     noremap = true,
+        --     silent = true,
+        --     desc = "Toggle nvim-tree",
+        -- })
     end,
 }

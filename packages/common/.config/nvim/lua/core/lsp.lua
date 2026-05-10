@@ -14,7 +14,6 @@ local function get_available_lsps()
     -- Using stdpath("config") ensures we find the base lua/lsp-servers directory
     --- @type string
     local internal_config = vim.fn.stdpath("config") .. "/lsp"
-    print(internal_config)
 
     --- @type string[]
     local paths_to_scan = { internal_config }

@@ -145,7 +145,7 @@ vim.cmd("set whichwrap+=<,>,[,],h,l")
 
 -- Add hyphen (-) to the list of characters that are considered part of a word
 -- This means operations like 'w', 'b', or '*' will treat hyphenated-words as a single word
-vim.cmd([[set iskeyword+=-]])
+-- vim.cmd([[set iskeyword+=-]])
 
 -- Modify format options:
 -- t = auto-wrap text using textwidth

@@ -77,7 +77,7 @@ fi
 # Autoload custom functions from $ZDOTDIR/functions/
 # Files prefixed with _ are completion functions, others are autoloaded directly.
 fpath=("$ZDOTDIR/functions" $fpath)
-autoload -Uz $ZDOTDIR/functions/*(.:t)
+autoload -Uz $ZDOTDIR/functions/*(-.:t)
 
 # FZF default options
 export FZF_DEFAULT_OPTS="
