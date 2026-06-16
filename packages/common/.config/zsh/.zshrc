@@ -96,37 +96,46 @@ export FZF_DEFAULT_OPTS="
 # Generated static bundle lives at $XDG_CACHE_HOME/zsh/.zsh_plugins.zsh (cache).
 # Only the plugin list (.zsh_plugins.txt) is tracked in dotfiles.
 
+# Ensure ZDOTDIR is set (Defensive Pathing)
+export ZDOTDIR="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}"
+
 _antidote_dir="${XDG_DATA_HOME:-$HOME/.local/share}/antidote"
 _antidote_bundle_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 _antidote_plugins_txt="$ZDOTDIR/.zsh_plugins.txt"
 _antidote_plugins_zsh="$_antidote_bundle_dir/.zsh_plugins.zsh"
 
-# Auto-bootstrap: clone antidote if not present
-if [[ ! -d "$_antidote_dir" ]]; then
-    print -P "%F{blue}[antidote]%f bootstrapping plugin manager..."
-    git clone --depth=1 https://github.com/mattmc3/antidote.git "$_antidote_dir"
-    print -P "%F{green}[antidote]%f cloned to $_antidote_dir"
+# Auto-bootstrap: check for the actual file, not just the directory
+if [[ ! -f "$_antidote_dir/antidote.zsh" ]]; then
+    if command -v git >/dev/null 2>&1; then
+        print -P "%F{blue}[antidote]%f bootstrapping plugin manager..."
+        mkdir -p "$(dirname "$_antidote_dir")"
+        git clone --depth=1 https://github.com/mattmc3/antidote.git "$_antidote_dir"
+        print -P "%F{green}[antidote]%f cloned to $_antidote_dir"
+    else
+        print -P "%F{red}[antidote]%f error: git not found, cannot bootstrap plugins."
+    fi
 fi
 
-# Wire antidote
-export ANTIDOTE_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/antidote-plugins"
-# fpath=("$_antidote_dir/functions" $fpath)
-# autoload -Uz antidote
-source "$_antidote_dir/antidote.zsh"
+# Wire antidote and generate bundle
+if [[ -f "$_antidote_dir/antidote.zsh" ]]; then
+    export ANTIDOTE_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/antidote-plugins"
+    source "$_antidote_dir/antidote.zsh"
 
-# Ensure cache dir exists
-mkdir -p "$_antidote_bundle_dir"
+    mkdir -p "$_antidote_bundle_dir"
 
-# Regenerate bundle if .zsh_plugins.txt is newer than the bundle,
-# or if the bundle doesn't exist yet (first run after bootstrap)
-if [[ ! -f "$_antidote_plugins_zsh" || \
-      "$_antidote_plugins_txt" -nt "$_antidote_plugins_zsh" ]]; then
-    print -P "%F{blue}[antidote]%f generating plugin bundle..."
-    antidote bundle <"$_antidote_plugins_txt" >|"$_antidote_plugins_zsh"
-    print -P "%F{green}[antidote]%f bundle generated at $_antidote_plugins_zsh"
+    # Regenerate bundle if .zsh_plugins.txt is newer than the bundle
+    if [[ ! -f "$_antidote_plugins_zsh" || "$_antidote_plugins_txt" -nt "$_antidote_plugins_zsh" ]]; then
+        if [[ -f "$_antidote_plugins_txt" ]]; then
+            print -P "%F{blue}[antidote]%f generating plugin bundle..."
+            antidote bundle <"$_antidote_plugins_txt" >|"$_antidote_plugins_zsh"
+            print -P "%F{green}[antidote]%f bundle generated"
+        else
+            print -P "%F{red}[antidote]%f error: $_antidote_plugins_txt not found."
+        fi
+    fi
+
+    [[ -f "$_antidote_plugins_zsh" ]] && source "$_antidote_plugins_zsh"
 fi
-
-source "$_antidote_plugins_zsh"
 
 unset _antidote_dir _antidote_bundle_dir _antidote_plugins_txt _antidote_plugins_zsh
 
