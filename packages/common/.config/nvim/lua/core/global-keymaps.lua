@@ -48,10 +48,6 @@ keymap("n", "<S-h>", "<cmd>bprevious<cr>", opts)
 -- 2. Control
 keymap("n", "<leader>bd", "<cmd>bd<cr>", opts)
 
--- Insert --
--- Press jk fast to enter
-keymap("i", "jk", "<ESC>", opts)
-
 -- Visual --
 -- Stay in indent mode
 keymap("v", "<", "<gv", opts)

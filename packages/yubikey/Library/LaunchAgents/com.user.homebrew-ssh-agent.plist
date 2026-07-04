@@ -8,10 +8,7 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/opt/homebrew/bin/ssh-agent</string>
-        <string>-D</string>
-        <string>-a</string>
-        <string>/Users/grim_reaper/.ssh/agent.sock</string>
+        <string>/Users/grim_reaper/.ssh/ssh-agent-start</string>
     </array>
 
     <key>EnvironmentVariables</key>

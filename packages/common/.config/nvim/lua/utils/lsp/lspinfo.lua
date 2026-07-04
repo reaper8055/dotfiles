@@ -18,7 +18,7 @@ local function get_lsp_info(bufnr)
         "- OK Deprecated servers: (none)",
         "",
         string.format("LSP configs active in this buffer (bufnr: %d) ~", bufnr),
-        string.format("- Language client log: %s", vim.lsp.get_log_path()),
+        string.format("- Language client log: %s", vim.lsp.log.get_filename()),
         string.format("- Detected filetype: `%s`", vim.bo[bufnr].filetype),
         string.format("- %d client(s) attached to this buffer", #clients),
     }
