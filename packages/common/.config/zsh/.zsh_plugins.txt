@@ -1,10 +1,16 @@
-zap-zsh/supercharge
-zsh-users/zsh-autosuggestions
+# Plugin list for antidote. Order matters — see notes below.
+
+# zsh-vi-mode must load FIRST. With ZVM_INIT_MODE=sourcing (set in .zshrc) it
+# initialises during sourcing instead of at the first precmd, so plugins and
+# keybindings loaded after this line survive instead of being reset.
+jeffreytse/zsh-vi-mode
+
 hlissner/zsh-autopair
 Aloxaf/fzf-tab
-zap-zsh/fzf
 
-# Must be last
+# zsh-syntax-highlighting must come after everything that defines widgets...
 zsh-users/zsh-syntax-highlighting
 
-jeffreytse/zsh-vi-mode
+# ...and zsh-autosuggestions must come after zsh-syntax-highlighting.
+# (upstream: "make sure that you load it before you load zsh-autosuggestions")
+zsh-users/zsh-autosuggestions

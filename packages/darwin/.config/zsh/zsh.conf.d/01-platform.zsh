@@ -8,16 +8,13 @@ fi
 # Clipboard
 alias copy='pbcopy'
 
-# BSD ls doesn't support --color=auto, use -G instead
-alias ls='ls --color=always'
+# BSD ls doesn't support --color, use -G instead
+alias ls='ls -G'
 alias ll='ls -lah'
 alias la='ls -A'
 
-# fzf via homebrew
-if [[ -f "$(brew --prefix)/opt/fzf/shell/completion.zsh" ]]; then
-    source "$(brew --prefix)/opt/fzf/shell/completion.zsh"
-    source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
-fi
+# NOTE: fzf shell integration is handled by _setup_fzf() in .zshrc, which has to
+# run after zsh-vi-mode. Don't source fzf here — it would be wiped on init.
 
 # Nix
 if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then

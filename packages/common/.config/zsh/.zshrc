@@ -32,7 +32,8 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 [[ $- != *i* ]] && return
 
 # Environment variables
-export TERM="xterm-256color"
+# NOTE: do not export TERM here — the terminal emulator sets it correctly.
+# Forcing xterm-256color hides truecolor/undercurl support from nvim & friends.
 export LANG=en_US.UTF-8
 export EDITOR="$(command -v nvim 2>/dev/null || command -v vim 2>/dev/null || echo 'vi')"
 export VISUAL="$EDITOR"
@@ -55,6 +56,11 @@ setopt HIST_SAVE_NO_DUPS
 setopt HIST_VERIFY
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
+setopt HIST_REDUCE_BLANKS
+
+# General shell options (both are off by default in zsh)
+unsetopt BEEP
+setopt INTERACTIVE_COMMENTS
 
 # Platform-specific config — loaded from zsh.conf.d/
 for f in "$XDG_CONFIG_HOME/zsh/zsh.conf.d/"*.zsh(N); do
@@ -67,6 +73,18 @@ for f in "$HOME/zsh.conf.d/"*.zsh(N); do
 done
 
 # Completion
+zmodload zsh/complist
+
+# Case-insensitive and partial-word matching (foo -> FooBar, /u/l/b -> /usr/local/bin)
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
+
+# fzf-tab requires zsh's own menu to be OFF so it can capture the
+# unambiguous prefix. Do not set `menu select` or `setopt MENU_COMPLETE`.
+zstyle ':completion:*' menu no
+
+_comp_options+=(globdots)     # complete hidden files (completion only, not globbing)
+zle_highlight=('paste:none')  # don't highlight pasted text
+
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
     compinit
@@ -89,6 +107,56 @@ export FZF_DEFAULT_OPTS="
     --layout=reverse
     --cycle
 "
+
+# fzf shell integration (Ctrl-R history, Ctrl-T files, Alt-C cd).
+# Defined as a function because zsh-vi-mode resets keymaps on init and we need
+# to re-apply these afterwards. Idempotent — safe to call more than once.
+_setup_fzf() {
+    # fzf >= 0.48 can emit the integration script itself; this is the preferred
+    # path and works regardless of how fzf was installed (brew, git, nix).
+    if command -v fzf >/dev/null 2>&1 && fzf --zsh >/dev/null 2>&1; then
+        source <(fzf --zsh)
+        return
+    fi
+
+    # Fallback for older fzf: locate the shipped shell/ directory.
+    local d
+    for d in \
+        "$HOME/.fzf/shell" \
+        "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/fzf/shell" \
+        /usr/share/fzf/shell \
+        /usr/share/doc/fzf/examples
+    do
+        if [[ -f "$d/key-bindings.zsh" ]]; then
+            source "$d/key-bindings.zsh"
+            [[ -f "$d/completion.zsh" ]] && source "$d/completion.zsh"
+            return
+        fi
+    done
+}
+
+# Personal keybindings. Also re-applied after zsh-vi-mode init, for the same reason.
+_setup_keybindings() {
+    bindkey '^p' history-search-backward
+    bindkey '^n' history-search-forward
+    bindkey '^H' backward-delete-char
+    bindkey '^?' backward-delete-char
+
+    # fzf's completion module grabs Tab for fzf-completion, displacing fzf-tab.
+    # fzf-tab is the better one, so hand Tab back to it when it's loaded.
+    (( ${+widgets[fzf-tab-complete]} )) && bindkey '^I' fzf-tab-complete
+}
+
+# zsh-vi-mode: initialise at *sourcing* time rather than at the first precmd.
+# The default (ZVM_INIT_MODE=last) runs after this whole file has executed and
+# wipes every keybinding set here. Must be set before the plugin is sourced.
+ZVM_INIT_MODE=sourcing
+
+# ZVM calls this once it has finished setting up its keymaps.
+zvm_after_init() {
+    _setup_fzf
+    _setup_keybindings
+}
 
 # Antidote — plugin manager
 # Manager lives at $XDG_DATA_HOME/antidote, auto-bootstrapped via git clone.
@@ -152,11 +220,10 @@ unset _antidote_dir _antidote_bundle_dir _antidote_plugins_txt _antidote_plugins
 # fzf-tab config
 zstyle ':fzf-tab:*' fzf-flags $(echo $FZF_DEFAULT_OPTS)
 
-# Keybindings
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
-bindkey '^H' backward-delete-char
-bindkey '^?' backward-delete-char
+# fzf + keybindings. zvm_after_init already ran these during sourcing, but call
+# them again here so the config still works if zsh-vi-mode is absent.
+_setup_fzf
+_setup_keybindings
 
 # Aliases
 alias n="nvim"
@@ -177,7 +244,9 @@ alias gl="git pull"
 
 alias nix-search="nix-env -qaP"
 alias path='echo $PATH | tr ":" "\n" | nl'
-alias grep="grep --color=always"
+# --color=auto, not always: `always` emits ANSI escapes into pipes and breaks
+# anything that parses grep's output.
+alias grep="grep --color=auto"
 
 # direnv
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
@@ -190,15 +259,6 @@ path=(
 )
 typeset -U path
 
-[[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
-
-# Cleanup for zsh-vi-mode — re-bind fzf after vi-mode loads
-function zvm_after_init() {
-    # Platform files handle fzf sourcing; re-source keybindings here
-    for f in "$XDG_CONFIG_HOME/zsh/zsh.conf.d/"*.zsh(N); do
-        [[ "$f" == *fzf* || "$f" == *platform* ]] && source "$f"
-    done
-}
-
-# Performance optimization
-zmodload zsh/zprof  # Uncomment to profile zsh startup time
+# Performance: uncomment BOTH this and the `zprof` call to profile startup.
+# zmodload zsh/zprof   # (must be the first line of .zshrc to be useful)
+# zprof

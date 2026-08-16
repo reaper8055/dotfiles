@@ -1,24 +1,77 @@
 #!/usr/bin/env bash
 # setup.sh — stow dotfiles based on platform and environment
-# Usage:
-#   ./setup.sh                    # personal machine
-#   ./setup.sh --corp             # corp machine
-#   ./setup.sh --dry-run          # simulate without modifying filesystem
-#   ./setup.sh --clean            # remove all dotfiles symlinks
-#   ./setup.sh --clean --corp     # remove only corp-mode symlinks
-#   ./setup.sh --clean --dry-run  # simulate clean
+# Run './setup.sh --help' for usage.
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROG="$(basename "${BASH_SOURCE[0]}")"
 DRY_RUN=false
 CORP=false
 CLEAN=false
 
+usage() {
+    cat <<EOF
+$PROG — symlink dotfiles into \$HOME with GNU stow
+
+USAGE
+    $PROG [OPTIONS]
+
+    With no options, stows the personal-machine package set for the
+    current platform into \$HOME.
+
+OPTIONS
+    --corp       Corp machine. Stows a reduced package set and skips all
+                 post-install steps. See PACKAGES below.
+    --clean      Remove symlinks instead of creating them. Unstows exactly
+                 the packages the same invocation would have stowed, so
+                 '--clean --corp' only removes corp-mode symlinks.
+    --dry-run    Simulate. Passes --simulate to stow and skips post-install
+                 steps. Nothing on disk is modified.
+    -h, --help   Show this help and exit.
+
+    Options may be combined and given in any order.
+
+PACKAGES
+    Selected from $DOTFILES_DIR/packages/ by platform and mode:
+
+                    personal                        corp
+    macOS           common darwin ssh yubikey       common darwin
+    Linux           common linux ssh                common
+
+POST-INSTALL
+    Runs only for a personal install (not with --corp or --dry-run):
+
+    macOS    chmod 700 on ~/.ssh/sk-askpass and ~/.ssh/sk-helper-wrapper,
+             then reload the com.user.homebrew-ssh-agent launchd agent.
+    Linux    Verify ~/.ssh/rc exists (needed for agent-forwarding updates).
+
+EXAMPLES
+    $PROG                      Personal machine, full install
+    $PROG --corp               Corp machine
+    $PROG --dry-run            Preview what a personal install would link
+    $PROG --corp --dry-run     Preview a corp install
+    $PROG --clean              Remove personal-machine symlinks
+    $PROG --clean --corp       Remove corp-mode symlinks only
+    $PROG --clean --dry-run    Preview a clean
+
+EXIT STATUS
+    0  Success
+    1  Runtime error (unsupported platform, missing package)
+    2  Invalid usage
+EOF
+}
+
 for arg in "$@"; do
     case "$arg" in
-        --dry-run) DRY_RUN=true ;;
-        --corp)    CORP=true ;;
-        --clean)   CLEAN=true ;;
+        --dry-run)  DRY_RUN=true ;;
+        --corp)     CORP=true ;;
+        --clean)    CLEAN=true ;;
+        -h|--help)  usage; exit 0 ;;
+        *)
+            printf "\033[0;31m[ERROR]\033[0m Unknown option: %s\n\n" "$arg" >&2
+            usage >&2
+            exit 2
+            ;;
     esac
 done
 
