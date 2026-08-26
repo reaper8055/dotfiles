@@ -5,4 +5,11 @@ window-padding-x = 5,5
 window-padding-y = 0,0
 window-padding-balance = true
 minimum-contrast = 1.1
+keybind = shift+enter=text:\r
 
+# Disable programming ligatures (like !=, ==, >=)
+font-feature = -calt
+
+# Disable standard and discretionary ligatures
+font-feature = -liga
+font-feature = -dlig

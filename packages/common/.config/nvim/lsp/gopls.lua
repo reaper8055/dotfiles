@@ -1,8 +1,7 @@
 return {
     cmd = {
-        -- Command to start the language server
         "gopls",
-        "-remote=auto",
+        -- "-remote=auto",
     },
     -- cmd_env = {
     --     -- GOPLS_CACHE = vim.fn.expand("~/.cache/gopls"),
@@ -11,7 +10,7 @@ return {
     --     -- GOCACHE = vim.fn.expand("~/.cache/go/build"),
     -- },
     filetypes = { "go", "gomod", "gowork", "gotmpl", "gosum" }, -- File types that this server will handle
-    -- root_markers = { "go.mod", "go.work", ".git" }, -- Markers to identify the root of the project
+    root_markers = { "go.mod", "go.work", ".git" }, -- Markers to identify the root of the project
     -- Settings for the language server
     settings = {
         gopls = {
@@ -39,10 +38,7 @@ return {
                 nilness = true,
                 unusedparams = true,
                 unusedwrite = true,
-                useany = true,
                 unreachable = true,
-                modernize = true,
-                stylecheck = true,
                 appends = true,
                 asmdecl = true,
                 assign = true,
@@ -50,9 +46,6 @@ return {
                 bools = true,
                 buildtag = true,
                 cgocall = true,
-                composite = true,
-                contextcheck = true,
-                deba = true,
                 atomicalign = true,
                 composites = true,
                 copylocks = true,
@@ -64,7 +57,6 @@ return {
                 errorsas = true,
                 fillreturns = true,
                 framepointer = true,
-                gofix = true,
                 hostport = true,
                 infertypeargs = true,
                 lostcancel = true,

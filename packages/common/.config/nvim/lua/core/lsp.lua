@@ -39,10 +39,17 @@ local function get_available_lsps()
             while true do
                 local name, type = vim.uv.fs_scandir_next(handle)
                 if not name then break end
-                if type == "file" and name:match("%.lua$") then
-                    --- @type lsp.ServerName
-                    local server_name = name:gsub("%.lua$", "")
-                    servers[server_name] = true
+                -- fs_scandir reports "link" for symlinks, and stow-managed
+                -- configs are all symlinks. Checking `type == "file"` here
+                -- silently skips every server. fs_stat follows the link.
+                if name:match("%.lua$") then
+                    --- @type uv.fs_stat.result|nil
+                    local entry_stat = vim.uv.fs_stat(path .. "/" .. name)
+                    if entry_stat and entry_stat.type == "file" then
+                        --- @type lsp.ServerName
+                        local server_name = name:gsub("%.lua$", "")
+                        servers[server_name] = true
+                    end
                 end
             end
         end
