@@ -730,6 +730,7 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
+                                            "^dev\\.zed\\.Zed$",
                                             "^com\\.github\\.wez\\.wezterm$",
                                             "^com\\.microsoft\\.rdc$",
                                             "^com\\.microsoft\\.rdc\\.",
@@ -983,6 +984,8 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
+                                            "^dev\\.zed\\.Zed$",
+                                            "^com\\.microsoft\\.VSCode$",
                                             "^com\\.github\\.wez\\.wezterm$",
                                             "^com\\.microsoft\\.rdc$",
                                             "^com\\.microsoft\\.rdc\\.",
@@ -1049,6 +1052,7 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
+                                            "^dev\\.zed\\.Zed$",
                                             "^com\\.github\\.wez\\.wezterm$",
                                             "^com\\.microsoft\\.rdc$",
                                             "^com\\.microsoft\\.rdc\\.",
@@ -1180,6 +1184,8 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
+                                            "^dev\\.zed\\.Zed$",
+                                            "^com\\.microsoft\\.VSCode$",
                                             "^com\\.github\\.wez\\.wezterm$",
                                             "^com\\.microsoft\\.rdc$",
                                             "^com\\.microsoft\\.rdc\\.",
@@ -1561,6 +1567,7 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
+                                            "^dev\\.zed\\.Zed$",
                                             "^com\\.github\\.wez\\.wezterm$",
                                             "^com\\.microsoft\\.rdc$",
                                             "^com\\.microsoft\\.rdc\\.",
@@ -1815,6 +1822,8 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
+                                            "^dev\\.zed\\.Zed$",
+                                            "^com\\.github\\.wez\\.wezterm$",
                                             "^com\\.microsoft\\.rdc$",
                                             "^com\\.microsoft\\.rdc\\.",
                                             "^net\\.sf\\.cord$",
@@ -1980,6 +1989,7 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
+                                            "^com\\.github\\.wez\\.wezterm$",
                                             "^com\\.microsoft\\.rdc$",
                                             "^com\\.microsoft\\.rdc\\.",
                                             "^net\\.sf\\.cord$",
@@ -2469,6 +2479,7 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
+                                            "^dev\\.zed\\.Zed$",
                                             "^org\\.mozilla\\.firefox$",
                                             "^org\\.mozilla\\.firefoxdeveloperedition$",
                                             "^org\\.mozilla\\.nightly$",
@@ -2957,7 +2968,9 @@
                         "product_id": 866,
                         "vendor_id": 10730
                     },
-                    "ignore": false
+                    "ignore": false,
+                    "ignore_vendor_events": true,
+                    "manipulate_caps_lock_led": false
                 },
                 {
                     "identifiers": {
@@ -2966,6 +2979,30 @@
                         "vendor_id": 1133
                     },
                     "ignore": true
+                },
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 835,
+                        "vendor_id": 1452
+                    },
+                    "manipulate_caps_lock_led": false,
+                    "simple_modifications": [
+                        {
+                            "from": { "key_code": "caps_lock" },
+                            "to": [{ "key_code": "left_control" }]
+                        }
+                    ]
+                },
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": true,
+                        "product_id": 24926,
+                        "vendor_id": 7504
+                    },
+                    "ignore": false,
+                    "ignore_vendor_events": true
                 }
             ],
             "name": "Default profile",
