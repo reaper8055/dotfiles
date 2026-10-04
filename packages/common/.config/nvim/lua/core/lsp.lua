@@ -96,9 +96,13 @@ vim.diagnostic.config({
     },
 })
 
--- Create user commands
-local lspinfo = require("utils.lsp.lspinfo")
-vim.api.nvim_create_user_command("LspInfoFloat", lspinfo.create_float, {})
+-- :LspInfo is our own float; `:checkhealth vim.lsp` has the full dump.
+vim.api.nvim_create_user_command("LspInfo", function() require("utils.lsp.info").open() end, { desc = "LSP info" })
+vim.api.nvim_create_user_command(
+    "LspRestart",
+    function(opts) vim.cmd("lsp restart " .. opts.args) end,
+    { nargs = "*", desc = "Restart LSP clients (all attached, or the named ones)" }
+)
 
 -- Created once, at module scope. `clear = false` so that per-buffer autocmds
 -- registered into it on LspAttach survive; they are cleared per buffer instead.
@@ -173,7 +177,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end,
             "Signature Help"
         )
-        keymap("<leader>li", "<cmd>LspInfoFloat<cr>", "[l]sp [i]nfo")
+        keymap("<leader>li", "<cmd>LspInfo<cr>", "[l]sp [i]nfo")
 
         -- Language-specific keymaps
         if client and client.name == "clangd" then

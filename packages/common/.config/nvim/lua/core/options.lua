@@ -132,6 +132,9 @@ vim.opt.fillchars = {
 --- h,l = h and l keys in normal mode
 vim.cmd("set whichwrap+=<,>,[,],h,l")
 
+-- :checkhealth (and :LspInfo) opens in a float, using 'winborder'.
+vim.g.health = { style = "float" }
+
 -- Floats and popup menus share the editor background, with a visible border.
 -- Links only (no colour values), so this follows whichever colorscheme is
 -- loaded. Registered before `colorscheme` so it also applies on startup.
