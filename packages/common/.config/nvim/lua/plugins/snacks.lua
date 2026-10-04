@@ -56,7 +56,9 @@ return {
                 end,
             },
         },
-        explorer = { enabled = true },
+        -- Off: nvim-tree is the sidebar (<leader>e) and oil owns directory
+        -- buffers (-). This had no keybinding and was never reachable.
+        explorer = { enabled = false },
         indent = { enabled = false },
         input = { enabled = true },
         picker = { enabled = false },

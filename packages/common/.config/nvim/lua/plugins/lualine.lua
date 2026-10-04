@@ -20,10 +20,13 @@ return {
                 -- theme = vim.g.colors_name,
                 disabled_filetypes = {},
                 always_divide_middle = true,
+                -- lualine's own defaults. The previous value of 20 rebuilt the
+                -- statusline 50 times a second; tabline/winbar are empty here
+                -- anyway (bufferline owns the tabline).
                 refresh = {
-                    statusline = 20,
-                    tabline = 20,
-                    winbar = 20,
+                    statusline = 1000,
+                    tabline = 1000,
+                    winbar = 1000,
                 },
             },
             sections = {

@@ -1,107 +1,69 @@
-local opts = {
-    noremap = true, -- Disable recursive mapping evaluation to prevent infinite execution loops [Source: Vim help 'noremap']
-    silent = true, -- Suppress command-line output when keymaps are executed [Source: Vim help 'silent']
-}
+-- Set leader keys prior to registering mappings that reference <leader>
+-- Setting mapleader after mapping <leader> binds prevents resolution to Space [K]
+vim.g.mapleader = " "
+-- Deliberately NOT " ". A localleader identical to leader means any plugin that
+-- defines a <localleader> mapping collides with the <leader> tree.
+vim.g.maplocalleader = "\\"
 
--- Shorten function name
-local keymap = vim.keymap.set -- Reference to Neovim Lua keymap mapping API [Source: Neovim Documentation 'vim.keymap.set']
+local default_opts = { silent = true }
 
---Remap space as leader key
-keymap("", "<Space>", "<Nop>", opts) -- [Global/Noremap] Unbind default Space key behavior (move right) across all modes [Source: Vim help '<Nop>']
-vim.g.mapleader = " " -- Set global leader key to Space [Source: Vim help 'mapleader']
-vim.g.maplocalleader = " " -- Set buffer-local leader key to Space [Source: Vim help 'maplocalleader']
+---Wrapper around vim.keymap.set enforcing description injection and default silence.
+---@param mode string|table Mode short-name ('n', 'v', 'x', etc.) or table of modes
+---@param lhs string Key sequence
+---@param rhs string|function Command string or Lua callback
+---@param desc string Human-readable description registered to map metadata
+---@param extra_opts? table Optional overrides (remap, expr, buffer, nowait)
+local function map(mode, lhs, rhs, desc, extra_opts)
+    local opts = vim.tbl_extend("force", default_opts, extra_opts or {})
+    opts.desc = desc
+    vim.keymap.set(mode, lhs, rhs, opts)
+end
 
--- Write and Quit
--- [Normal Mode] <leader>wq -> Force-write current buffer to disk and close current window [Source: Vim help ':wq']
-keymap("n", "<leader>wq", "<cmd>wq!<cr>", opts)
+-- Leader Key Initialization
+map("", "<Space>", "<Nop>", "Unbind default Space behavior")
 
--- Write
--- [Normal Mode] <leader>w -> Force-write current buffer contents to disk [Source: Vim help ':w']
-keymap("n", "<leader>w", "<cmd>w!<cr>", opts)
+-- Buffer Write & Quit
+map("n", "<leader>w", "<cmd>w!<cr>", "Force-write buffer contents")
 
--- buffer delete
--- [Normal Mode] <leader>bd -> Delete active buffer from buffer list [Source: Vim help ':bdelete']
-keymap("n", "<leader>bd", "<cmd>bd<cr>", opts)
+-- Window Navigation
+map("n", "<C-h>", "<C-w>h", "Move focus to left split window")
+map("n", "<C-j>", "<C-w>j", "Move focus to lower split window")
+map("n", "<C-k>", "<C-w>k", "Move focus to upper split window")
+map("n", "<C-l>", "<C-w>l", "Move focus to right split window")
 
--- Modes
---    normal_mode = "n",
---    insert_mode = "i",
---    visual_mode = "v",
---    visual_block_mode = "x",
---    term_mode = "t",
---    command_mode = "c",
+-- Window Resizing
+map("n", "<C-A-k>", "<cmd>resize +2<cr>", "Expand window height by 2 rows")
+map("n", "<C-A-j>", "<cmd>resize -2<cr>", "Shrink window height by 2 rows")
+map("n", "<C-A-l>", "<cmd>vertical resize -2<cr>", "Shrink window width by 2 columns")
+map("n", "<C-A-h>", "<cmd>vertical resize +2<cr>", "Expand window width by 2 columns")
 
--- Normal --
--- Better window navigation
--- [Normal Mode] Ctrl+h -> Move focus to the split window on the left [Source: Vim help 'CTRL-W_h']
-keymap("n", "<C-h>", "<C-w>h", opts)
--- [Normal Mode] Ctrl+j -> Move focus to the split window below [Source: Vim help 'CTRL-W_j']
-keymap("n", "<C-j>", "<C-w>j", opts)
--- [Normal Mode] Ctrl+k -> Move focus to the split window above [Source: Vim help 'CTRL-W_k']
-keymap("n", "<C-k>", "<C-w>k", opts)
--- [Normal Mode] Ctrl+l -> Move focus to the split window on the right [Source: Vim help 'CTRL-W_l']
-keymap("n", "<C-l>", "<C-w>l", opts)
+-- Buffer Navigation & Control
+map("n", "<S-l>", "<cmd>bnext<cr>", "Navigate to next open buffer")
+map("n", "<S-h>", "<cmd>bprevious<cr>", "Navigate to previous open buffer")
+map("n", "<leader>bd", "<cmd>bd<cr>", "Delete active buffer from buffer list")
 
--- Resize with h,j,k,l
--- [Normal Mode] Ctrl+Alt+k -> Expand current window height by 2 rows [Source: Vim help ':resize']
-keymap("n", "<C-A-k>", "<cmd>resize +2<cr>", opts)
--- [Normal Mode] Ctrl+Alt+j -> Shrink current window height by 2 rows [Source: Vim help ':resize']
-keymap("n", "<C-A-j>", "<cmd>resize -2<cr>", opts)
--- [Normal Mode] Ctrl+Alt+l -> Shrink current window width by 2 columns [Source: Vim help ':vertical-resize']
-keymap("n", "<C-A-l>", "<cmd>vertical resize -2<cr>", opts)
--- [Normal Mode] Ctrl+Alt+h -> Expand current window width by 2 columns [Source: Vim help ':vertical-resize']
-keymap("n", "<C-A-h>", "<cmd>vertical resize +2<cr>", opts)
+-- Visual Mode Indentation & Line Manipulation
+map("v", "<", "<gv", "Shift selection left and retain visual selection")
+map("v", ">", ">gv", "Shift selection right and retain visual selection")
+map("v", "<A-j>", ":m '>+1<CR>gv=gv", "Move selection down 1 line and re-indent")
+map("v", "<A-k>", ":m '<-2<CR>gv=gv", "Move selection up 1 line and re-indent")
+map("v", "p", '"_dP', "Paste over selection without overwriting unnamed register")
 
--- Buffers
--- 1. Navigation
--- [Normal Mode] Shift+l -> Navigate to next open buffer [Source: Vim help ':bnext']
-keymap("n", "<S-l>", "<cmd>bnext<cr>", opts)
--- [Normal Mode] Shift+h -> Navigate to previous open buffer [Source: Vim help ':bprevious']
-keymap("n", "<S-h>", "<cmd>bprevious<cr>", opts)
--- 2. Control
--- [Normal Mode] <leader>bd -> Delete active buffer from buffer list (Note: Redundant re-declaration of <leader>bd) [Source: Vim help ':bdelete']
-keymap("n", "<leader>bd", "<cmd>bd<cr>", opts)
+-- Plugin Management
+map("n", "<leader>lz", "<cmd>Lazy<cr>", "Open Lazy.nvim plugin manager UI")
 
--- Visual --
--- Stay in indent mode
--- [Visual Mode] < -> Shift visual selection left by 'shiftwidth', retaining visual selection [Source: Vim help 'gv', 'v_<']
-keymap("v", "<", "<gv", opts)
--- [Visual Mode] > -> Shift visual selection right by 'shiftwidth', retaining visual selection [Source: Vim help 'gv', 'v_>']
-keymap("v", ">", ">gv", opts)
+-- Tab Management
+map("n", "<leader>ta", "<cmd>$tabnew<cr>", "Open new tab page at end of tablist")
+map("n", "<leader>tc", "<cmd>tabclose<cr>", "Close current tab page")
+map("n", "<leader>to", "<cmd>tabonly<cr>", "Close other tab pages")
+map("n", "<leader>tn", "<cmd>tabNext<cr>", "Focus next tab page")
+map("n", "<leader>tp", "<cmd>tabprevious<cr>", "Focus previous tab page")
+-- Under <leader>t with the rest of the tab commands. These were <leader>-/+,
+-- but oil.nvim binds <space>- (== <leader>-) to its float toggle and, loading
+-- later, won.
+map("n", "<leader>t-", "<cmd>-tabmove<cr>", "Move active tab left by 1 position")
+map("n", "<leader>t+", "<cmd>+tabmove<cr>", "Move active tab right by 1 position")
 
--- Move text up and down
--- [Visual Mode] Alt+j -> Move visually selected lines down by 1 line, re-select selection, and auto-indent [Source: Vim help ':move', 'gv', '=']
-keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", opts)
--- [Visual Mode] Alt+k -> Move visually selected lines up by 2 lines relative to start mark, re-select selection, and auto-indent [Source: Vim help ':move', 'gv', '=']
-keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
--- [Visual Mode] p -> Paste over selection into Black Hole Register ("_) to retain previous clipboard register contents [Source: Vim help 'quote_']
-keymap("v", "p", '"_dP', opts)
-
--- Lazy
--- [Normal Mode] <leader>lz -> Open Lazy.nvim plugin manager UI [Source: lazy.nvim Documentation]
-keymap("n", "<leader>lz", "<CMD>Lazy<cr>", opts)
-
--- tab management
--- [Normal Mode] <leader>ta -> Open a new tab page at the end of tablist [Source: Vim help ':tabnew']
-keymap("n", "<leader>ta", "<cmd>$tabnew<cr>", opts)
--- [Normal Mode] <leader>tc -> Close current tab page [Source: Vim help ':tabclose']
-keymap("n", "<leader>tc", "<cmd>tabclose<cr>", opts)
--- [Normal Mode] <leader>to -> Close all other tab pages except active tab [Source: Vim help ':tabonly']
-keymap("n", "<leader>to", "<cmd>tabonly<cr>", opts)
--- [Normal Mode] <leader>tn -> Focus next tab page [Source: Vim help ':tabnext']
-keymap("n", "<leader>tn", "<cmd>tabNext<cr>", opts)
--- [Normal Mode] <leader>tp -> Focus previous tab page [Source: Vim help ':tabprevious']
-keymap("n", "<leader>tp", "<cmd>tabprevious<cr>", opts)
--- move current tab to previous position
--- [Normal Mode] <leader>- -> Move active tab page left by 1 position [Source: Vim help ':tabmove']
-keymap("n", "<leader>-", "<cmd>-tabmove<cr>", opts)
--- move current tab to next position
--- [Normal Mode] <leader>+ -> Move active tab page right by 1 position [Source: Vim help ':tabmove']
-keymap("n", "<leader>+", "<cmd>+tabmove<cr>", opts)
-
--- vertical split
--- [Normal Mode] <leader>| -> Create vertical window split [Source: Vim help ':vsplit']
-keymap("n", "<leader>|", "<cmd>vsplit<cr>", opts)
--- horizontal split
--- [Normal Mode] <leader>_ -> Create horizontal window split [Source: Vim help ':split']
-keymap("n", "<leader>_", "<cmd>split<cr>", opts)
+-- Window Splits
+map("n", "<leader>|", "<cmd>vsplit<cr>", "Create vertical window split")
+map("n", "<leader>_", "<cmd>split<cr>", "Create horizontal window split")

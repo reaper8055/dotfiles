@@ -1,4 +1,16 @@
 local home = os.getenv("HOME")
+
+-- jdtls ships a separate `config_*` directory per platform and refuses to start
+-- against the wrong one. This was hardcoded to "config_linux" on a Darwin/arm64
+-- machine -- see the commented line further down.
+local uname = vim.uv.os_uname()
+local jdtls_config_dir = "config_linux"
+if uname.sysname == "Darwin" then
+    jdtls_config_dir = uname.machine == "arm64" and "config_mac_arm" or "config_mac"
+elseif uname.sysname:find("Windows") then
+    jdtls_config_dir = "config_win"
+end
+
 local workspace_path = home .. "/.local/share/nvim/jdtls-workspace/"
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 local workspace_dir = workspace_path .. project_name
@@ -28,7 +40,10 @@ local config = {
                 .. "/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar"
         ),
         "-configuration",
-        home .. "/.local/share/nvim/mason/packages/jdtls/config_linux",
+        -- was: home .. "/.local/share/nvim/mason/packages/jdtls/config_linux",
+        -- Hardcoded Linux path; this machine is Darwin/arm64, so jdtls would
+        -- have been pointed at a config directory that does not exist.
+        home .. "/.local/share/nvim/mason/packages/jdtls/" .. jdtls_config_dir,
         "-data",
         workspace_dir,
     },

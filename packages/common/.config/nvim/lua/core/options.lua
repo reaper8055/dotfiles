@@ -1,171 +1,132 @@
--- :help options
+-- =============================================================================
+-- 1. System Clipboard (OSC 52)
+-- =============================================================================
+-- OSC 52 is only used when there is no local clipboard to talk to, i.e. over
+-- SSH. It was previously set unconditionally, which broke pasting *into* Neovim
+-- on this machine:
+--
+--   Terminals essentially never honour OSC 52 clipboard *reads* (it would let
+--   any program exfiltrate your clipboard), so the paste handler below falls
+--   back to the unnamed register. But 'clipboard=unnamedplus' has already
+--   aliased unnamed to "+, so "+p just read back whatever Neovim last yanked
+--   and the real system clipboard never reached the editor.
+--
+-- Locally, leaving vim.g.clipboard unset lets Neovim find pbcopy/pbpaste (macOS)
+-- or wl-copy/xclip (Linux) by itself, and "+ works in both directions.
+if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
+    local osc52 = require("vim.ui.clipboard.osc52")
 
--- Enable editorconfig support
-vim.g.editorconfig = true
+    -- Best effort: see the note above about OSC 52 reads.
+    local function osc52_paste()
+        return {
+            vim.fn.split(vim.fn.getreg(""), "\n"),
+            vim.fn.getregtype(""),
+        }
+    end
 
--- do not create a backup file
-vim.opt.backup = false
-
---allows neovim to access system clipboard
-local function paste()
-    return {
-        vim.fn.split(vim.fn.getreg(""), "\n"),
-        vim.fn.getregtype(""),
+    vim.g.clipboard = {
+        name = "OSC 52",
+        copy = {
+            ["+"] = osc52.copy("+"),
+            ["*"] = osc52.copy("*"),
+        },
+        paste = {
+            ["+"] = osc52_paste,
+            ["*"] = osc52_paste,
+        },
     }
 end
 
--- allows neovim to access the system clipboard
-vim.opt.clipboard = "unnamedplus"
-vim.g.clipboard = {
-    name = "OSC 52",
-    copy = {
-        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-    },
-    paste = {
-        ["+"] = paste,
-        ["*"] = paste,
-    },
+-- =============================================================================
+-- 2. Scalar & Primitive Options (Declarative Map)
+-- =============================================================================
+local options = {
+    -- Backup & Swap Files
+    backup = false,
+    writebackup = false,
+    swapfile = false,
+    undofile = true,
+
+    -- Command Line & Menus
+    cmdheight = 1,
+    pumheight = 10,
+    showtabline = 2,
+    completeopt = { "menuone", "noselect" },
+
+    -- Search & Matching
+    hlsearch = true,
+    ignorecase = true,
+    smartcase = true,
+
+    -- Window Splits
+    splitbelow = true,
+    splitright = true,
+    winblend = 0,
+
+    -- Cursor & Line Display
+    cursorline = true,
+    cursorlineopt = "both",
+    cursorcolumn = true,
+    number = true,
+    relativenumber = true,
+    numberwidth = 4,
+    signcolumn = "yes",
+    wrap = true,
+    scrolloff = 8,
+    sidescrolloff = 8,
+    colorcolumn = "100",
+    textwidth = 80,
+    conceallevel = 0,
+
+    -- Indentation Defaults (Fallback when .editorconfig is absent)
+    autoindent = true,
+    smartindent = true,
+    expandtab = true,
+    shiftwidth = 4,
+    tabstop = 4,
+    softtabstop = 4,
+
+    -- Filesystem & Timing
+    fileformats = "unix,dos,mac",
+    endofline = true,
+    fixendofline = true,
+    timeoutlen = 1000,
+    updatetime = 300,
+    mouse = "a",
+    termguicolors = true,
+    clipboard = "unnamedplus",
+    guifont = "JetBrainsMono NF",
 }
 
--- more space in the neovim command line for displaying messages
-vim.opt.cmdheight = 1
+for opt, val in pairs(options) do
+    vim.opt[opt] = val
+end
 
--- mostly just for cmp
-vim.opt.completeopt = { "menuone", "noselect" }
+-- =============================================================================
+-- 3. Compound, Flag, and Character-Map Options
+-- =============================================================================
+-- Message Suppression: suppress intro message ('I'), ins-completion ('c'), and search counts ('S')
+vim.opt.shortmess:append({ I = true, c = true, S = true })
 
--- so that `` is visible in markdown files
-vim.opt.conceallevel = 0
-vim.opt.encoding = "utf-8"
-
--- highlight all matches on previous search pattern
-vim.opt.hlsearch = true
-
--- ignore case in search patterns
-vim.opt.ignorecase = true
-
--- allow the mouse to be used in neovim
-vim.opt.mouse = "a"
-
--- pop up menu height
-vim.opt.pumheight = 10
-
--- always show tabs
-vim.opt.showtabline = 2
-
--- smart case
-vim.opt.smartcase = true
-
--- make indenting smarter again
-vim.opt.smartindent = true
-
--- force all horizontal splits to go below current window
-vim.opt.splitbelow = true
-
--- force all vertical splits to go to the right of current window
-vim.opt.splitright = true
-
--- do not create a swapfile
-vim.opt.swapfile = false
-
--- set term gui colors (most terminals support this)
-vim.opt.termguicolors = true
-
--- time to wait for a mapped sequence to complete (in milliseconds)
-vim.opt.timeoutlen = 1000
-
--- enable persistent undo
-vim.opt.undofile = true
-
--- faster completion (4000ms default)
-vim.opt.updatetime = 300
-
--- if a file is being edited by another program (or was written to file while editing
--- with another program), it is not allowed to be edited
-vim.opt.writebackup = false
-
--- Indentation settings (these will be overridden by EditorConfig)
-vim.opt.expandtab = true -- convert tabs to spaces
-vim.opt.shiftwidth = 4 -- the number of spaces inserted for each indentation
-vim.opt.tabstop = 4 -- insert 4 spaces for a tab
-vim.opt.softtabstop = 4 -- make sure softtabstop matches tabstop
-
--- highlight the current line
-vim.opt.cursorline = true
-
--- highlight current line number
-vim.opt.cursorlineopt = "number"
-
--- set numbered lines
-vim.opt.number = true
-
--- set relative numbered lines
-vim.opt.relativenumber = true
-
--- set number column width to 4 {default 4}
-vim.opt.numberwidth = 4
-
--- always show the sign column
-vim.opt.signcolumn = "yes"
-
--- display lines as one long line
-vim.opt.wrap = true
-
--- is one of my fav
-vim.opt.scrolloff = 8
-vim.opt.sidescrolloff = 8
-
--- the font used in graphical neovim applications
--- vim.opt.guifont = "FiraCode Nerd Font:h18"
-vim.opt.guifont = "JetBrainsMono NF"
-vim.opt.colorcolumn = "100"
-vim.opt.textwidth = 80
-vim.opt.cursorcolumn = true
-vim.opt.shortmess:append("c")
+-- Whitespace Visibility
 vim.opt.list = true
-vim.opt.listchars:append({
+vim.opt.listchars = {
     tab = "» ",
     trail = "·",
     eol = "¬",
-})
+}
 
--- End of line settings (these will be overridden by EditorConfig)
-vim.opt.fileformats = "unix,dos,mac" -- Prefer Unix line endings
-vim.opt.endofline = true -- Ensure file ends with newline
-vim.opt.fixendofline = true -- Fix files lacking final newline
+-- UI Fill Characters (fold column, window boundaries, end-of-buffer)
+vim.opt.fillchars = {
+    eob = " ",
+    fold = " ",
+    foldopen = " ",
+    foldsep = " ",
+    foldclose = " ",
+}
 
--- fix floating window borders for retro box theme
-vim.opt.winblend = 0
-
--- Allow specified keys that move the cursor left/right to move to the previous/next line when the cursor is on the first/last character
--- <,> = left and right arrow keys
--- [,] = cursor keys in insert mode
--- h,l = h and l keys in normal mode
+--- Allow specified keys that move the cursor left/right to move to the previous/next line when the cursor is on the first/last character
+--- <,> = left and right arrow keys
+--- [,] = cursor keys in insert mode
+--- h,l = h and l keys in normal mode
 vim.cmd("set whichwrap+=<,>,[,],h,l")
-
--- Add hyphen (-) to the list of characters that are considered part of a word
--- This means operations like 'w', 'b', or '*' will treat hyphenated-words as a single word
--- vim.cmd([[set iskeyword+=-]])
-
--- Modify format options:
--- t = auto-wrap text using textwidth
--- Note: Other format options you might want to consider:
--- c = auto-wrap comments using textwidth
--- q = allow formatting of comments with "gq"
--- j = remove comment leader when joining lines
--- r = automatically insert comment leader after hitting <Enter>
--- n = recognize numbered lists
--- vim.cmd("set formatoptions+=t")
-
--- Helps Neovim detect indentation when no .editorconfig is present
-vim.opt.autoindent = true
-
--- hide search occurances
-vim.opt.shortmess:append("S")
-
--- set border charactres to empty or spaces if you want no visible borders
-vim.opt.fillchars:append("eob: ")
-vim.opt.fillchars:append("fold: ")
-vim.opt.fillchars:append("foldopen: ")
-vim.opt.fillchars:append("foldsep: ")
-vim.opt.fillchars:append("foldclose: ")

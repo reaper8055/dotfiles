@@ -45,9 +45,11 @@ return {
                 local buf = event.buf
                 local ft = event.match
 
-                -- Attempt to start treesitter highlighting
-                -- This silently fails if no parser exists for the filetype
-                pcall(vim.treesitter.start, buf)
+                -- Bail out unless a parser actually exists for this filetype.
+                -- Previously the pcall was discarded and 'indentexpr' was set
+                -- regardless, pointing parser-less buffers at an indent function
+                -- that can never work.
+                if not pcall(vim.treesitter.start, buf) then return end
 
                 -- Enable treesitter-based indentation (except yaml)
                 if ft ~= "yaml" then

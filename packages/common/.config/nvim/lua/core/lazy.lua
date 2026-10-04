@@ -21,13 +21,14 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     end
 end
 vim.opt.rtp:prepend(lazypath)
-vim.env.PATH = vim.env.VIM_PATH or vim.env.PATH
 
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
+-- mapleader/maplocalleader are set in core/global-keymaps.lua, which
+-- core/init.lua requires before this file -- so they are already correct by the
+-- time lazy.setup() runs. They used to be set in both places with *different*
+-- localleader values, and whichever file loaded last silently won.
+--
+-- termguicolors stays here: it has to be on before the colorscheme loads, and
+-- core/options.lua runs after lazy.setup().
 vim.opt.termguicolors = true
 
 -- Disabling netrw so that 'oil' can take it's place

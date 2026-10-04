@@ -32,56 +32,21 @@ vim.api.nvim_create_autocmd("BufWritePre", {
             end
         end
 
-        -- Format the buffer
-        vim.lsp.buf.format({ async = false })
+        -- No formatting here. conform.nvim's format_on_save already covers go
+        -- via lsp_fallback -> gopls (which has gofumpt enabled). Calling
+        -- vim.lsp.buf.format here too meant every :w formatted the buffer twice.
     end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "*.go",
-    callback = function()
-        -- syntax highlighting, provided by Neovim
-        vim.treesitter.start()
-        -- folds, provided by Neovim
-        vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-        vim.wo.foldmethod = "expr"
-        -- indentation, provided by nvim-treesitter
-        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    end,
-})
+-- Treesitter folds. Highlighting and 'indentexpr' are already applied to every
+-- buffer by the global FileType autocmd in lua/plugins/treesitter.lua, so this
+-- only adds what that does not cover.
+--
+-- This runs in an ftplugin, which Neovim sources per go buffer, so the settings
+-- apply directly -- wrapping them in a FileType autocmd here was both redundant
+-- and wrong ('pattern' matches the filetype name "go", never the glob "*.go").
+vim.opt_local.foldmethod = "expr"
+vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
--- vim.api.nvim_create_autocmd("BufWritePre", {
---     pattern = "*.go",
---     callback = function()
---         -- Check if LSP is attached
---         if vim.lsp.get_clients({ bufnr = 0 })[1] == nil then
---             vim.notify("No LSP client attached", vim.log.levels.WARN)
---             return
---         end
---
---         -- Organize imports
---         local params = vim.lsp.util.make_range_params()
---         params.context = { only = { "source.organizeImports" } }
---
---         local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params)
---         if not result then
---             vim.notify("Failed to organize imports", vim.log.levels.WARN)
---             return
---         end
---
---         for cid, res in pairs(result) do
---             for _, r in pairs(res.result or {}) do
---                 if r.edit then
---                     local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
---                     vim.lsp.util.apply_workspace_edit(r.edit, enc)
---                 end
---             end
---         end
---
---         -- Format the buffer
---         local format_success, format_err = pcall(vim.lsp.buf.format, { async = false })
---         if not format_success then
---             vim.notify("Format failed: " .. tostring(format_err), vim.log.levels.WARN)
---         end
---     end,
--- })
+-- Without this, 'foldlevel' defaults to 0 and every go file opens fully folded.
+vim.opt_local.foldlevel = 99

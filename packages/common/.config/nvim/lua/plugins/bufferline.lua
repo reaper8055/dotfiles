@@ -2,7 +2,6 @@ return {
     "akinsho/bufferline.nvim",
     version = "*",
     dependencies = {
-        "rebelot/kanagawa.nvim",
         "nvim-tree/nvim-web-devicons",
         "rebelot/kanagawa.nvim",
     },
@@ -40,8 +39,12 @@ return {
             end,
             options = {
                 numbers = "none", -- | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string,
-                close_command = "Bdelete! %d", -- can be a string | function, see "Mouse actions"
-                right_mouse_command = "Bdelete! %d", -- can be a string | function, see "Mouse actions"
+                -- Was "Bdelete! %d", which needs vim-bbye/bufdelete.nvim -- neither
+                -- is installed, so the close button silently errored. snacks.nvim
+                -- is already loaded and its bufdelete preserves the window layout
+                -- the way plain :bdelete does not.
+                close_command = function(n) Snacks.bufdelete(n) end,
+                right_mouse_command = function(n) Snacks.bufdelete(n) end,
                 left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
                 middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
                 indicator = {

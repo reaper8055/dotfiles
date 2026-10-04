@@ -56,7 +56,9 @@ return {
             on_attach = setup_keymaps,
 
             disable_netrw = true,
-            hijack_netrw = true,
+            -- oil.nvim owns directory buffers (`-`). Both plugins claimed them;
+            -- oil happened to win on load order. This makes that deliberate.
+            hijack_netrw = false,
 
             sync_root_with_cwd = true,
 

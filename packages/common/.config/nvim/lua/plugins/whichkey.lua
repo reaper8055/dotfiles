@@ -1,7 +1,7 @@
 return {
     "folke/which-key.nvim",
-    delay = 100,
     opts = {
+        delay = 100,
         preset = "classic",
         win = {
             title = false,
@@ -11,7 +11,7 @@ return {
             mappings = false,
         },
     },
-    key = {
+    keys = {
         {
             "<leader>?",
             function() require("which-key").show({ global = false }) end,

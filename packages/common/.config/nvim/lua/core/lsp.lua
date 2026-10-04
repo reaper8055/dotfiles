@@ -85,7 +85,7 @@ vim.diagnostic.config({
             [vim.diagnostic.severity.INFO] = " ",
         },
     },
-    update_in_insert = true,
+    update_in_insert = false,
     underline = true,
     severity_sort = true,
     float = {
@@ -102,6 +102,21 @@ vim.diagnostic.config({
 -- Create user commands
 local lspinfo = require("utils.lsp.lspinfo")
 vim.api.nvim_create_user_command("LspInfoFloat", lspinfo.create_float, {})
+
+-- Created once, at module scope. `clear = false` so that per-buffer autocmds
+-- registered into it on LspAttach survive; they are cleared per buffer instead.
+local highlight_augroup = vim.api.nvim_create_augroup("reaper-lsp-highlight", { clear = false })
+
+-- Registered ONCE, not per attach. Previously this lived inside the LspAttach
+-- callback and created its augroup with `clear = true`, so every new attach
+-- wiped the handler belonging to every previously attached buffer.
+vim.api.nvim_create_autocmd("LspDetach", {
+    group = vim.api.nvim_create_augroup("reaper-lsp-detach", { clear = true }),
+    callback = function(event)
+        vim.lsp.buf.clear_references()
+        vim.api.nvim_clear_autocmds({ group = highlight_augroup, buffer = event.buf })
+    end,
+})
 
 -- LspAttach autocommand with complete keymap configuration
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -143,9 +158,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
             "[D]ocument [S]ymbols"
         )
         keymap(
-            "<leader>ws",
+            "<leader>sS",
             require("telescope.builtin").lsp_dynamic_workspace_symbols,
-            "[W]orkspace [S]ymbols"
+            "[S]earch Workspace [S]ymbols"
         )
 
         -- LSP actions
@@ -176,9 +191,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
         -- Document highlighting setup
         if client and client.server_capabilities.documentHighlightProvider then
-            local highlight_augroup =
-                vim.api.nvim_create_augroup("reaper-lsp-highlight", { clear = false })
-
             -- clear existing autocmds for this specific buffer to avoid duplicates
             vim.api.nvim_clear_autocmds({ group = highlight_augroup, buffer = bufnr })
 
@@ -192,17 +204,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 buffer = bufnr,
                 group = highlight_augroup,
                 callback = vim.lsp.buf.clear_references,
-            })
-
-            vim.api.nvim_create_autocmd("LspDetach", {
-                group = vim.api.nvim_create_augroup("reaper-lsp-detach", { clear = true }),
-                callback = function(event2)
-                    vim.lsp.buf.clear_references()
-                    vim.api.nvim_clear_autocmds({
-                        group = "reaper-lsp-highlight",
-                        buffer = event2.buf,
-                    })
-                end,
             })
         end
 

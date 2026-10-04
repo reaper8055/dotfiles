@@ -3,7 +3,6 @@ return {
     -- optional: provides snippets for the snippet source
     dependencies = {
         "rafamadriz/friendly-snippets",
-        "windwp/nvim-autopairs",
     },
 
     -- use a release tag to download pre-built binaries

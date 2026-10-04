@@ -36,9 +36,23 @@ return {
                 preserve_equality = false,
             },
             on_attach = function(bufnr)
-                -- Jump forwards/backwards with '{' and '}'
-                vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-                vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+                -- Jump between symbols. Deliberately NOT {/} -- those are the
+                -- paragraph motions, and aerial attaches to every code buffer.
+                -- [r/]r is one of the few bracket pairs with no native command
+                -- or default mapping behind it ([a/]a, [b/]b, [q/]q, [l/]l, [t/]t
+                -- are default mappings; [m/]m, [s/]s, [c/]c, [z/]z are builtins).
+                vim.keymap.set(
+                    "n",
+                    "[r",
+                    "<cmd>AerialPrev<CR>",
+                    { buffer = bufnr, desc = "Aerial: previous symbol" }
+                )
+                vim.keymap.set(
+                    "n",
+                    "]r",
+                    "<cmd>AerialNext<CR>",
+                    { buffer = bufnr, desc = "Aerial: next symbol" }
+                )
             end,
         })
         vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")

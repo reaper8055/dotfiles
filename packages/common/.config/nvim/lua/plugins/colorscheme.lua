@@ -49,7 +49,7 @@ return {
                     -- Float related highlights
                     FloatBorder = { bg = theme.ui.bg, fg = palette.fujiWhite },
                     NormalFloat = { bg = theme.ui.bg, fg = theme.ui.fg },
-                    CursorLine = { bg = theme.ui.bg },
+                    CursorLine = { bg = theme.ui.bg_p1 },
                     FloatTitle = { bg = theme.ui.bg, fg = palette.fujiWhite },
                     DressingInputText = { bg = theme.ui.bg },
                     DressingInputBorder = { bg = theme.ui.bg, fg = palette.fujiWhite },

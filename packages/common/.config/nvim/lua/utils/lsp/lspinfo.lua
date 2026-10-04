@@ -29,7 +29,8 @@ local function get_lsp_info(bufnr)
             lines,
             string.format("- Client: `%s` (id: %d, bufnr: [%d])", client.name, client.id, bufnr)
         )
-        table.insert(lines, string.format("  root directory:    %s", client.config.root_dir or ""))
+        -- `client.root_dir` is the canonical field under the vim.lsp.config API
+        table.insert(lines, string.format("  root directory:    %s", client.root_dir or ""))
         table.insert(
             lines,
             string.format(
@@ -41,7 +42,8 @@ local function get_lsp_info(bufnr)
             lines,
             string.format(
                 "  cmd:               %s",
-                client.config.cmd and table.concat(client.config.cmd, " ") or ""
+                type(client.config.cmd) == "table" and table.concat(client.config.cmd, " ")
+                    or tostring(client.config.cmd)
             )
         )
         if client.version then
@@ -51,12 +53,11 @@ local function get_lsp_info(bufnr)
             lines,
             string.format(
                 "  executable:        %s",
-                tostring(vim.fn.executable(client.config.cmd and client.config.cmd[1] or "") == 1)
+                tostring(
+                    type(client.config.cmd) == "table"
+                        and vim.fn.executable(client.config.cmd[1]) == 1
+                )
             )
-        )
-        table.insert(
-            lines,
-            string.format("  autostart:         %s", tostring(client.config.autostart))
         )
     end
 
@@ -70,8 +71,8 @@ function M.create_float()
     local lines = get_lsp_info(current_buf)
 
     -- Create floating window
-    local width = vim.api.nvim_get_option("columns")
-    local height = vim.api.nvim_get_option("lines")
+    local width = vim.o.columns
+    local height = vim.o.lines
     local win_width = math.floor(width * 0.8)
     local win_height = math.floor(height * 0.8)
     local row = math.floor((height - win_height) / 2)
@@ -95,17 +96,16 @@ function M.create_float()
 
     -- Add highlighting
     local ns_id = vim.api.nvim_create_namespace("LspInfoFloat")
-    vim.api.nvim_buf_add_highlight(buf, ns_id, "Title", 0, 0, -1)
+    vim.hl.range(buf, ns_id, "Title", { 0, 0 }, { 0, -1 })
 
     -- Set buffer options
-    vim.api.nvim_buf_set_option(buf, "modifiable", false)
-    vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+    vim.bo[buf].modifiable = false
+    vim.bo[buf].bufhidden = "wipe"
 
     -- Add keymapping to close the window
-    vim.api.nvim_buf_set_keymap(buf, "n", "q", ":close<CR>", {
-        noremap = true,
-        silent = true,
-    })
+    vim.keymap.set("n", "q", function()
+        if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+    end, { buffer = buf, noremap = true, silent = true, desc = "Close LSP info" })
 end
 
 -- Export the module
