@@ -259,6 +259,9 @@ path=(
 )
 typeset -U path
 
+typeset -A ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_STYLES[comment]='fg=#7f849c'
+
 # Performance: uncomment BOTH this and the `zprof` call to profile startup.
 # zmodload zsh/zprof   # (must be the first line of .zshrc to be useful)
 # zprof
