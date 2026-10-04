@@ -41,7 +41,6 @@ return {
     config = function()
         local nvim_tree = require("nvim-tree")
         local api = require("nvim-tree.api")
-        local helpers = require("utils.win.decorations")
 
         vim.api.nvim_create_autocmd("BufEnter", {
             nested = true,
@@ -82,7 +81,6 @@ return {
             renderer = {
                 indent_markers = {
                     enable = true,
-                    icons = helpers.indent_markers.icons,
                 },
                 icons = {
                     git_placement = "before",
@@ -123,16 +121,6 @@ return {
                     },
                 },
             },
-        })
-
-        vim.api.nvim_set_hl(0, "NvimTreeCursorLine", {
-            bg = "#2A2A37",
-            bold = false,
-        })
-
-        vim.api.nvim_set_hl(0, "NvimTreeCursorLineNr", {
-            fg = "#E6C384",
-            bold = true,
         })
 
         vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeFindFileToggle!<cr>", {

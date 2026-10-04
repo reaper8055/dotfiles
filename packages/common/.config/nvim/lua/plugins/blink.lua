@@ -43,16 +43,8 @@ return {
 
         -- (Default) Only show the documentation popup when manually triggered
         completion = {
-            menu = {
-                border = require("utils.win.decorations").default_border,
-                winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-            },
             documentation = {
                 auto_show = true,
-                window = {
-                    border = require("utils.win.decorations").default_border,
-                    winhighlight = "Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc",
-                },
             },
         },
 

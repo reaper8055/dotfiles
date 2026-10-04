@@ -62,6 +62,7 @@ local options = {
     splitbelow = true,
     splitright = true,
     winblend = 0,
+    winborder = require("utils.win.decorations").default_border,
 
     -- Cursor & Line Display
     cursorline = true,
@@ -130,3 +131,22 @@ vim.opt.fillchars = {
 --- [,] = cursor keys in insert mode
 --- h,l = h and l keys in normal mode
 vim.cmd("set whichwrap+=<,>,[,],h,l")
+
+-- Floats and popup menus share the editor background, with a visible border.
+-- Links only (no colour values), so this follows whichever colorscheme is
+-- loaded. Registered before `colorscheme` so it also applies on startup.
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("reaper-float-colors", { clear = true }),
+    callback = function()
+        vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
+        vim.api.nvim_set_hl(0, "Pmenu", { link = "Normal" })
+        vim.api.nvim_set_hl(0, "FloatBorder", { link = "Comment" })
+        -- These default to fill groups (Pmenu/NormalFloat), not FloatBorder.
+        for _, group in ipairs({ "PmenuBorder", "BlinkCmpMenuBorder", "BlinkCmpDocBorder", "BlinkCmpSignatureHelpBorder" }) do
+            vim.api.nvim_set_hl(0, group, { link = "FloatBorder" })
+        end
+    end,
+})
+
+-- Built-in colorscheme (ships with Neovim 0.12).
+vim.cmd.colorscheme("catppuccin")

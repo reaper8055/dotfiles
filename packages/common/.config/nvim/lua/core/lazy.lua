@@ -38,13 +38,11 @@ vim.g.loaded_netrwPlugin = 1
 local installed, lazy = pcall(require, "lazy")
 if not installed then return end
 
-local helpers = require("utils.win.decorations")
-
 lazy.setup({
     spec = {
         { import = "plugins" },
     },
-    install = { colorscheme = { "default" } },
+    install = { colorscheme = { "catppuccin" } },
     checker = {
         enabled = true,
         notify = false,
@@ -60,6 +58,6 @@ lazy.setup({
     },
     ui = {
         backdrop = 100,
-        border = helpers.default_border,
+        border = "bold",
     },
 })

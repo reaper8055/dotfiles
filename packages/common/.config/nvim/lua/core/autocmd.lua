@@ -45,37 +45,3 @@ vim.api.nvim_create_autocmd("CmdwinEnter", {
         vim.keymap.set("n", "}", "}", opts)
     end,
 })
-
--- DISABLED. The block below did three things, all either redundant or actively
--- harmful. Kept commented so you can review each part and decide.
---
---   1. Linked FloatBorder and NormalFloat to Normal. This is the harmful one:
---      it erased the border and float colours that plugins/colorscheme.lua
---      defines in its `overrides`, undoing the whole custom box-drawing border
---      scheme on every colorscheme event.
---   2. Re-appended eob/fold/foldopen/foldsep/foldclose to 'fillchars', which
---      core/options.lua already sets wholesale. Redundant, not harmful.
---   3. The stray winblend call was at file scope, not in the autocmd, so it
---      applied to whatever single window happened to exist at startup.
---      core/options.lua sets winblend = 0 globally instead.
-
--- -- Fix floating window borders for retro box theme
--- vim.api.nvim_set_option_value("winblend", 0, { scope = "local" })
--- -- vim.api.nvim_set_option("winblend", 0) -- deprecated
---
--- -- Configure floating window appearance
--- vim.api.nvim_create_autocmd("ColorScheme", {
---     pattern = "*",
---     callback = function()
---         -- Remove or customize borders for floating windows
---         vim.api.nvim_set_hl(0, "FloatBorder", { link = "Normal" })
---         vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
---
---         -- Set border characters to empty or spaces if you want no visible border
---         vim.opt.fillchars:append("eob: ")
---         vim.opt.fillchars:append("fold: ")
---         vim.opt.fillchars:append("foldopen: ")
---         vim.opt.fillchars:append("foldsep: ")
---         vim.opt.fillchars:append("foldclose: ")
---     end,
--- })

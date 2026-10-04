@@ -3,40 +3,9 @@ return {
     version = "*",
     dependencies = {
         "nvim-tree/nvim-web-devicons",
-        "rebelot/kanagawa.nvim",
     },
     config = function()
         require("bufferline").setup({
-            highlights = function()
-                -- Get Kanagawa colors
-                local colors = require("kanagawa.colors").setup()
-                local palette = colors.palette
-
-                return {
-                    tab_selected = {
-                        fg = palette.carpYellow,
-                    },
-                    tab_close = {
-                        fg = palette.carpYellow,
-                    },
-                    tab_separator_selected = {
-                        fg = palette.carpYellow,
-                    },
-                    buffer_selected = {
-                        fg = palette.carpYellow,
-                    },
-                    indicator_selected = {
-                        fg = palette.carpYellow,
-                    },
-                    close_button_selected = {
-                        fg = palette.carpYellow,
-                    },
-                    separator_selected = {
-                        fg = palette.carpYellow,
-                        bg = palette.carpYellow,
-                    },
-                }
-            end,
             options = {
                 numbers = "none", -- | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string,
                 -- Was "Bdelete! %d", which needs vim-bbye/bufdelete.nvim -- neither

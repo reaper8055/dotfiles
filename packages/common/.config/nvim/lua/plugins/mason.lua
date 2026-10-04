@@ -4,7 +4,6 @@ return {
         ui = {
             width = 0.8,
             height = 0.8,
-            border = require("utils.win.decorations").default_border,
             backdrop = 100,
             icons = {
                 package_installed = "✓",

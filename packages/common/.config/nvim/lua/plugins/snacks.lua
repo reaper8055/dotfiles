@@ -10,15 +10,8 @@ return {
         -- refer to the configuration section below
         styles = {
             input = {
-                border = require("utils.win.decorations").default_border,
                 width = 40,
                 relative = "cursor",
-            },
-            win = {
-                border = require("utils.win.decorations").default_border,
-            },
-            notification = {
-                border = require("utils.win.decorations").default_border,
             },
         },
         bigfile = { enabled = false },

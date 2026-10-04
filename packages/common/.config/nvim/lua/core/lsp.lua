@@ -74,7 +74,6 @@ if #lsps > 0 then
 end
 
 -- Diagnostic configuration
-local win_decorations = require("utils.win.decorations")
 vim.diagnostic.config({
     virtual_text = true,
     signs = {
@@ -91,8 +90,6 @@ vim.diagnostic.config({
     float = {
         focusable = true,
         style = "minimal",
-        border = win_decorations.default_border,
-        -- border = "bold",
         source = true,
         header = "",
         prefix = "",
@@ -138,7 +135,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 vim.lsp.buf.hover({
                     max_width = math.floor(vim.o.columns * 0.7),
                     max_height = math.floor(vim.o.lines * 0.3),
-                    border = win_decorations.default_border,
                 })
             end,
             "Hover Documentation"
@@ -172,7 +168,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 vim.lsp.buf.signature_help({
                     max_width = math.floor(vim.o.columns * 0.7),
                     max_height = math.floor(vim.o.lines * 0.3),
-                    border = require("utils.win.decorations").default_border,
                     focusable = false,
                 })
             end,

@@ -10,21 +10,6 @@ return {
                 ["<C-h>"] = false,
                 ["<M-h>"] = "actions.select_split",
             },
-            float = {
-                border = require("utils.win.decorations").default_border,
-            },
-            confirmation = {
-                border = require("utils.win.decorations").default_border,
-            },
-            ssh = {
-                border = require("utils.win.decorations").default_border,
-            },
-            progress = {
-                border = require("utils.win.decorations").default_border,
-            },
-            keymaps_help = {
-                border = require("utils.win.decorations").default_border,
-            },
             view_options = {
                 show_hidden = true,
             },

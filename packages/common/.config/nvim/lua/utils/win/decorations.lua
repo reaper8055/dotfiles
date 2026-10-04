@@ -1,25 +1,9 @@
 local M = {}
 
-M.default_border = {
-    { "┏", "FloatBorder" },
-    { "━", "FloatBorder" },
-    { "┓", "FloatBorder" },
-    { "┃", "FloatBorder" },
-    { "┛", "FloatBorder" },
-    { "━", "FloatBorder" },
-    { "┗", "FloatBorder" },
-    { "┃", "FloatBorder" },
-}
-
-M.indent_markers = {
-    icons = {
-        corner = "┗",
-        edge = "┃",
-        item = "┃",
-        bottom = "━",
-        none = " ",
-    },
-}
+-- Border style for every floating window. Applied globally via 'winborder'
+-- (core/options.lua); only plugins that ignore 'winborder' reference this.
+-- Try "single" for thin lines.
+M.default_border = "bold"
 
 M.telescope_dropdown_borders = {
     { "━", "┃", "━", "┃", "┏", "┓", "┛", "┗" },
@@ -35,28 +19,4 @@ M.telescope_default_borders = {
     preview = { "━", "┃", "━", "┃", "┏", "┓", "┛", "┗" },
 }
 
-M.border_icons = {
-    corner = {
-        top = {
-            left = "┏",
-            right = "┓",
-            none = " ",
-        },
-        bottom = {
-            left = "┗",
-            right = "┛",
-            none = " ",
-        },
-    },
-    side = {
-        horizontal = "━",
-        vertical = "┃",
-        none = " ",
-    },
-    joins = {
-        left = "┣",
-        right = "┫",
-        none = " ",
-    },
-}
 return M

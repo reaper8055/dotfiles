@@ -86,7 +86,6 @@ function M.create_float()
         row = row,
         col = col,
         style = "minimal",
-        border = require("utils.win.decorations").default_border,
     }
 
     local win = vim.api.nvim_open_win(buf, true, win_opts)

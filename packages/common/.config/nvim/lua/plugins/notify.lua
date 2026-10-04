@@ -26,7 +26,6 @@ return {
             return string.format("[%s]: %s %s%s", time, icon, title, notification.msg)
         end
 
-        local helpers = require("utils.win.decorations")
         require("mini.notify").setup({
             content = {
                 format = custom_format,
@@ -39,7 +38,6 @@ return {
 
                     return {
                         anchor = "SE",
-                        border = helpers.default_border,
                         col = columns - 1,
                         row = lines - 2,
                         relative = "editor",

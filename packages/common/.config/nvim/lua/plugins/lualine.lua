@@ -6,13 +6,8 @@ return {
             "nvim-tree/nvim-web-devicons",
             opt = true,
         },
-        { "rebelot/kanagawa.nvim" },
     },
     config = function()
-        -- Get Kanagawa colors
-        local colors = require("kanagawa.colors").setup()
-        local theme = colors.theme
-
         require("lualine").setup({
             options = {
                 icons_enabled = true,
@@ -59,9 +54,6 @@ return {
                         sections = { "error", "warn", "info", "hint" },
                         symbols = { error = " ", warn = " ", info = " ", hint = " " },
                         colored = true,
-                        color = {
-                            bg = theme.ui.bg,
-                        },
                         separator = {
                             left = "",
                             right = "",
@@ -74,10 +66,6 @@ return {
                         "diff",
                         colored = true,
                         symbols = { added = " ", modified = " ", removed = " " }, -- changes diff symbols
-                        color = {
-                            bg = theme.ui.bg,
-                            fg = theme.ui.fg,
-                        },
                         cond = function() return vim.fn.winwidth(0) > 80 end,
                         separator = {
                             right = "",
@@ -95,9 +83,6 @@ return {
                     },
                     {
                         "encoding",
-                        color = {
-                            bg = theme.ui.bg,
-                        },
                         separator = {
                             right = "",
                             left = "",
@@ -109,9 +94,6 @@ return {
                         "searchcount",
                         fmt = function(str) return str:gsub("%[", ""):gsub("%]", "") end,
                         maxcount = 99999,
-                        color = {
-                            bg = colors.palette.autumnYellow,
-                        },
                         padding = 1,
                         separator = {
                             right = "",
